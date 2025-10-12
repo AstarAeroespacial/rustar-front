@@ -14,7 +14,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Ground Stations', href: '/ground-stations', current: router.pathname === '/ground-stations' },
     { name: 'Monitoring', href: '/telemetry', current: router.pathname === '/telemetry' },
     { name: 'Commands', href: '/commands', current: router.pathname === '/commands' },
-    { name: 'Settings', href: '/settings', current: router.pathname === '/settings' },
   ];
 
   return (

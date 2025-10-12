@@ -89,3 +89,11 @@ export interface GroundStation {
   };
   lastUpdate: Date;
 }
+
+export interface AvailableCommand {
+  id: string;
+  name: string;
+  description: string;
+  category: 'system' | 'telemetry' | 'control' | 'maintenance';
+  requiresConfirmation: boolean;
+}

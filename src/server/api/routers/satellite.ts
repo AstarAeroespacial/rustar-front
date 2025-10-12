@@ -172,4 +172,53 @@ export const satelliteRouter = createTRPCRouter({
       console.log(`Updating satellite ${input.id} with new TLE:`, input.tle);
       return { success: true };
     }),
+
+  // Get available commands
+  getAvailableCommands: publicProcedure.query(async () => {
+    // Mock implementation - would call actual API endpoint
+    return [
+      {
+        id: "REBOOT",
+        name: "Restart System",
+        description: "Restart the satellite's main computer",
+        category: "system" as const,
+        requiresConfirmation: true,
+      },
+      {
+        id: "STATUS_CHECK",
+        name: "Status Check",
+        description: "Verify operational status of all systems",
+        category: "telemetry" as const,
+        requiresConfirmation: false,
+      },
+      {
+        id: "UPDATE_SOFTWARE",
+        name: "Update Software",
+        description: "Fetch and apply the latest software patches",
+        category: "maintenance" as const,
+        requiresConfirmation: true,
+      },
+      {
+        id: "ADJUST_POWER",
+        name: "Adjust Power",
+        description: "Modify power distribution settings",
+        category: "control" as const,
+        requiresConfirmation: true,
+      },
+      {
+        id: "SIGNAL_TEST",
+        name: "Signal Test",
+        description: "Test communication signal strength",
+        category: "telemetry" as const,
+        requiresConfirmation: false,
+      },
+      {
+        id: "ANTENNA_ADJUST",
+        name: "Antenna Adjustment",
+        description: "Adjust antenna orientation",
+        category: "control" as const,
+        requiresConfirmation: true,
+      },
+    ];
+  }),
 });
