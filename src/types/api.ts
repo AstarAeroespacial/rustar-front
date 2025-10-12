@@ -55,6 +55,10 @@ export interface Satellite {
     longitude: number;
     altitude: number;
   };
+  tle?: {
+    line1: string;
+    line2: string;
+  };
 }
 
 export interface Command {

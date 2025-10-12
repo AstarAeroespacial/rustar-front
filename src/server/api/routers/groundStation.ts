@@ -76,22 +76,50 @@ export const groundStationRouter = createTRPCRouter({
     .input(
       z.object({
         stationId: z.string(),
-        satelliteId: z.string(),
-        satelliteName: z.string(),
+        satelliteId: z.string().optional(),
+        satelliteName: z.string().optional(),
         tle: z.object({
           line1: z.string(),
           line2: z.string(),
         }),
+        isNewSatellite: z.boolean().optional(),
       })
     )
     .mutation(async ({ input }) => {
       // This would update the ground station's tracking satellite in your backend
       // For now, we'll just return success
-      console.log(`Updating station ${input.stationId} to track satellite ${input.satelliteId} with new TLE`);
+      if (input.isNewSatellite) {
+        console.log(`Updating station ${input.stationId} to track new satellite ${input.satelliteId} with TLE`);
+      } else {
+        console.log(`Updating station ${input.stationId} to track existing satellite ${input.satelliteId}`);
+      }
       
       return {
         success: true,
-        message: `Ground station ${input.stationId} updated to track ${input.satelliteName}`,
+        message: `Ground station ${input.stationId} updated successfully`,
+      };
+    }),
+
+  // Create new ground station
+  createGroundStation: publicProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        location: z.object({
+          latitude: z.number(),
+          longitude: z.number(),
+          altitude: z.number(),
+        }),
+      })
+    )
+    .mutation(async ({ input }) => {
+      // This would create a new ground station in your backend
+      console.log(`Creating new ground station: ${input.name}`);
+      
+      return {
+        success: true,
+        id: `GS-${Date.now()}`, // Mock ID generation
+        message: `Ground station ${input.name} created successfully`,
       };
     }),
 
