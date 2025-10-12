@@ -197,7 +197,7 @@ const Commands: NextPage = () => {
                                             sendCommandMutation.isLoading ||
                                             commandsLoading
                                         }
-                                        className='w-full bg-primary-600 hover:bg-primary-700 disabled:bg-dark-600 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-md transition-colors'
+                                        className='w-full bg-primary-700/90 hover:bg-primary-700 disabled:bg-dark-600 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-md transition-colors'
                                     >
                                         {sendCommandMutation.isLoading
                                             ? 'Sending...'

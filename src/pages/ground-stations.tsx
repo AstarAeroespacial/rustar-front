@@ -507,7 +507,7 @@ const GroundStations: NextPage = () => {
                                     </h3>
                                     <button
                                         onClick={openTLEModal}
-                                        className='bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors'
+                                        className='bg-primary-700/90 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors'
                                     >
                                         {currentStation.trackingSatellite
                                             ? 'Cambiar TLE'
@@ -761,7 +761,7 @@ const GroundStations: NextPage = () => {
                                               !newTLE.line2
                                             : !selectedSatelliteId)
                                     }
-                                    className='bg-primary-600 hover:bg-primary-700 disabled:bg-dark-600 disabled:cursor-not-allowed text-white px-4 py-2 rounded-md font-medium transition-colors'
+                                    className='bg-primary-700/90 hover:bg-primary-700 disabled:bg-dark-600 disabled:cursor-not-allowed text-white px-4 py-2 rounded-md font-medium transition-colors'
                                 >
                                     {updateTLEMutation.isLoading
                                         ? 'Actualizando...'
