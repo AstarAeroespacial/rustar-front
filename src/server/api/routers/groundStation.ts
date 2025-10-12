@@ -149,4 +149,28 @@ export const groundStationRouter = createTRPCRouter({
         lastUpdate: new Date(),
       };
     }),
+
+  // Update ground station parameters
+  updateGroundStation: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        location: z.object({
+          latitude: z.number(),
+          longitude: z.number(),
+          altitude: z.number(),
+        }),
+        status: z.enum(['active', 'inactive', 'maintenance']),
+      })
+    )
+    .mutation(async ({ input }) => {
+      // This would update the ground station parameters in your backend
+      console.log(`Updating ground station ${input.id} with new parameters`);
+      
+      return {
+        success: true,
+        message: `Ground station ${input.name} updated successfully`,
+      };
+    }),
 });

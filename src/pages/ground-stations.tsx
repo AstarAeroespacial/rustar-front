@@ -1,6 +1,6 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "~/components/Layout";
 import { api } from "~/utils/api";
 import type { GroundStation } from "~/types/api";
@@ -9,44 +9,49 @@ const GroundStations: NextPage = () => {
   const { data: groundStations, isLoading, refetch } = api.groundStation.getGroundStations.useQuery();
   const { data: satellites } = api.satellite.getSatellites.useQuery();
   
-  const [selectedStation, setSelectedStation] = useState<GroundStation | null>(null);
+  // Single ground station state
+  const [currentStation, setCurrentStation] = useState<GroundStation | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedStation, setEditedStation] = useState<Partial<GroundStation>>({});
+  
+  // TLE modal state
   const [showTLEModal, setShowTLEModal] = useState(false);
-  const [showNewStationModal, setShowNewStationModal] = useState(false);
   const [newTLE, setNewTLE] = useState({ line1: "", line2: "" });
   const [selectedSatelliteId, setSelectedSatelliteId] = useState("");
   const [isNewSatellite, setIsNewSatellite] = useState(false);
   const [newSatelliteId, setNewSatelliteId] = useState("");
-  const [newStationData, setNewStationData] = useState({
-    name: "",
-    latitude: 0,
-    longitude: 0,
-    altitude: 0,
-  });
+
+  // Load first ground station when data is available
+  useEffect(() => {
+    if (groundStations && groundStations.length > 0 && !currentStation) {
+      const firstStation = groundStations[0]!;
+      setCurrentStation(firstStation);
+      setEditedStation(firstStation);
+    }
+  }, [groundStations, currentStation]);
 
   const updateTLEMutation = api.groundStation.updateStationTLE.useMutation({
     onSuccess: () => {
       setShowTLEModal(false);
-      setSelectedStation(null);
       refetch();
     },
   });
 
-  const createStationMutation = api.groundStation.createGroundStation.useMutation({
+  const updateStationMutation = api.groundStation.updateGroundStation.useMutation({
     onSuccess: () => {
-      setShowNewStationModal(false);
-      setNewStationData({ name: "", latitude: 0, longitude: 0, altitude: 0 });
+      setIsEditing(false);
       refetch();
     },
   });
 
   const handleUpdateTLE = () => {
-    if (!selectedStation) return;
+    if (!currentStation) return;
     
     if (isNewSatellite) {
       if (!newSatelliteId || !newTLE.line1 || !newTLE.line2) return;
       
       updateTLEMutation.mutate({
-        stationId: selectedStation.id,
+        stationId: currentStation.id,
         satelliteId: newSatelliteId,
         tle: newTLE,
         isNewSatellite: true,
@@ -58,7 +63,7 @@ const GroundStations: NextPage = () => {
       if (!selectedSat) return;
 
       updateTLEMutation.mutate({
-        stationId: selectedStation.id,
+        stationId: currentStation.id,
         satelliteId: selectedSatelliteId,
         satelliteName: selectedSat.name,
         tle: selectedSat.tle || newTLE,
@@ -67,23 +72,26 @@ const GroundStations: NextPage = () => {
     }
   };
 
-  const handleCreateStation = () => {
-    if (!newStationData.name || !newStationData.latitude || !newStationData.longitude) return;
+  const handleSaveStation = () => {
+    if (!currentStation || !editedStation.name || !editedStation.location) return;
     
-    createStationMutation.mutate({
-      name: newStationData.name,
-      location: {
-        latitude: newStationData.latitude,
-        longitude: newStationData.longitude,
-        altitude: newStationData.altitude,
-      },
+    updateStationMutation.mutate({
+      id: currentStation.id,
+      name: editedStation.name,
+      location: editedStation.location,
+      status: editedStation.status || currentStation.status,
     });
   };
 
-  const openTLEModal = (station: GroundStation) => {
-    setSelectedStation(station);
-    setSelectedSatelliteId(station.trackingSatellite?.id || "");
-    setNewTLE(station.trackingSatellite?.tle || { line1: "", line2: "" });
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditedStation(currentStation || {});
+  };
+
+  const openTLEModal = () => {
+    if (!currentStation) return;
+    setSelectedSatelliteId(currentStation.trackingSatellite?.id || "");
+    setNewTLE(currentStation.trackingSatellite?.tle || { line1: "", line2: "" });
     setIsNewSatellite(false);
     setNewSatelliteId("");
     setShowTLEModal(true);
@@ -133,117 +141,283 @@ const GroundStations: NextPage = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <>
+        <Head>
+          <title>Ground Station - SatCom</title>
+          <meta name="description" content="Ground station management and monitoring" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <Layout>
+          <div className="py-6">
+            <div className="text-center text-dark-400 py-12">
+              Cargando estación terrestre...
+            </div>
+          </div>
+        </Layout>
+      </>
+    );
+  }
+
+  if (!currentStation) {
+    return (
+      <>
+        <Head>
+          <title>Ground Station - SatCom</title>
+          <meta name="description" content="Ground station management and monitoring" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <Layout>
+          <div className="py-6">
+            <div className="text-center text-dark-400 py-12">
+              No hay estaciones terrestres configuradas
+            </div>
+          </div>
+        </Layout>
+      </>
+    );
+  }
+
   return (
     <>
       <Head>
-        <title>Ground Stations - SatCom</title>
+        <title>Ground Station - SatCom</title>
         <meta name="description" content="Ground station management and monitoring" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
         <div className="py-6">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold text-white">Estaciones Terrestres</h1>
+          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between mb-8">
+              <h1 className="text-3xl font-bold text-white">Estación Terrestre</h1>
               <div className="flex items-center space-x-4">
-                <div className="text-sm text-dark-300">
-                  {groundStations?.length || 0} estaciones configuradas
-                </div>
-                <button
-                  onClick={() => setShowNewStationModal(true)}
-                  className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
-                >
-                  + Nueva Estación
-                </button>
+                {!isEditing ? (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+                  >
+                    Editar Estación
+                  </button>
+                ) : (
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={handleCancelEdit}
+                      className="bg-dark-600 hover:bg-dark-500 text-white px-4 py-2 rounded-md font-medium transition-colors"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={handleSaveStation}
+                      disabled={updateStationMutation.isLoading}
+                      className="bg-green-600 hover:bg-green-700 disabled:bg-dark-600 disabled:cursor-not-allowed text-white px-4 py-2 rounded-md font-medium transition-colors"
+                    >
+                      {updateStationMutation.isLoading ? 'Guardando...' : 'Guardar'}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
-          
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-8">
-            {isLoading ? (
-              <div className="text-center text-dark-400 py-12">
-                Cargando estaciones terrestres...
+
+            <div className="bg-dark-800 rounded-lg border border-dark-700 p-8">
+              {/* Station Status */}
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center space-x-4">
+                  <div className={`flex items-center ${getStatusColor(currentStation.status).split(' ')[0]}`}>
+                    <div className={`w-4 h-4 rounded-full mr-3 ${getStatusColor(currentStation.status).split(' ')[1]}`} />
+                    <span className="text-lg font-medium">{getStatusText(currentStation.status)}</span>
+                  </div>
+                </div>
+                <div className="text-dark-300 text-sm">
+                  ID: {currentStation.id}
+                </div>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {groundStations?.map((station) => (
-                  <div
-                    key={station.id}
-                    className="bg-dark-800 rounded-lg border border-dark-700 p-6 hover:border-primary-500 transition-colors"
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-white">{station.name}</h3>
-                      <div className={`flex items-center ${getStatusColor(station.status).split(' ')[0]}`}>
-                        <div className={`w-3 h-3 rounded-full mr-2 ${getStatusColor(station.status).split(' ')[1]}`} />
-                        <span className="text-sm font-medium">{getStatusText(station.status)}</span>
-                      </div>
-                    </div>
 
-                    <div className="space-y-3 mb-6">
-                      <div>
-                        <span className="text-dark-400 text-sm">ID:</span>
-                        <div className="text-white font-medium">{station.id}</div>
-                      </div>
-                      
-                      <div>
-                        <span className="text-dark-400 text-sm">Ubicación:</span>
-                        <div className="text-white font-medium">
-                          {station.location.latitude.toFixed(4)}°, {station.location.longitude.toFixed(4)}°
-                        </div>
-                        <div className="text-dark-300 text-sm">
-                          Altitud: {station.location.altitude}m
-                        </div>
-                      </div>
+              {/* Station Details */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                {/* Basic Information */}
+                <div className="space-y-6">
+                  <h3 className="text-xl font-semibold text-white mb-4">Información Básica</h3>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-dark-300 mb-2">
+                      Nombre de la Estación
+                    </label>
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        value={editedStation.name || ''}
+                        onChange={(e) => setEditedStation({ ...editedStation, name: e.target.value })}
+                        className="w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      />
+                    ) : (
+                      <div className="text-white font-medium text-lg">{currentStation.name}</div>
+                    )}
+                  </div>
 
-                      <div>
-                        <span className="text-dark-400 text-sm">Última actualización:</span>
-                        <div className="text-white font-medium">
-                          {station.lastUpdate.toLocaleString()}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="border-t border-dark-700 pt-4">
-                      <div className="mb-3">
-                        <span className="text-dark-400 text-sm">Satélite en seguimiento:</span>
-                        {station.trackingSatellite ? (
-                          <div className="mt-2">
-                            <div className="text-white font-medium">
-                              {station.trackingSatellite.name}
-                            </div>
-                            <div className="text-dark-300 text-sm">
-                              ID: {station.trackingSatellite.id}
-                            </div>
-                            <div className="mt-2 p-2 bg-dark-900 rounded text-xs font-mono text-dark-300">
-                              <div className="truncate">{station.trackingSatellite.tle.line1}</div>
-                              <div className="truncate">{station.trackingSatellite.tle.line2}</div>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="text-dark-400 mt-1">Sin asignación</div>
-                        )}
-                      </div>
-                      
-                      <button
-                        onClick={() => openTLEModal(station)}
-                        className="w-full bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                  <div>
+                    <label className="block text-sm font-medium text-dark-300 mb-2">
+                      Estado
+                    </label>
+                    {isEditing ? (
+                      <select
+                        value={editedStation.status || currentStation.status}
+                        onChange={(e) => setEditedStation({ ...editedStation, status: e.target.value as 'active' | 'inactive' | 'maintenance' })}
+                        className="w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                       >
-                        {station.trackingSatellite ? 'Cambiar TLE' : 'Asignar Satélite'}
-                      </button>
+                        <option value="active">Activa</option>
+                        <option value="inactive">Inactiva</option>
+                        <option value="maintenance">Mantenimiento</option>
+                      </select>
+                    ) : (
+                      <div className="text-white font-medium">{getStatusText(currentStation.status)}</div>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-dark-300 mb-2">
+                      Última Actualización
+                    </label>
+                    <div className="text-white font-medium">
+                      {currentStation.lastUpdate.toLocaleString()}
                     </div>
                   </div>
-                ))}
+                </div>
+
+                {/* Location Information */}
+                <div className="space-y-6">
+                  <h3 className="text-xl font-semibold text-white mb-4">Ubicación</h3>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-dark-300 mb-2">
+                        Latitud
+                      </label>
+                      {isEditing ? (
+                        <input
+                          type="number"
+                          step="any"
+                          value={editedStation.location?.latitude || currentStation.location.latitude}
+                          onChange={(e) => setEditedStation({ 
+                            ...editedStation, 
+                            location: { 
+                              ...editedStation.location, 
+                              ...currentStation.location,
+                              latitude: parseFloat(e.target.value) || 0 
+                            } 
+                          })}
+                          className="w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        />
+                      ) : (
+                        <div className="text-white font-medium">{currentStation.location.latitude.toFixed(6)}°</div>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-dark-300 mb-2">
+                        Longitud
+                      </label>
+                      {isEditing ? (
+                        <input
+                          type="number"
+                          step="any"
+                          value={editedStation.location?.longitude || currentStation.location.longitude}
+                          onChange={(e) => setEditedStation({ 
+                            ...editedStation, 
+                            location: { 
+                              ...editedStation.location, 
+                              ...currentStation.location,
+                              longitude: parseFloat(e.target.value) || 0 
+                            } 
+                          })}
+                          className="w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        />
+                      ) : (
+                        <div className="text-white font-medium">{currentStation.location.longitude.toFixed(6)}°</div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-dark-300 mb-2">
+                      Altitud (metros)
+                    </label>
+                    {isEditing ? (
+                      <input
+                        type="number"
+                        value={editedStation.location?.altitude || currentStation.location.altitude}
+                        onChange={(e) => setEditedStation({ 
+                          ...editedStation, 
+                          location: { 
+                            ...editedStation.location, 
+                            ...currentStation.location,
+                            altitude: parseInt(e.target.value) || 0 
+                          } 
+                        })}
+                        className="w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      />
+                    ) : (
+                      <div className="text-white font-medium">{currentStation.location.altitude}m</div>
+                    )}
+                  </div>
+                </div>
               </div>
-            )}
+
+              {/* Satellite Tracking Section */}
+              <div className="border-t border-dark-700 pt-8">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-semibold text-white">Satélite en Seguimiento</h3>
+                  <button
+                    onClick={openTLEModal}
+                    className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                  >
+                    {currentStation.trackingSatellite ? 'Cambiar TLE' : 'Asignar Satélite'}
+                  </button>
+                </div>
+
+                {currentStation.trackingSatellite ? (
+                  <div className="bg-dark-900 rounded-lg p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <div className="mb-4">
+                          <span className="text-dark-400 text-sm">Nombre del Satélite:</span>
+                          <div className="text-white font-medium text-lg">
+                            {currentStation.trackingSatellite.name}
+                          </div>
+                        </div>
+                        <div>
+                          <span className="text-dark-400 text-sm">ID del Satélite:</span>
+                          <div className="text-white font-medium">
+                            {currentStation.trackingSatellite.id}
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-dark-400 text-sm">Datos TLE:</span>
+                        <div className="mt-2 p-3 bg-dark-800 rounded text-xs font-mono text-dark-200">
+                          <div className="mb-1">{currentStation.trackingSatellite.tle.line1}</div>
+                          <div>{currentStation.trackingSatellite.tle.line2}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-dark-400">
+                    <div className="text-lg mb-2">Sin satélite asignado</div>
+                    <div className="text-sm">Haz clic en "Asignar Satélite" para configurar el seguimiento</div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
         {/* TLE Update Modal */}
-        {showTLEModal && selectedStation && (
+        {showTLEModal && currentStation && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-dark-800 rounded-lg border border-dark-700 p-6 w-full max-w-2xl">
               <h3 className="text-lg font-semibold text-white mb-4">
-                Actualizar TLE - {selectedStation.name}
+                Actualizar TLE - {currentStation.name}
               </h3>
               
               <div className="space-y-4">
@@ -376,89 +550,6 @@ const GroundStations: NextPage = () => {
           </div>
         )}
 
-        {/* New Ground Station Modal */}
-        {showNewStationModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-dark-800 rounded-lg border border-dark-700 p-6 w-full max-w-lg">
-              <h3 className="text-lg font-semibold text-white mb-4">
-                Nueva Estación Terrestre
-              </h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-dark-300 mb-2">
-                    Nombre de la Estación
-                  </label>
-                  <input
-                    type="text"
-                    value={newStationData.name}
-                    onChange={(e) => setNewStationData({ ...newStationData, name: e.target.value })}
-                    className="w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    placeholder="Ej: Estación Buenos Aires"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-dark-300 mb-2">
-                      Latitud
-                    </label>
-                    <input
-                      type="number"
-                      step="any"
-                      value={newStationData.latitude}
-                      onChange={(e) => setNewStationData({ ...newStationData, latitude: parseFloat(e.target.value) || 0 })}
-                      className="w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                      placeholder="-34.6037"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-dark-300 mb-2">
-                      Longitud
-                    </label>
-                    <input
-                      type="number"
-                      step="any"
-                      value={newStationData.longitude}
-                      onChange={(e) => setNewStationData({ ...newStationData, longitude: parseFloat(e.target.value) || 0 })}
-                      className="w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                      placeholder="-58.3816"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-dark-300 mb-2">
-                    Altitud (metros)
-                  </label>
-                  <input
-                    type="number"
-                    value={newStationData.altitude}
-                    onChange={(e) => setNewStationData({ ...newStationData, altitude: parseInt(e.target.value) || 0 })}
-                    className="w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    placeholder="25"
-                  />
-                </div>
-              </div>
-
-              <div className="flex justify-end space-x-3 mt-6">
-                <button
-                  onClick={() => setShowNewStationModal(false)}
-                  className="px-4 py-2 text-dark-300 hover:text-white transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={handleCreateStation}
-                  disabled={!newStationData.name || createStationMutation.isLoading}
-                  className="bg-primary-600 hover:bg-primary-700 disabled:bg-dark-600 disabled:cursor-not-allowed text-white px-4 py-2 rounded-md font-medium transition-colors"
-                >
-                  {createStationMutation.isLoading ? 'Creando...' : 'Crear Estación'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </Layout>
     </>
   );
