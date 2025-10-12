@@ -120,108 +120,54 @@ const Telemetry: NextPage = () => {
             <h1 className="text-3xl font-bold text-white">Telemetry Control</h1>
           </div>
           
+          {/* Update Interval Controls */}
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-8">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-              
-              {/* Control Panel */}
-              <div className="lg:col-span-1 space-y-6">
-                
-                {/* Start Reception */}
-                <div className="bg-dark-800 rounded-lg border border-dark-700 p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold text-white">Start Reception</h2>
-                    <button
-                      onClick={() => setIsReceiving(!isReceiving)}
-                      className={`px-3 py-1 rounded text-sm font-medium ${
-                        isReceiving 
-                          ? 'bg-red-600 hover:bg-red-700 text-white' 
-                          : 'bg-green-600 hover:bg-green-700 text-white'
-                      }`}
+            <div className="bg-dark-800 rounded-lg border border-dark-700 p-4 mb-8">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-6">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm font-medium text-dark-300">Update Interval:</span>
+                    <select 
+                      value={updateInterval}
+                      onChange={(e) => setUpdateInterval(Number(e.target.value))}
+                      className="bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                     >
-                      {isReceiving ? 'Stop Reception' : 'Start Reception'}
-                    </button>
+                      <option value={1}>1s</option>
+                      <option value={5}>5s</option>
+                      <option value={10}>10s</option>
+                      <option value={30}>30s</option>
+                    </select>
                   </div>
                   
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-dark-300 mb-2">
-                        Satellite
-                      </label>
-                      <select 
-                        value={selectedSatellite}
-                        onChange={(e) => setSelectedSatellite(e.target.value)}
-                        className="w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                      >
-                        {satellites?.map((sat) => (
-                          <option key={sat.id} value={sat.id}>
-                            {sat.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-dark-300 mb-2">
-                        Ground Station
-                      </label>
-                      <select className="w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-                        <option>GND-STN-01</option>
-                        <option>GND-STN-02</option>
-                      </select>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-dark-300 mb-2">
-                        Telemetry Type
-                      </label>
-                      <select 
-                        value={telemetryType}
-                        onChange={(e) => setTelemetryType(e.target.value)}
-                        className="w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                      >
-                        <option>Housekeeping</option>
-                        <option>Science</option>
-                        <option>Engineering</option>
-                      </select>
-                    </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm font-medium text-dark-300">Status:</span>
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${
+                      isReceiving 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {isReceiving ? 'Receiving' : 'Stopped'}
+                    </span>
                   </div>
                 </div>
-
-                {/* Display Settings */}
-                <div className="bg-dark-800 rounded-lg border border-dark-700 p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">Display Settings</h3>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-dark-300 mb-2">
-                        Chart Parameters
-                      </label>
-                      <div className="bg-dark-700 rounded p-2 text-sm text-dark-300">
-                        Temperature, Voltage, Current, Battery Level
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-dark-300 mb-2">
-                        Update Interval (seconds)
-                      </label>
-                      <select 
-                        value={updateInterval}
-                        onChange={(e) => setUpdateInterval(Number(e.target.value))}
-                        className="w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                      >
-                        <option value={1}>1s</option>
-                        <option value={5}>5s</option>
-                        <option value={10}>10s</option>
-                        <option value={30}>30s</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
+                
+                <button
+                  onClick={() => setIsReceiving(!isReceiving)}
+                  className={`px-4 py-2 rounded text-sm font-medium ${
+                    isReceiving 
+                      ? 'bg-red-600 hover:bg-red-700 text-white' 
+                      : 'bg-green-600 hover:bg-green-700 text-white'
+                  }`}
+                >
+                  {isReceiving ? 'Stop Reception' : 'Start Reception'}
+                </button>
               </div>
+            </div>
+          </div>
 
-              {/* Main Content */}
-              <div className="lg:col-span-3 space-y-6">
+          {/* Main Content */}
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="space-y-6">
                 
                 {/* Real-time Charts */}
                 <div className="bg-dark-800 rounded-lg border border-dark-700 p-6">
@@ -320,7 +266,6 @@ const Telemetry: NextPage = () => {
                     </table>
                   </div>
                 </div>
-              </div>
             </div>
           </div>
         </div>
