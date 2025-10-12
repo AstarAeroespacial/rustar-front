@@ -1,154 +1,23 @@
+import 'leaflet/dist/leaflet.css';
 import React, { useEffect, useRef, useState } from 'react';
 import {
     MapContainer,
     TileLayer,
     Marker,
-    Popup,
     Polyline,
     Circle,
 } from 'react-leaflet';
 import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import FullscreenControl from '~/components/FullscreenControl';
 import * as satellite from 'satellite.js';
 import type { Satellite } from '~/types/api';
+import {
+    normalizeLongitude,
+    createSatelliteIcon,
+    createSatelliteLabel,
+    getGroundTrack,
+} from '~/utils/satellite';
 
-// -----------------------------------------------------------------------------
-// Marker icon setup
-// -----------------------------------------------------------------------------
-delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)
-    ._getIconUrl;
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl:
-        'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-    iconUrl:
-        'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-    shadowUrl:
-        'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
-
-// -----------------------------------------------------------------------------
-// Helper functions
-// -----------------------------------------------------------------------------
-function normalizeLongitude(lon: number): number {
-    if (lon > 180) return lon - 360;
-    if (lon < -180) return lon + 360;
-    return lon;
-}
-
-const createSatelliteIcon = (status: string): L.DivIcon => {
-    const color =
-        status === 'active'
-            ? '#10b981'
-            : status === 'inactive'
-            ? '#f59e0b'
-            : '#ef4444';
-
-    return L.divIcon({
-        html: `
-            <div style="
-                width: 12px;
-                height: 12px;
-                background-color: ${color};
-                border: 2px solid white;
-                border-radius: 50%;
-                box-shadow: 0 0 10px rgba(0,0,0,0.3);
-            "></div>
-        `,
-        className: 'custom-satellite-icon',
-        iconSize: [12, 12],
-        iconAnchor: [6, 6],
-    });
-};
-
-const createSatelliteLabel = (name: string): L.DivIcon =>
-    L.divIcon({
-        html: `
-            <div style="
-                color: white;
-                font-weight: 600;
-                font-size: 12px;
-                text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-                white-space: nowrap;
-                transform: translate(-50%, -120%);
-            ">
-                ${name}
-            </div>
-        `,
-        className: 'satellite-label',
-        iconSize: [0, 0],
-        iconAnchor: [0, 0],
-    });
-
-// Generate ground track for the next ±N minutes (split at dateline)
-function getGroundTrack(
-    tle1: string,
-    tle2: string,
-    minutes = 90
-): [number, number][][] {
-    const satrec = satellite.twoline2satrec(tle1, tle2);
-    const now = new Date();
-    const segments: [number, number][][] = [];
-    let current: [number, number][] = [];
-    let prevLon: number | null = null;
-
-    for (let t = -minutes * 60; t <= minutes * 60; t += 5) {
-        const time = new Date(now.getTime() + t * 1000);
-        const pv = satellite.propagate(satrec, time);
-        if (!pv?.position) continue;
-
-        const gmst = satellite.gstime(time);
-        const gd = satellite.eciToGeodetic(pv.position, gmst);
-        const lat = satellite.degreesLat(gd.latitude);
-        const lon = normalizeLongitude(satellite.degreesLong(gd.longitude));
-
-        if (prevLon !== null && Math.abs(lon - prevLon) > 180) {
-            segments.push(current);
-            current = [];
-        }
-
-        current.push([lat, lon]);
-        prevLon = lon;
-    }
-
-    if (current.length) segments.push(current);
-    return segments;
-}
-
-// Compute subsolar point (where the Sun is directly overhead)
-function getSubsolarPoint(date: Date): [number, number] {
-    const jd =
-        satellite.jday(
-            date.getUTCFullYear(),
-            date.getUTCMonth() + 1,
-            date.getUTCDate(),
-            date.getUTCHours(),
-            date.getUTCMinutes(),
-            date.getUTCSeconds()
-        ) - 2451545.0;
-    const n = jd / 36525.0;
-    const L = (280.46 + 36000.77 * n) % 360;
-    const g = (357.528 + 35999.05 * n) % 360;
-    const lambda =
-        L +
-        1.915 * Math.sin((g * Math.PI) / 180) +
-        0.02 * Math.sin((2 * g * Math.PI) / 180);
-    const epsilon = 23.4393 - 0.013 * n;
-    const decl = Math.asin(
-        Math.sin((epsilon * Math.PI) / 180) * Math.sin((lambda * Math.PI) / 180)
-    );
-    const gst = satellite.gstime(date);
-    const ra = Math.atan2(
-        Math.cos((epsilon * Math.PI) / 180) *
-            Math.sin((lambda * Math.PI) / 180),
-        Math.cos((lambda * Math.PI) / 180)
-    );
-    const lon = normalizeLongitude((gst - ra) * (180 / Math.PI));
-    return [decl * (180 / Math.PI), -lon];
-}
-
-// -----------------------------------------------------------------------------
-// Component
-// -----------------------------------------------------------------------------
 interface SatelliteMapProps {
     satellites: Satellite[];
     selectedSatellite: string | null;
@@ -168,7 +37,7 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
         (s) => s.id === selectedSatellite
     );
 
-    // Update clock every minute
+    // 🕒 Update UTC clock
     useEffect(() => {
         const interval = setInterval(
             () => setUtcTime(new Date().toUTCString()),
@@ -177,7 +46,7 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
         return () => clearInterval(interval);
     }, []);
 
-    // Update satellite position and track
+    // 🛰️ Update satellite position and track
     useEffect(() => {
         if (!selectedSatelliteObj?.tle) return;
         let cancelled = false;
@@ -191,7 +60,6 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
             if (!pv?.position) return;
             const gmst = satellite.gstime(now);
             const gd = satellite.eciToGeodetic(pv.position, gmst);
-            // gd.height is in kilometers
             setPosition([
                 satellite.degreesLat(gd.latitude),
                 normalizeLongitude(satellite.degreesLong(gd.longitude)),
@@ -225,41 +93,46 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
             <div className='flex-1 min-h-[300px]'>
                 <MapContainer
                     center={[0, 0]}
-                    zoom={1.5}
                     minZoom={1.5}
-                    maxZoom={1.5}
-                    zoomControl={false}
-                    scrollWheelZoom={false}
+                    zoom={1.5}
+                    maxZoom={6}
+                    zoomControl={true}
+                    scrollWheelZoom={true}
                     doubleClickZoom={false}
                     attributionControl={false}
-                    touchZoom={false}
-                    dragging={false}
+                    touchZoom={true}
+                    dragging={true}
                     keyboard={false}
                     boxZoom={false}
+                    zoomSnap={0.5}
+                    worldCopyJump={true}
+                    maxBoundsViscosity={1.0}
+                    maxBounds={L.latLngBounds([-85, -180], [85, 180])}
                     style={{ height: '100%', width: '100%' }}
                     ref={mapRef}
                     className='z-0 h-full w-full'
                 >
+                    <FullscreenControl />
+
                     <TileLayer
                         url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
                         attribution=''
                     />
 
-                    {/* Ground track (split into segments) */}
-                    {track.length > 0 &&
-                        track.map((segment, i) => (
-                            <Polyline
-                                key={i}
-                                positions={segment as [number, number][]}
-                                pathOptions={{
-                                    color: 'yellow',
-                                    weight: 1.2,
-                                    opacity: 1,
-                                }}
-                            />
-                        ))}
+                    {/* 🟡 Ground track */}
+                    {track.map((segment, i) => (
+                        <Polyline
+                            key={i}
+                            positions={segment}
+                            pathOptions={{
+                                color: 'yellow',
+                                weight: 1.2,
+                                opacity: 1,
+                            }}
+                        />
+                    ))}
 
-                    {/* Satellite marker + visibility circle */}
+                    {/* 🛰️ Satellite + visibility circle */}
                     {position && selectedSatelliteObj && (
                         <>
                             <Marker
@@ -267,59 +140,18 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
                                 icon={createSatelliteIcon(
                                     selectedSatelliteObj.status
                                 )}
-                            >
-                                <Popup>
-                                    <div className='text-sm'>
-                                        <div className='font-semibold'>
-                                            {selectedSatelliteObj.name}
-                                        </div>
-                                        <div className='text-gray-600'>
-                                            {selectedSatelliteObj.id}
-                                        </div>
-                                        <div className='mt-1'>
-                                            <div>
-                                                Status:{' '}
-                                                <span
-                                                    className={`font-medium ${
-                                                        selectedSatelliteObj.status ===
-                                                        'active'
-                                                            ? 'text-green-600'
-                                                            : selectedSatelliteObj.status ===
-                                                              'inactive'
-                                                            ? 'text-yellow-600'
-                                                            : 'text-red-600'
-                                                    }`}
-                                                >
-                                                    {
-                                                        selectedSatelliteObj.status
-                                                    }
-                                                </span>
-                                            </div>
-                                            <div>
-                                                Altitude: {altitude?.toFixed(1)}{' '}
-                                                km
-                                            </div>
-                                            <div>
-                                                Last Contact:{' '}
-                                                {selectedSatelliteObj.lastContact?.toLocaleString()}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Popup>
-                            </Marker>
-
+                            />
                             <Circle
                                 center={position}
-                                radius={radiusKm * 1000} // meters
+                                radius={radiusKm * 1000}
                                 pathOptions={{
-                                    color: 'limegreen', // green border
+                                    color: 'limegreen',
                                     weight: 2,
                                     opacity: 1,
-                                    fillColor: 'white', // white fill
-                                    fillOpacity: 0.3, // semi-transparent
+                                    fillColor: 'white',
+                                    fillOpacity: 0.3,
                                 }}
                             />
-
                             <Marker
                                 position={position}
                                 icon={createSatelliteLabel(
@@ -331,7 +163,7 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
                     )}
                 </MapContainer>
 
-                {/* UTC clock overlay */}
+                {/* 🕓 UTC clock overlay */}
                 <div className='absolute bottom-2 right-3 text-base text-white bg-black/60 px-3 py-1 rounded flex items-center'>
                     {utcTime}
                 </div>
