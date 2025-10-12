@@ -10,10 +10,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const router = useRouter();
 
   const navigation = [
-    { name: 'Dashboard', href: '/', current: router.pathname === '/' },
+    { name: 'Tracking', href: '/', current: router.pathname === '/' },
     { name: 'Monitoring', href: '/telemetry', current: router.pathname === '/telemetry' },
     { name: 'Commands', href: '/commands', current: router.pathname === '/commands' },
-    { name: 'Reports', href: '/tracking', current: router.pathname === '/tracking' },
     { name: 'Settings', href: '/settings', current: router.pathname === '/settings' },
   ];
 
