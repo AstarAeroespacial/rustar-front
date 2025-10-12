@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@next/font':
-        specifier: ^14.0.4
-        version: 14.2.15(next@14.2.33(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       '@t3-oss/env-nextjs':
         specifier: ^0.7.1
         version: 0.7.3(typescript@5.8.3)(zod@3.25.76)
@@ -35,6 +32,9 @@ importers:
       leaflet:
         specifier: ^1.9.4
         version: 1.9.4
+      leaflet.fullscreen:
+        specifier: ^4.0.0
+        version: 4.0.0
       next:
         specifier: ^14.0.4
         version: 14.2.33(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -171,11 +171,6 @@ packages:
 
   '@next/eslint-plugin-next@14.2.33':
     resolution: {integrity: sha512-DQTJFSvlB+9JilwqMKJ3VPByBNGxAGFTfJ7BuFj25cVcbBy7jm88KfUN+dngM4D3+UxZ8ER2ft+WH9JccMvxyg==}
-
-  '@next/font@14.2.15':
-    resolution: {integrity: sha512-QopYhBmCDDrNDynbi+ZD1hDZXmQXVFo7TmAFp4DQgO/kogz1OLbQ92hPigJbj572eZ3GaaVxNIyYVn3/eAsehg==}
-    peerDependencies:
-      next: '*'
 
   '@next/swc-darwin-arm64@14.2.33':
     resolution: {integrity: sha512-HqYnb6pxlsshoSTubdXKu15g3iivcbsMXg4bYpjL2iS/V6aQot+iyF4BUc2qA/J/n55YtvE4PHMKWBKGCF/+wA==}
@@ -1309,6 +1304,9 @@ packages:
     resolution: {integrity: sha512-MbjN408fEndfiQXbFQ1vnd+1NoLDsnQW41410oQBXiyXDMYH5z505juWa4KUE1LqxRC7DgOgZDbKLxHIwm27hA==}
     engines: {node: '>=0.10'}
 
+  leaflet.fullscreen@4.0.0:
+    resolution: {integrity: sha512-wIV7R6yxtlk95/Er31ptCL0MQCmG4OUU4U0SwNeamEb2xBNDIeU8GtWF2S7PaxV/fdfReNmp+QCT9cUPSNIgdw==}
+
   leaflet@1.9.4:
     resolution: {integrity: sha512-nxS1ynzJOmOlHp+iL3FyWqK89GtNL8U8rvlMOsQdTTssxZwCXh8N2NB3GDQOL+YR3XnWyZAxwQixURb+FA74PA==}
 
@@ -2048,10 +2046,6 @@ snapshots:
   '@next/eslint-plugin-next@14.2.33':
     dependencies:
       glob: 10.3.10
-
-  '@next/font@14.2.15(next@14.2.33(react-dom@18.2.0(react@18.2.0))(react@18.2.0))':
-    dependencies:
-      next: 14.2.33(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
 
   '@next/swc-darwin-arm64@14.2.33':
     optional: true
@@ -3326,6 +3320,8 @@ snapshots:
   language-tags@1.0.9:
     dependencies:
       language-subtag-registry: 0.3.23
+
+  leaflet.fullscreen@4.0.0: {}
 
   leaflet@1.9.4: {}
 

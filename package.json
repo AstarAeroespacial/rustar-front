@@ -10,7 +10,6 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@next/font": "^14.0.4",
     "@t3-oss/env-nextjs": "^0.7.1",
     "@tanstack/react-query": "^4.36.1",
     "@trpc/client": "^10.45.0",
@@ -19,6 +18,7 @@
     "@trpc/server": "^10.45.0",
     "chart.js": "^4.4.0",
     "leaflet": "^1.9.4",
+    "leaflet.fullscreen": "^4.0.0",
     "next": "^14.0.4",
     "react": "18.2.0",
     "react-chartjs-2": "^5.2.0",
