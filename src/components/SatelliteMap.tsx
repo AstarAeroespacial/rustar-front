@@ -6,7 +6,6 @@ import {
     Popup,
     Polyline,
     Circle,
-    Polygon,
 } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -61,7 +60,6 @@ const createSatelliteIcon = (status: string): L.DivIcon => {
     });
 };
 
-// Satellite label (Orbitron-style)
 const createSatelliteLabel = (name: string): L.DivIcon =>
     L.divIcon({
         html: `
@@ -81,7 +79,7 @@ const createSatelliteLabel = (name: string): L.DivIcon =>
         iconAnchor: [0, 0],
     });
 
-// Generate ground track for the next N minutes (split at dateline)
+// Generate ground track for the next ±N minutes (split at dateline)
 function getGroundTrack(
     tle1: string,
     tle2: string,
@@ -111,6 +109,7 @@ function getGroundTrack(
         current.push([lat, lon]);
         prevLon = lon;
     }
+
     if (current.length) segments.push(current);
     return segments;
 }
@@ -148,16 +147,13 @@ function getSubsolarPoint(date: Date): [number, number] {
 }
 
 // -----------------------------------------------------------------------------
-// Component props
+// Component
 // -----------------------------------------------------------------------------
 interface SatelliteMapProps {
     satellites: Satellite[];
     selectedSatellite: string | null;
 }
 
-// -----------------------------------------------------------------------------
-// Main component
-// -----------------------------------------------------------------------------
 const SatelliteMap: React.FC<SatelliteMapProps> = ({
     satellites,
     selectedSatellite,
@@ -166,24 +162,22 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
     const [position, setPosition] = useState<[number, number] | null>(null);
     const [altitude, setAltitude] = useState<number | null>(null);
     const [track, setTrack] = useState<[number, number][][]>([]);
-    const [subsolar, setSubsolar] = useState<[number, number]>([0, 0]);
     const [utcTime, setUtcTime] = useState<string>(new Date().toUTCString());
 
     const selectedSatelliteObj = satellites.find(
         (s) => s.id === selectedSatellite
     );
 
+    // Update clock every minute
     useEffect(() => {
-        const updateSun = () => {
-            const now = new Date();
-            setSubsolar(getSubsolarPoint(now));
-            setUtcTime(now.toUTCString());
-        };
-        updateSun();
-        const sunInterval = setInterval(updateSun, 60000);
-        return () => clearInterval(sunInterval);
+        const interval = setInterval(
+            () => setUtcTime(new Date().toUTCString()),
+            60000
+        );
+        return () => clearInterval(interval);
     }, []);
 
+    // Update satellite position and track
     useEffect(() => {
         if (!selectedSatelliteObj?.tle) return;
         let cancelled = false;
@@ -197,6 +191,7 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
             if (!pv?.position) return;
             const gmst = satellite.gstime(now);
             const gd = satellite.eciToGeodetic(pv.position, gmst);
+            // gd.height is in kilometers
             setPosition([
                 satellite.degreesLat(gd.latitude),
                 normalizeLongitude(satellite.degreesLong(gd.longitude)),
@@ -224,13 +219,6 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
           ) - minElevationRad
         : 0;
     const radiusKm = Math.max(0, Math.min(earthRadiusKm * theta, 4000));
-
-    // Create crude day/night terminator polygon
-    const terminator: [number, number][] = [];
-    for (let i = -180; i <= 180; i += 5) {
-        const lat = -90 * Math.cos((Math.PI * (i - subsolar[1])) / 180);
-        terminator.push([lat, i]);
-    }
 
     return (
         <div className='relative h-full w-full rounded-lg overflow-hidden flex flex-col'>
