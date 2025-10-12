@@ -65,3 +65,23 @@ export interface Command {
   timestamp: Date;
   response?: string;
 }
+
+export interface GroundStation {
+  id: string;
+  name: string;
+  location: {
+    latitude: number;
+    longitude: number;
+    altitude: number;
+  };
+  status: 'active' | 'inactive' | 'maintenance';
+  trackingSatellite?: {
+    id: string;
+    name: string;
+    tle: {
+      line1: string;
+      line2: string;
+    };
+  };
+  lastUpdate: Date;
+}
