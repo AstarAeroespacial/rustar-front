@@ -8,7 +8,7 @@ export const groundStationRouter = createTRPCRouter({
     return [
       {
         id: "GS-001",
-        name: "Buenos Aires Ground Station",
+        name: "Buenos Aires",
         location: {
           latitude: -34.6037,
           longitude: -58.3816,
@@ -17,7 +17,7 @@ export const groundStationRouter = createTRPCRouter({
       },
       {
         id: "GS-002",
-        name: "Córdoba Ground Station",
+        name: "Córdoba",
         location: {
           latitude: -31.4201,
           longitude: -64.1888,
@@ -26,7 +26,7 @@ export const groundStationRouter = createTRPCRouter({
       },
       {
         id: "GS-003",
-        name: "Mendoza Ground Station",
+        name: "Mendoza",
         location: {
           latitude: -32.8895,
           longitude: -68.8458,
@@ -35,7 +35,7 @@ export const groundStationRouter = createTRPCRouter({
       },
       {
         id: "GS-004",
-        name: "Ushuaia Ground Station",
+        name: "Ushuaia",
         location: {
           latitude: -54.8019,
           longitude: -68.3030,
@@ -53,7 +53,7 @@ export const groundStationRouter = createTRPCRouter({
       const stations = [
         {
           id: "GS-001",
-          name: "Buenos Aires Ground Station",
+          name: "Buenos Aires",
           location: {
             latitude: -34.6037,
             longitude: -58.3816,
@@ -62,7 +62,7 @@ export const groundStationRouter = createTRPCRouter({
         },
         {
           id: "GS-002",
-          name: "Córdoba Ground Station",
+          name: "Córdoba",
           location: {
             latitude: -31.4201,
             longitude: -64.1888,
@@ -71,7 +71,7 @@ export const groundStationRouter = createTRPCRouter({
         },
         {
           id: "GS-003",
-          name: "Mendoza Ground Station",
+          name: "Mendoza",
           location: {
             latitude: -32.8895,
             longitude: -68.8458,
@@ -80,7 +80,7 @@ export const groundStationRouter = createTRPCRouter({
         },
         {
           id: "GS-004",
-          name: "Ushuaia Ground Station",
+          name: "Ushuaia",
           location: {
             latitude: -54.8019,
             longitude: -68.3030,
