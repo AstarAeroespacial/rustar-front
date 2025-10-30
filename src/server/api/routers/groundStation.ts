@@ -90,7 +90,7 @@ export const groundStationRouter = createTRPCRouter({
       ];
 
       const station = stations.find((s) => s.id === input.id);
-      
+
       if (!station) {
         throw new Error(`Ground station ${input.id} not found`);
       }
