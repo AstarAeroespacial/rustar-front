@@ -28,39 +28,23 @@ const GroundStationCard: React.FC<GroundStationCardProps> = ({
             {/* Coordinates Section */}
             <div className='space-y-3'>
                 <div className='grid grid-cols-2 gap-3'>
-                    <CoordinateItem
-                        label='Latitude'
-                        value={`${latitude.toFixed(4)}°`}
-                    />
-                    <CoordinateItem
-                        label='Longitude'
-                        value={`${longitude.toFixed(4)}°`}
-                    />
+                    <div>
+                        <div className='text-dark-400 text-sm'>Latitude</div>
+                        <div className='text-white font-medium text-sm'>{latitude.toFixed(4)}°</div>
+                    </div>
+                    <div>
+                        <div className='text-dark-400 text-sm'>Longitude</div>
+                        <div className='text-white font-medium text-sm'>{longitude.toFixed(4)}°</div>
+                    </div>
                 </div>
 
                 <div>
-                    <CoordinateItem
-                        label='Altitude'
-                        value={`${altitude} m`}
-                    />
+                    <div className='text-dark-400 text-sm'>Altitude</div>
+                    <div className='text-white font-medium text-sm'>{altitude} m</div>
                 </div>
             </div>
         </div>
     );
 };
-
-// Subcomponent for coordinate label/value pairs
-const CoordinateItem = ({
-    label,
-    value,
-}: {
-    label: string;
-    value: string;
-}) => (
-    <div>
-        <div className='text-dark-400 text-sm'>{label}</div>
-        <div className='text-white font-medium text-sm'>{value}</div>
-    </div>
-);
 
 export default GroundStationCard;
