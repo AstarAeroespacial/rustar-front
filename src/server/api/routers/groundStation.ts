@@ -8,169 +8,94 @@ export const groundStationRouter = createTRPCRouter({
     return [
       {
         id: "GS-001",
-        name: "Buenos Aires Ground Station",
+        name: "Buenos Aires",
         location: {
           latitude: -34.6037,
           longitude: -58.3816,
           altitude: 25,
         },
-        status: "active" as const,
-        trackingSatellite: {
-          id: "SAT-01A",
-          name: "Satellite 1",
-          tle: {
-            line1: "1 25544U 98067A   21001.00000000  .00002182  00000-0  40864-4 0  9990",
-            line2: "2 25544  51.6461 339.7939 0001882  83.2943 276.8623 15.48919103260532",
-          },
-        },
-        lastUpdate: new Date(),
       },
       {
-        id: "GS-002", 
-        name: "Córdoba Ground Station",
+        id: "GS-002",
+        name: "Córdoba",
         location: {
           latitude: -31.4201,
           longitude: -64.1888,
           altitude: 390,
         },
-        status: "active" as const,
-        trackingSatellite: {
-          id: "SAT-02B",
-          name: "Satellite 2",
-          tle: {
-            line1: "1 25544U 98067A   21001.00000000  .00002182  00000-0  40864-4 0  9991",
-            line2: "2 25544  51.6461 339.7939 0001882  83.2943 276.8623 15.48919103260533",
-          },
-        },
-        lastUpdate: new Date(),
       },
       {
         id: "GS-003",
-        name: "Mendoza Ground Station", 
+        name: "Mendoza",
         location: {
           latitude: -32.8895,
           longitude: -68.8458,
           altitude: 760,
         },
-        status: "maintenance" as const,
-        trackingSatellite: undefined,
-        lastUpdate: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
       },
       {
         id: "GS-004",
-        name: "Ushuaia Ground Station",
+        name: "Ushuaia",
         location: {
           latitude: -54.8019,
           longitude: -68.3030,
           altitude: 30,
         },
-        status: "inactive" as const,
-        trackingSatellite: undefined,
-        lastUpdate: new Date(Date.now() - 24 * 60 * 60 * 1000), // 24 hours ago
       },
     ];
   }),
 
-  // Update ground station's tracking satellite TLE
-  updateStationTLE: publicProcedure
-    .input(
-      z.object({
-        stationId: z.string(),
-        satelliteId: z.string().optional(),
-        satelliteName: z.string().optional(),
-        tle: z.object({
-          line1: z.string(),
-          line2: z.string(),
-        }),
-        isNewSatellite: z.boolean().optional(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      // This would update the ground station's tracking satellite in your backend
-      // For now, we'll just return success
-      if (input.isNewSatellite) {
-        console.log(`Updating station ${input.stationId} to track new satellite ${input.satelliteId} with TLE`);
-      } else {
-        console.log(`Updating station ${input.stationId} to track existing satellite ${input.satelliteId}`);
-      }
-      
-      return {
-        success: true,
-        message: `Ground station ${input.stationId} updated successfully`,
-      };
-    }),
-
-  // Create new ground station
-  createGroundStation: publicProcedure
-    .input(
-      z.object({
-        name: z.string(),
-        location: z.object({
-          latitude: z.number(),
-          longitude: z.number(),
-          altitude: z.number(),
-        }),
-      })
-    )
-    .mutation(async ({ input }) => {
-      // This would create a new ground station in your backend
-      console.log(`Creating new ground station: ${input.name}`);
-      
-      return {
-        success: true,
-        id: `GS-${Date.now()}`, // Mock ID generation
-        message: `Ground station ${input.name} created successfully`,
-      };
-    }),
-
-  // Get a specific ground station
-  getGroundStation: publicProcedure
+  // Get a single ground station by ID
+  getGroundStationById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
-      // This would fetch a specific ground station from your backend
-      // For now, we'll return mock data for the first station
-      return {
-        id: input.id,
-        name: "Ground Station " + input.id,
-        location: {
-          latitude: -34.6037,
-          longitude: -58.3816,
-          altitude: 25,
-        },
-        status: "active" as const,
-        trackingSatellite: {
-          id: "SAT-01A",
-          name: "Satellite 1",
-          tle: {
-            line1: "1 25544U 98067A   21001.00000000  .00002182  00000-0  40864-4 0  9990",
-            line2: "2 25544  51.6461 339.7939 0001882  83.2943 276.8623 15.48919103260532",
+      // Mock data - this would come from your backend API
+      const stations = [
+        {
+          id: "GS-001",
+          name: "Buenos Aires",
+          location: {
+            latitude: -34.6037,
+            longitude: -58.3816,
+            altitude: 25,
           },
         },
-        lastUpdate: new Date(),
-      };
-    }),
+        {
+          id: "GS-002",
+          name: "Córdoba",
+          location: {
+            latitude: -31.4201,
+            longitude: -64.1888,
+            altitude: 390,
+          },
+        },
+        {
+          id: "GS-003",
+          name: "Mendoza",
+          location: {
+            latitude: -32.8895,
+            longitude: -68.8458,
+            altitude: 760,
+          },
+        },
+        {
+          id: "GS-004",
+          name: "Ushuaia",
+          location: {
+            latitude: -54.8019,
+            longitude: -68.3030,
+            altitude: 30,
+          },
+        },
+      ];
 
-  // Update ground station parameters
-  updateGroundStation: publicProcedure
-    .input(
-      z.object({
-        id: z.string(),
-        name: z.string(),
-        location: z.object({
-          latitude: z.number(),
-          longitude: z.number(),
-          altitude: z.number(),
-        }),
-        status: z.enum(['active', 'inactive', 'maintenance']),
-      })
-    )
-    .mutation(async ({ input }) => {
-      // This would update the ground station parameters in your backend
-      console.log(`Updating ground station ${input.id} with new parameters`);
-      
-      return {
-        success: true,
-        message: `Ground station ${input.name} updated successfully`,
-      };
+      const station = stations.find((s) => s.id === input.id);
+
+      if (!station) {
+        throw new Error(`Ground station ${input.id} not found`);
+      }
+
+      return station;
     }),
 });
+

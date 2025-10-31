@@ -82,9 +82,9 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
     const minElevationRad = (minElevationDeg * Math.PI) / 180;
     const theta = altitude
         ? Math.acos(
-              (earthRadiusKm / (earthRadiusKm + altitude)) *
-                  Math.cos(minElevationRad)
-          ) - minElevationRad
+            (earthRadiusKm / (earthRadiusKm + altitude)) *
+            Math.cos(minElevationRad)
+        ) - minElevationRad
         : 0;
     const radiusKm = Math.max(0, Math.min(earthRadiusKm * theta, 4000));
 
