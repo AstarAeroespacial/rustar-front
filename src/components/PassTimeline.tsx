@@ -67,6 +67,18 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
                     canMove={false}
                     canResize={false}
                     canChangeGroup={false}
+                    onTimeChange={(visibleTimeStart, visibleTimeEnd, updateScrollCanvas) => {
+                        // Restrict scrolling to the fetched time window
+                        if (visibleTimeStart < startTime && visibleTimeEnd > endTime) {
+                            updateScrollCanvas(startTime, endTime);
+                        } else if (visibleTimeStart < startTime) {
+                            updateScrollCanvas(startTime, startTime + (visibleTimeEnd - visibleTimeStart));
+                        } else if (visibleTimeEnd > endTime) {
+                            updateScrollCanvas(endTime - (visibleTimeEnd - visibleTimeStart), endTime);
+                        } else {
+                            updateScrollCanvas(visibleTimeStart, visibleTimeEnd);
+                        }
+                    }}
                 >
                     <TimelineHeaders>
                         <SidebarHeader>
