@@ -3,6 +3,8 @@ import Timeline, {
     TimelineHeaders,
     SidebarHeader,
     DateHeader,
+    TimelineMarkers,
+    TodayMarker,
 } from 'react-calendar-timeline';
 import 'react-calendar-timeline/style.css';
 
@@ -89,6 +91,13 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
                         <DateHeader unit="primaryHeader" />
                         <DateHeader />
                     </TimelineHeaders>
+                    <TimelineMarkers>
+                        <TodayMarker>
+                            {({ styles }) => (
+                                <div style={{ ...styles, backgroundColor: '#ef4444', width: '2px' }} />
+                            )}
+                        </TodayMarker>
+                    </TimelineMarkers>
                 </Timeline>
             </div>
         </div>
