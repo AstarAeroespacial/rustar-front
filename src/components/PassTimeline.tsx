@@ -56,11 +56,8 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
     }, [passes]);
 
     return (
-        <div className='bg-dark-900 rounded-xl border border-dark-700 p-5 shadow-md'>
-            <h3 className='text-lg font-semibold text-white tracking-wide mb-4'>
-                Satellite Passes
-            </h3>
-            <div className='h-[300px]'>
+        <div className='bg-dark-900 rounded-xl border border-dark-700 p-3 shadow-md'>
+            <div>
                 <Timeline
                     groups={groups}
                     items={items}
@@ -85,7 +82,7 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
                     <TimelineHeaders>
                         <SidebarHeader>
                             {({ getRootProps }) => (
-                                <div {...getRootProps()}>Ground Station</div>
+                                <div {...getRootProps()}></div>
                             )}
                         </SidebarHeader>
                         <DateHeader unit="primaryHeader" />
