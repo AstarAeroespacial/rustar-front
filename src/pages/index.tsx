@@ -1,10 +1,11 @@
 import { type NextPage } from 'next';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Layout from '~/components/Layout';
 import { api } from '~/utils/api';
 import dynamic from 'next/dynamic';
 import type { Satellite } from '~/types/api';
 import SatelliteInfoCard from '~/components/SatelliteInfoCard';
+import PassTimeline from '~/components/PassTimeline';
 
 // Dynamically import the map component to avoid SSR issues
 const SatelliteMap = dynamic(() => import('~/components/SatelliteMap'), {
@@ -31,6 +32,25 @@ const Home: NextPage = () => {
     // Get the first active satellite or the first satellite as default
     const selectedSatData =
         satellites?.find((sat) => sat.status === 'active') || satellites?.[0];
+
+    // Fetch satellite passes for the selected satellite
+    const timeframe = useMemo(() => {
+        const now = Date.now();
+        return {
+            now,
+            startTime: now,
+            endTime: now + 24 * 60 * 60 * 1000, // 24 hours from now
+        };
+    }, []);
+
+    const { data: passes } = api.satellite.getSatellitePasses.useQuery(
+        {
+            satelliteId: selectedSatData?.id || '',
+            startTime: timeframe.startTime,
+            endTime: timeframe.endTime,
+        },
+        { enabled: !!selectedSatData }
+    );
 
     const updateSatelliteMutation = api.satellite.updateSatellite.useMutation({
         onSuccess: () => {
@@ -64,6 +84,15 @@ const Home: NextPage = () => {
                                 onEdit={handleEditSatellite}
                             />
                         </div>
+                    </div>
+
+                    {/* Satellite Passes Timeline */}
+                    <div className='mt-6'>
+                        <PassTimeline
+                            passes={passes || []}
+                            startTime={timeframe.startTime}
+                            endTime={timeframe.endTime}
+                        />
                     </div>
                 </div>
 

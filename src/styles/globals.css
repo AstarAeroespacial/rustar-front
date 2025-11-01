@@ -30,18 +30,112 @@
     * {
         @apply border-border;
     }
+
     body {
         @apply bg-background text-foreground;
     }
 }
 
 @layer utilities {
+
     /* Hide scrollbar but keep scroll functionality */
     .scrollbar-hide::-webkit-scrollbar {
         display: none;
     }
+
     .scrollbar-hide {
-        -ms-overflow-style: none; /* IE and Edge */
-        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none;
+        /* IE and Edge */
+        scrollbar-width: none;
+        /* Firefox */
     }
+}
+
+/* React Calendar Timeline Dark Theme Overrides */
+.react-calendar-timeline {
+    background-color: #0f172a !important;
+}
+
+/* Sidebar */
+.react-calendar-timeline .rct-sidebar {
+    background-color: #1e293b !important;
+    border-right: 1px solid #334155 !important;
+}
+
+.react-calendar-timeline .rct-sidebar .rct-sidebar-row {
+    background-color: #1e293b !important;
+    border-bottom: 1px solid #334155 !important;
+    color: #e2e8f0 !important;
+}
+
+.react-calendar-timeline .rct-sidebar .rct-sidebar-row.rct-sidebar-row-odd,
+.react-calendar-timeline .rct-sidebar .rct-sidebar-row.rct-sidebar-row-even {
+    background-color: #1e293b !important;
+}
+
+/* Headers */
+.react-calendar-timeline .rct-header-root {
+    background-color: #1e293b !important;
+    border-bottom: 1px solid #334155 !important;
+}
+
+.react-calendar-timeline .rct-dateHeader {
+    background-color: #dc2626 !important;
+    border-left: 1px solid #334155 !important;
+    border-bottom: 1px solid #334155 !important;
+    color: white !important;
+}
+
+.react-calendar-timeline .rct-dateHeader-primary {
+    background-color: #dc2626 !important;
+    color: white !important;
+}
+
+/* Canvas area */
+.react-calendar-timeline .rct-horizontal-lines .rct-hl-even,
+.react-calendar-timeline .rct-horizontal-lines .rct-hl-odd {
+    border-bottom: 1px solid #334155 !important;
+    background-color: transparent !important;
+}
+
+/* Vertical grid lines */
+.react-calendar-timeline .rct-vertical-lines .rct-vl {
+    border-left: 1px solid #334155 !important;
+}
+
+.react-calendar-timeline .rct-vertical-lines .rct-vl.rct-day-6,
+.react-calendar-timeline .rct-vertical-lines .rct-vl.rct-day-0 {
+    background: rgba(51, 65, 85, 0.2) !important;
+}
+
+/* Timeline items (pass bars) */
+.react-calendar-timeline .rct-item {
+    background-color: #3b82f6 !important;
+    border: 1px solid #2563eb !important;
+    border-radius: 4px !important;
+    color: white !important;
+}
+
+.react-calendar-timeline .rct-item.selected {
+    background-color: #2563eb !important;
+    border: 2px solid #1d4ed8 !important;
+}
+
+/* Scrollbar */
+.react-calendar-timeline ::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.react-calendar-timeline ::-webkit-scrollbar-track {
+    background: #1e293b;
+}
+
+.react-calendar-timeline ::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 4px;
+}
+
+.react-calendar-timeline ::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
 }
