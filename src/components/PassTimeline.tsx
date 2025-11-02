@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Tooltip } from 'react-tooltip';
 import Timeline, {
     TimelineHeaders,
     SidebarHeader,
@@ -72,6 +73,19 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
                         month: 1,
                         year: 1
                     }}
+                    itemRenderer={({ item, itemContext, getItemProps }) => {
+                        const pass = passes.find(p => p.id === item.id);
+                        const props = getItemProps({});
+                        return (
+                            <div
+                                {...props}
+                                data-tooltip-id="pass-tooltip"
+                                data-tooltip-content={pass ? pass.groundStationName : ''}
+                            >
+                                <div style={{ height: '100%', overflow: 'hidden' }}></div>
+                            </div>
+                        );
+                    }}
                     canMove={false}
                     canResize={false}
                     canChangeGroup={false}
@@ -112,6 +126,19 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
                     </TimelineMarkers>
                 </Timeline>
             </div>
+            <Tooltip
+                id="pass-tooltip"
+                place="top"
+                style={{
+                    backgroundColor: '#1e293b',
+                    color: '#e2e8f0',
+                    borderRadius: '6px',
+                    border: '1px solid #334155',
+                    fontSize: '12px',
+                    padding: '6px 10px',
+                    zIndex: 1000
+                }}
+            />
         </div>
     );
 };
