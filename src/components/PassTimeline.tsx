@@ -44,7 +44,7 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
         const items = passes.map(pass => ({
             id: pass.id,
             group: pass.groundStationId,
-            title: `${pass.maxElevation.toFixed(1)}°`,
+            title: '',
             start_time: pass.aos,
             end_time: pass.los,
         }));
