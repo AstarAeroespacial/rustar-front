@@ -78,6 +78,7 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
                             updateScrollCanvas(visibleTimeStart, visibleTimeEnd);
                         }
                     }}
+                    buffer={1}
                 >
                     <TimelineHeaders>
                         <SidebarHeader>
