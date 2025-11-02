@@ -86,7 +86,12 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
                                 <div {...getRootProps()}></div>
                             )}
                         </SidebarHeader>
-                        <DateHeader unit="primaryHeader" />
+                        <DateHeader
+                            unit="primaryHeader"
+                            labelFormat={([startTime]) => {
+                                return startTime.format('MMMM D');
+                            }}
+                        />
                         <DateHeader />
                     </TimelineHeaders>
                     <TimelineMarkers>
