@@ -63,6 +63,15 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
                     items={items}
                     defaultTimeStart={startTime}
                     defaultTimeEnd={endTime}
+                    sidebarWidth={0}
+                    timeSteps={{
+                        second: 1,
+                        minute: 15,
+                        hour: 1,
+                        day: 0.5,
+                        month: 1,
+                        year: 1
+                    }}
                     canMove={false}
                     canResize={false}
                     canChangeGroup={false}
