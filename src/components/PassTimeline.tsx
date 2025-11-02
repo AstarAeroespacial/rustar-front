@@ -56,7 +56,7 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
     }, [passes]);
 
     return (
-        <div className='bg-dark-900 rounded-xl border border-dark-700 p-3 shadow-md'>
+        <div className='bg-dark-900 rounded-xl border border-dark-700 shadow-md overflow-hidden'>
             <div>
                 <Timeline
                     groups={groups}
