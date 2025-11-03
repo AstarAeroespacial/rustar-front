@@ -6,12 +6,18 @@ interface SatelliteInfoCardProps {
     satellite: Satellite | null;
     isLoading: boolean;
     onEdit: (satellite: Satellite) => void;
+    position?: {
+        latitude: number;
+        longitude: number;
+        altitude: number;
+    } | null;
 }
 
 const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
     satellite,
     isLoading,
     onEdit,
+    position,
 }) => {
     const [copied, setCopied] = useState(false);
 
@@ -29,26 +35,11 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
             </div>
         );
 
-    const { name, id, status, position, tle, lastContact } = satellite;
-
-    const statusColor =
-        status === 'active'
-            ? 'text-green-400'
-            : status === 'inactive'
-            ? 'text-yellow-400'
-            : 'text-red-400';
-
-    const statusDot =
-        status === 'active'
-            ? 'bg-green-500'
-            : status === 'inactive'
-            ? 'bg-yellow-500'
-            : 'bg-red-500';
+    const { name, id, tle, downlink_frequency, uplink_frequency } = satellite;
 
     const handleCopyTLE = async () => {
         if (!tle) return;
-        const tleText = `${tle.line1}\n${tle.line2}`;
-        await navigator.clipboard.writeText(tleText);
+        await navigator.clipboard.writeText(tle);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
@@ -61,7 +52,6 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
                     <h2 className='text-lg font-semibold text-white tracking-wide'>
                         {name}
                     </h2>
-                    <p className='text-dark-400 text-sm font-mono'>{id}</p>
                 </div>
 
                 <Button
@@ -89,29 +79,7 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
                 />
             </div>
 
-            {/* Status */}
-            <div
-                className={`border-l-4 pl-3 mb-5 ${
-                    status === 'active'
-                        ? 'border-green-500'
-                        : status === 'inactive'
-                        ? 'border-yellow-500'
-                        : 'border-red-500'
-                }`}
-            >
-                <div className={`flex items-center gap-2 ${statusColor}`}>
-                    <div className={`w-2.5 h-2.5 rounded-full ${statusDot}`} />
-                    <span className='font-medium capitalize'>
-                        {status === 'active'
-                            ? 'Activo'
-                            : status === 'inactive'
-                            ? 'Inactivo'
-                            : 'Error'}
-                    </span>
-                </div>
-            </div>
-
-            {/* Position and telemetry */}
+            {/* Position */}
             <section className='mb-6'>
                 <h3 className='text-[11px] uppercase tracking-widest text-dark-400 mb-3'>
                     Posición
@@ -119,19 +87,40 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
                 <div className='grid grid-cols-2 gap-y-3'>
                     <InfoItem
                         label='Latitud'
-                        value={`${position?.latitude?.toFixed(4) ?? '--'}°`}
+                        value={position ? `${position.latitude.toFixed(4)}°` : '—'}
                     />
                     <InfoItem
                         label='Longitud'
-                        value={`${position?.longitude?.toFixed(4) ?? '--'}°`}
+                        value={position ? `${position.longitude.toFixed(4)}°` : '—'}
                     />
                     <InfoItem
                         label='Altitud'
-                        value={`${position?.altitude ?? '--'} km`}
+                        value={position ? `${position.altitude.toFixed(2)} km` : '—'}
+                    />
+                </div>
+            </section>
+
+            {/* Velocity */}
+            <section className='mb-6'>
+                <h3 className='text-[11px] uppercase tracking-widest text-dark-400 mb-3'>
+                    Velocidad
+                </h3>
+                <div className='text-white font-medium text-sm'>7.8 km/s</div>
+            </section>
+
+            {/* Frequencies */}
+            <section className='mb-6'>
+                <h3 className='text-[11px] uppercase tracking-widest text-dark-400 mb-3'>
+                    Frecuencias
+                </h3>
+                <div className='grid grid-cols-2 gap-y-3'>
+                    <InfoItem
+                        label='Downlink'
+                        value={`${downlink_frequency.toFixed(3)} MHz`}
                     />
                     <InfoItem
-                        label='Velocidad'
-                        value='7.8 km/s'
+                        label='Uplink'
+                        value={`${uplink_frequency.toFixed(3)} MHz`}
                     />
                 </div>
             </section>
@@ -140,7 +129,7 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
             <div className='border-t border-dark-700 pt-3 text-dark-400 text-sm'>
                 Último contacto:{' '}
                 <span className='text-dark-300'>
-                    {lastContact?.toLocaleString() ?? 'No disponible'}
+                    {new Date().toLocaleString()}
                 </span>
             </div>
 
@@ -153,9 +142,8 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
 
                     <div className='relative group'>
                         {/* TLE text box */}
-                        <div className='bg-dark-800 rounded-md p-3 font-mono text-[11px] text-dark-300 leading-relaxed border border-dark-700/50 whitespace-nowrap overflow-x-auto scrollbar-hide'>
-                            <div className='mb-1'>{tle.line1}</div>
-                            <div>{tle.line2}</div>
+                        <div className='bg-dark-800 rounded-md p-3 font-mono text-[11px] text-dark-300 leading-relaxed border border-dark-700/50 whitespace-pre-wrap break-all'>
+                            {tle}
                         </div>
 
                         {/* Copy button */}
