@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '~/components/ui/Button';
 import type { Satellite } from '~/types/api';
 
@@ -20,6 +20,17 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
     position,
 }) => {
     const [copied, setCopied] = useState(false);
+    // Generate random velocity between 7.5 and 8.0 km/s (typical LEO satellite range)
+    const [velocity, setVelocity] = useState(() => (Math.random() * 0.5 + 7.5).toFixed(2));
+
+    // Update velocity every second
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setVelocity((Math.random() * 0.5 + 7.5).toFixed(2));
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
 
     if (isLoading)
         return (
@@ -49,6 +60,9 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
             {/* Header */}
             <div className='flex justify-between items-start mb-5'>
                 <div>
+                    <h3 className='text-[11px] uppercase tracking-widest text-dark-400 mb-2'>
+                        Satellite
+                    </h3>
                     <h2 className='text-lg font-semibold text-white tracking-wide'>
                         {name}
                     </h2>
@@ -105,7 +119,7 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
                 <h3 className='text-[11px] uppercase tracking-widest text-dark-400 mb-3'>
                     Velocity
                 </h3>
-                <div className='text-white font-medium text-sm'>7.8 km/s</div>
+                <div className='text-white font-medium text-sm'>{velocity} km/s</div>
             </section>
 
             {/* Frequencies */}

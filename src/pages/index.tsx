@@ -94,6 +94,9 @@ const Home: NextPage = () => {
 
                     {/* Satellite Passes Timeline */}
                     <div className='mt-6'>
+                        <h3 className='text-[16px] uppercase tracking-widest text-dark-400 mb-4'>
+                            Next Passes
+                        </h3>
                         <PassTimeline
                             passes={passes || []}
                             startTime={timeframe.startTime}
