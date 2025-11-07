@@ -24,14 +24,14 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
     if (isLoading)
         return (
             <div className='bg-dark-800 rounded-lg border border-dark-700 p-6 text-dark-400'>
-                Cargando datos del satélite...
+                Loading satellite data...
             </div>
         );
 
     if (!satellite)
         return (
             <div className='bg-dark-800 rounded-lg border border-dark-700 p-6 text-dark-400'>
-                No hay datos de satélite disponibles.
+                No satellite data available.
             </div>
         );
 
@@ -82,19 +82,19 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
             {/* Position */}
             <section className='mb-6'>
                 <h3 className='text-[11px] uppercase tracking-widest text-dark-400 mb-3'>
-                    Posición
+                    Position
                 </h3>
                 <div className='grid grid-cols-2 gap-y-3'>
                     <InfoItem
-                        label='Latitud'
+                        label='Latitude'
                         value={position ? `${position.latitude.toFixed(4)}°` : '—'}
                     />
                     <InfoItem
-                        label='Longitud'
+                        label='Longitude'
                         value={position ? `${position.longitude.toFixed(4)}°` : '—'}
                     />
                     <InfoItem
-                        label='Altitud'
+                        label='Altitude'
                         value={position ? `${position.altitude.toFixed(2)} km` : '—'}
                     />
                 </div>
@@ -103,7 +103,7 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
             {/* Velocity */}
             <section className='mb-6'>
                 <h3 className='text-[11px] uppercase tracking-widest text-dark-400 mb-3'>
-                    Velocidad
+                    Velocity
                 </h3>
                 <div className='text-white font-medium text-sm'>7.8 km/s</div>
             </section>
@@ -111,7 +111,7 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
             {/* Frequencies */}
             <section className='mb-6'>
                 <h3 className='text-[11px] uppercase tracking-widest text-dark-400 mb-3'>
-                    Frecuencias
+                    Frequencies
                 </h3>
                 <div className='grid grid-cols-2 gap-y-3'>
                     <InfoItem
@@ -127,7 +127,7 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
 
             {/* Last contact */}
             <div className='border-t border-dark-700 pt-3 text-dark-400 text-sm'>
-                Último contacto:{' '}
+                Last contact:{' '}
                 <span className='text-dark-300'>
                     {new Date().toLocaleString()}
                 </span>

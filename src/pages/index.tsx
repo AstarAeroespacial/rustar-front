@@ -116,7 +116,7 @@ const Home: NextPage = () => {
                         {/* Modal */}
                         <div className='relative z-10 w-full max-w-xl rounded-lg border border-dark-700 bg-dark-800 p-6 shadow-xl'>
                             <h3 className='text-xl font-semibold text-white mb-4'>
-                                Editar TLE
+                                Edit TLE
                             </h3>
 
                             <div className='space-y-4'>
@@ -142,7 +142,7 @@ const Home: NextPage = () => {
                                     }}
                                     className='px-4 py-2 rounded-md bg-dark-700 hover:bg-dark-600 text-white border border-dark-600'
                                 >
-                                    Cancelar
+                                    Cancel
                                 </button>
                                 <button
                                     onClick={() => {
@@ -159,8 +159,8 @@ const Home: NextPage = () => {
                                     className='px-4 py-2 rounded-md bg-primary-700/90 hover:bg-primary-700 disabled:bg-dark-600 disabled:cursor-not-allowed text-white'
                                 >
                                     {updateSatelliteMutation.isLoading
-                                        ? 'Guardando...'
-                                        : 'Guardar'}
+                                        ? 'Saving...'
+                                        : 'Save'}
                                 </button>
                             </div>
                         </div>
