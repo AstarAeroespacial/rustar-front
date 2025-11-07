@@ -62,13 +62,11 @@ export interface Command {
 }
 
 export interface GroundStation {
-  id: string;
+  id: number;
   name: string;
-  location: {
-    latitude: number;
-    longitude: number;
-    altitude: number;
-  };
+  altitude: number;
+  latitude: number;
+  longitude: number;
   status: 'active' | 'inactive' | 'maintenance';
   trackingSatellite?: {
     id: number;

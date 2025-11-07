@@ -20,7 +20,7 @@ const GroundStationDetail: NextPage = () => {
     const { id } = router.query;
 
     const { data: station } = api.groundStation.getGroundStationById.useQuery(
-        { id: id as string },
+        { id: Number(id) },
         { enabled: !!id }
     );
 
@@ -43,8 +43,8 @@ const GroundStationDetail: NextPage = () => {
                         <div className='lg:col-span-9 h-[600px]'>
                             {station && (
                                 <GroundStationMap
-                                    latitude={station.location.latitude}
-                                    longitude={station.location.longitude}
+                                    latitude={station.latitude}
+                                    longitude={station.longitude}
                                     name={station.name}
                                 />
                             )}
@@ -57,7 +57,6 @@ const GroundStationDetail: NextPage = () => {
                                     <h2 className='text-lg font-semibold text-white tracking-wide'>
                                         {station?.name ?? 'Loading...'}
                                     </h2>
-                                    <p className='text-dark-400 text-sm font-mono'>{station?.id ?? id}</p>
                                 </div>
 
                                 {/* Coordinates Section */}
@@ -66,13 +65,13 @@ const GroundStationDetail: NextPage = () => {
                                         <div>
                                             <div className='text-dark-400 text-sm'>Latitude</div>
                                             <div className='text-white font-medium text-sm'>
-                                                {station?.location.latitude.toFixed(4) ?? '--'}°
+                                                {station?.latitude.toFixed(4) ?? '--'}°
                                             </div>
                                         </div>
                                         <div>
                                             <div className='text-dark-400 text-sm'>Longitude</div>
                                             <div className='text-white font-medium text-sm'>
-                                                {station?.location.longitude.toFixed(4) ?? '--'}°
+                                                {station?.longitude.toFixed(4) ?? '--'}°
                                             </div>
                                         </div>
                                     </div>
@@ -80,7 +79,7 @@ const GroundStationDetail: NextPage = () => {
                                     <div>
                                         <div className='text-dark-400 text-sm'>Altitude</div>
                                         <div className='text-white font-medium text-sm'>
-                                            {station?.location.altitude ?? '--'} m
+                                            {station?.altitude ?? '--'} m
                                         </div>
                                     </div>
                                 </div>
