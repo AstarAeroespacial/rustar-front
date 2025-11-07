@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 
 interface GroundStationCardProps {
-    id: string;
+    id: number;
     name: string;
     latitude: number;
     longitude: number;
@@ -24,7 +24,6 @@ const GroundStationCard: React.FC<GroundStationCardProps> = ({
                     <h2 className='text-lg font-semibold text-white tracking-wide'>
                         {name}
                     </h2>
-                    <p className='text-dark-400 text-sm font-mono'>{id}</p>
                 </div>
 
                 {/* Coordinates Section */}

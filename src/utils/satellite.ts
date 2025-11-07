@@ -1,6 +1,14 @@
 import L from 'leaflet';
 import * as satellite from 'satellite.js';
 
+export function parseTLE(tle: string): { line1: string; line2: string } | null {
+    const lines = tle.trim().split('\n').map(line => line.trim());
+    if (lines.length >= 2 && lines[0] && lines[1]) {
+        return { line1: lines[0], line2: lines[1] };
+    }
+    return null;
+}
+
 // Normalize longitude to [-180, 180]
 export function normalizeLongitude(lon: number): number {
     if (lon > 180) return lon - 360;
@@ -8,14 +16,9 @@ export function normalizeLongitude(lon: number): number {
     return lon;
 }
 
-// Create a colored satellite dot based on status
-export const createSatelliteIcon = (status: string): L.DivIcon => {
-    const color =
-        status === 'active'
-            ? '#10b981'
-            : status === 'inactive'
-            ? '#f59e0b'
-            : '#ef4444';
+// Create a colored satellite dot (default green/active color)
+export const createSatelliteIcon = (): L.DivIcon => {
+    const color = '#10b981';
     return L.divIcon({
         html: `
       <div style="

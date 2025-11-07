@@ -48,8 +48,8 @@ const FullscreenControl: React.FC = () => {
                     const control = new (L.Control as any).Fullscreen({
                         position: 'topright',
                         title: {
-                            false: 'Pantalla completa',
-                            true: 'Salir de pantalla completa',
+                            false: 'View fullscreen',
+                            true: 'Exit fullscreen',
                         },
                         forceSeparateButton: true,
                     });

@@ -7,6 +7,8 @@ import { api } from '~/utils/api';
 const GroundStations: NextPage = () => {
     const { data: groundStations } = api.groundStation.getGroundStations.useQuery();
 
+    const sortedStations = groundStations?.slice().sort((a, b) => a.id - b.id);
+
     return (
         <>
             <Head>
@@ -25,14 +27,14 @@ const GroundStations: NextPage = () => {
                     <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
                         {/* Grid of ground station cards */}
                         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
-                            {groundStations?.map((station) => (
+                            {sortedStations?.map((station) => (
                                 <GroundStationCard
                                     key={station.id}
                                     id={station.id}
                                     name={station.name}
-                                    latitude={station.location.latitude}
-                                    longitude={station.location.longitude}
-                                    altitude={station.location.altitude}
+                                    altitude={station.altitude}
+                                    latitude={station.latitude}
+                                    longitude={station.longitude}
                                 />
                             ))}
                         </div>

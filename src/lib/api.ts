@@ -5,7 +5,9 @@ import type {
   TestMessage, 
   ConfigResponse,
   HistoricTelemetryRequest,
-  LatestTelemetryRequest 
+  LatestTelemetryRequest,
+  Satellite,
+  GroundStation
 } from "~/types/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
@@ -71,6 +73,22 @@ class ApiClient {
   // Config endpoint
   async getConfig(): Promise<ConfigResponse> {
     return this.request<ConfigResponse>('/config');
+  }
+
+  async getSatellites(): Promise<Satellite[]> {
+    return this.request<Satellite[]>('/api/satellites');
+  }
+
+  async getSatelliteById(id: number): Promise<Satellite> {
+    return this.request<Satellite>(`/api/satellites/${id}`);
+  }
+
+  async getGroundStations(): Promise<GroundStation[]> {
+    return this.request<GroundStation[]>('/api/ground-stations');
+  }
+
+  async getGroundStationById(id: number): Promise<GroundStation> {
+    return this.request<GroundStation>(`/api/ground-stations/${id}`);
   }
 }
 

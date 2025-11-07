@@ -16,16 +16,19 @@ import {
     createSatelliteIcon,
     createSatelliteLabel,
     getGroundTrack,
+    parseTLE,
 } from '~/utils/satellite';
 
 interface SatelliteMapProps {
     satellites: Satellite[];
-    selectedSatellite: string | null;
+    selectedSatellite: number | null;
+    onPositionUpdate?: (position: { latitude: number; longitude: number; altitude: number } | null) => void;
 }
 
 const SatelliteMap: React.FC<SatelliteMapProps> = ({
     satellites,
     selectedSatellite,
+    onPositionUpdate,
 }) => {
     const mapRef = useRef<L.Map | null>(null);
     const [position, setPosition] = useState<[number, number] | null>(null);
@@ -50,7 +53,11 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
     useEffect(() => {
         if (!selectedSatelliteObj?.tle) return;
         let cancelled = false;
-        const { line1, line2 } = selectedSatelliteObj.tle;
+        
+        const tleData = parseTLE(selectedSatelliteObj.tle);
+        if (!tleData) return;
+        
+        const { line1, line2 } = tleData;
         const satrec = satellite.twoline2satrec(line1, line2);
 
         const updatePosition = () => {
@@ -60,11 +67,21 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
             if (!pv?.position) return;
             const gmst = satellite.gstime(now);
             const gd = satellite.eciToGeodetic(pv.position, gmst);
-            setPosition([
-                satellite.degreesLat(gd.latitude),
-                normalizeLongitude(satellite.degreesLong(gd.longitude)),
-            ]);
-            setAltitude(gd.height);
+            const lat = satellite.degreesLat(gd.latitude);
+            const lon = normalizeLongitude(satellite.degreesLong(gd.longitude));
+            const alt = gd.height;
+            
+            setPosition([lat, lon]);
+            setAltitude(alt);
+            
+            // Notify parent component of position update
+            if (onPositionUpdate) {
+                onPositionUpdate({
+                    latitude: lat,
+                    longitude: lon,
+                    altitude: alt,
+                });
+            }
         };
 
         updatePosition();
@@ -74,8 +91,11 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
         return () => {
             cancelled = true;
             clearInterval(interval);
+            if (onPositionUpdate) {
+                onPositionUpdate(null);
+            }
         };
-    }, [selectedSatelliteObj]);
+    }, [selectedSatelliteObj, onPositionUpdate]);
 
     const earthRadiusKm = 6371;
     const minElevationDeg = 10;
@@ -137,9 +157,7 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
                         <>
                             <Marker
                                 position={position}
-                                icon={createSatelliteIcon(
-                                    selectedSatelliteObj.status
-                                )}
+                                icon={createSatelliteIcon()}
                             />
                             <Circle
                                 center={position}

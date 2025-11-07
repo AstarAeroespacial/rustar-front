@@ -44,21 +44,12 @@ export interface LatestTelemetryRequest {
   amount?: number;
 }
 
-// Additional types for the frontend
 export interface Satellite {
-  id: string;
+  id: number;
   name: string;
-  status: 'active' | 'inactive' | 'error';
-  lastContact?: Date;
-  position?: {
-    latitude: number;
-    longitude: number;
-    altitude: number;
-  };
-  tle?: {
-    line1: string;
-    line2: string;
-  };
+  tle: string;
+  downlink_frequency: number;
+  uplink_frequency: number;
 }
 
 export interface Command {
@@ -71,21 +62,16 @@ export interface Command {
 }
 
 export interface GroundStation {
-  id: string;
+  id: number;
   name: string;
-  location: {
-    latitude: number;
-    longitude: number;
-    altitude: number;
-  };
+  altitude: number;
+  latitude: number;
+  longitude: number;
   status: 'active' | 'inactive' | 'maintenance';
   trackingSatellite?: {
-    id: string;
+    id: number;
     name: string;
-    tle: {
-      line1: string;
-      line2: string;
-    };
+    tle: string;
   };
   lastUpdate: Date;
 }

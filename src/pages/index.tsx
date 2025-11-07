@@ -27,11 +27,15 @@ const Home: NextPage = () => {
     const [editingSatellite, setEditingSatellite] = useState<Satellite | null>(
         null
     );
-    const [newTLE, setNewTLE] = useState({ line1: '', line2: '' });
+    const [newTLE, setNewTLE] = useState('');
+    const [satellitePosition, setSatellitePosition] = useState<{
+        latitude: number;
+        longitude: number;
+        altitude: number;
+    } | null>(null);
 
-    // Get the first active satellite or the first satellite as default
-    const selectedSatData =
-        satellites?.find((sat) => sat.status === 'active') || satellites?.[0];
+    // Get the first satellite as default
+    const selectedSatData = satellites?.[0];
 
     // Fetch satellite passes for the selected satellite
     const timeframe = useMemo(() => {
@@ -45,7 +49,7 @@ const Home: NextPage = () => {
 
     const { data: passes } = api.satellite.getSatellitePasses.useQuery(
         {
-            satelliteId: selectedSatData?.id || '',
+            satelliteId: selectedSatData?.id ?? 0,
             startTime: timeframe.startTime,
             endTime: timeframe.endTime,
         },
@@ -62,7 +66,7 @@ const Home: NextPage = () => {
 
     const handleEditSatellite = (satellite: Satellite) => {
         setEditingSatellite(satellite);
-        setNewTLE(satellite.tle || { line1: '', line2: '' });
+        setNewTLE(satellite.tle || '');
         setShowEditModal(true);
     };
 
@@ -75,6 +79,7 @@ const Home: NextPage = () => {
                             <SatelliteMap
                                 satellites={satellites || []}
                                 selectedSatellite={selectedSatData?.id || null}
+                                onPositionUpdate={setSatellitePosition}
                             />
                         </div>
                         <div className='lg:col-span-3'>
@@ -82,12 +87,16 @@ const Home: NextPage = () => {
                                 satellite={selectedSatData || null}
                                 isLoading={isLoading}
                                 onEdit={handleEditSatellite}
+                                position={satellitePosition}
                             />
                         </div>
                     </div>
 
                     {/* Satellite Passes Timeline */}
                     <div className='mt-6'>
+                        <h3 className='text-[16px] uppercase tracking-widest text-dark-400 mb-4'>
+                            Next Passes
+                        </h3>
                         <PassTimeline
                             passes={passes || []}
                             startTime={timeframe.startTime}
@@ -110,42 +119,20 @@ const Home: NextPage = () => {
                         {/* Modal */}
                         <div className='relative z-10 w-full max-w-xl rounded-lg border border-dark-700 bg-dark-800 p-6 shadow-xl'>
                             <h3 className='text-xl font-semibold text-white mb-4'>
-                                Editar TLE
+                                Edit TLE
                             </h3>
 
                             <div className='space-y-4'>
                                 <div>
                                     <label className='block text-sm font-medium text-dark-300 mb-2'>
-                                        Línea 1
+                                        TLE (Two-Line Element Set)
                                     </label>
                                     <textarea
-                                        value={newTLE.line1}
-                                        onChange={(e) =>
-                                            setNewTLE((prev) => ({
-                                                ...prev,
-                                                line1: e.target.value,
-                                            }))
-                                        }
-                                        rows={3}
-                                        className='w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500'
-                                        placeholder='TLE Line 1'
-                                    />
-                                </div>
-                                <div>
-                                    <label className='block text-sm font-medium text-dark-300 mb-2'>
-                                        Línea 2
-                                    </label>
-                                    <textarea
-                                        value={newTLE.line2}
-                                        onChange={(e) =>
-                                            setNewTLE((prev) => ({
-                                                ...prev,
-                                                line2: e.target.value,
-                                            }))
-                                        }
-                                        rows={3}
-                                        className='w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500'
-                                        placeholder='TLE Line 2'
+                                        value={newTLE}
+                                        onChange={(e) => setNewTLE(e.target.value)}
+                                        rows={6}
+                                        className='w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary-500'
+                                        placeholder='Line 1&#10;Line 2'
                                     />
                                 </div>
                             </div>
@@ -158,7 +145,7 @@ const Home: NextPage = () => {
                                     }}
                                     className='px-4 py-2 rounded-md bg-dark-700 hover:bg-dark-600 text-white border border-dark-600'
                                 >
-                                    Cancelar
+                                    Cancel
                                 </button>
                                 <button
                                     onClick={() => {
@@ -170,14 +157,13 @@ const Home: NextPage = () => {
                                     }}
                                     disabled={
                                         updateSatelliteMutation.isLoading ||
-                                        !newTLE.line1 ||
-                                        !newTLE.line2
+                                        !newTLE.trim()
                                     }
                                     className='px-4 py-2 rounded-md bg-primary-700/90 hover:bg-primary-700 disabled:bg-dark-600 disabled:cursor-not-allowed text-white'
                                 >
                                     {updateSatelliteMutation.isLoading
-                                        ? 'Guardando...'
-                                        : 'Guardar'}
+                                        ? 'Saving...'
+                                        : 'Save'}
                                 </button>
                             </div>
                         </div>
