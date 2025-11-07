@@ -1,0 +1,149 @@
+import type { Satellite } from '~/types/api';
+
+export const MOCK_SATELLITES: Satellite[] = [
+    {
+        id: 1,
+        name: 'SAT-01A',
+        tle: '1 25544U 98067A   21275.51782528  .00016717  00000-0  10270-3 0  9005\n2 25544  51.6412 247.4627 0006703 130.5360 325.0288 15.48908950314314',
+        downlink_frequency: 437.425,
+        uplink_frequency: 145.825,
+    },
+    {
+        id: 2,
+        name: 'SAT-02B',
+        tle: '1 43013U 17073A   21275.51782528  .00000123  00000-0  12345-4 0  9991\n2 43013  98.2123 123.4567 0001234  45.6789  12.3456 14.19876543123456',
+        downlink_frequency: 437.5,
+        uplink_frequency: 145.9,
+    },
+    {
+        id: 3,
+        name: 'SAT-03C',
+        tle: '1 40967U 15052B   21275.51782528  .00000456  00000-0  23456-4 0  9992\n2 40967  97.4321 234.5678 0002345  67.8901  23.4567 14.98765432234567',
+        downlink_frequency: 436.75,
+        uplink_frequency: 145.95,
+    },
+];
+
+export const MOCK_GROUND_STATIONS = [
+    {
+        id: 1,
+        name: 'Madrid Ground Station',
+        latitude: 40.4168,
+        longitude: -3.7038,
+        altitude: 667,
+    },
+    {
+        id: 2,
+        name: 'Barcelona Tracking Station',
+        latitude: 41.3851,
+        longitude: 2.1734,
+        altitude: 12,
+    },
+    {
+        id: 3,
+        name: 'Canary Islands Station',
+        latitude: 28.2916,
+        longitude: -16.6291,
+        altitude: 247,
+    },
+];
+
+export const MOCK_TELEMETRY = Array.from({ length: 20 }, (_, i) => ({
+    id: i + 1,
+    satellite: 'SAT-01A',
+    timestamp: Math.floor(Date.now() / 1000) - i * 300, // 5 minute intervals
+    temperature: 20 + Math.random() * 10 - 5,
+    voltage: 12 + Math.random() * 2 - 1,
+    current: 2 + Math.random() * 0.5 - 0.25,
+}));
+
+export const MOCK_COMMANDS = [
+    {
+        id: '1',
+        name: 'Power On',
+        description: 'Turn on satellite subsystem',
+        category: 'power',
+        requiresConfirmation: false,
+    },
+    {
+        id: '2',
+        name: 'Power Off',
+        description: 'Turn off satellite subsystem',
+        category: 'power',
+        requiresConfirmation: true,
+    },
+    {
+        id: '3',
+        name: 'Reset',
+        description: 'Reset satellite computer',
+        category: 'system',
+        requiresConfirmation: true,
+    },
+    {
+        id: '4',
+        name: 'Deploy Antenna',
+        description: 'Deploy communication antenna',
+        category: 'payload',
+        requiresConfirmation: true,
+    },
+    {
+        id: '5',
+        name: 'Camera Capture',
+        description: 'Take a photo',
+        category: 'payload',
+        requiresConfirmation: false,
+    },
+];
+
+export const MOCK_COMMAND_HISTORY = [
+    {
+        id: 1,
+        command: 'Power On',
+        status: 'received',
+        timestamp: new Date(Date.now() - 3600000).toISOString(),
+    },
+    {
+        id: 2,
+        command: 'Camera Capture',
+        status: 'received',
+        timestamp: new Date(Date.now() - 7200000).toISOString(),
+    },
+    {
+        id: 3,
+        command: 'Reset',
+        status: 'failed',
+        timestamp: new Date(Date.now() - 10800000).toISOString(),
+    },
+];
+
+export const MOCK_PASSES = (
+    satelliteId: number,
+    startTime: number,
+    endTime: number
+) => {
+    const passes = [];
+    const duration = endTime - startTime;
+    const numPasses = 3; // Generate 3 passes
+
+    for (let i = 0; i < numPasses; i++) {
+        const aos =
+            startTime +
+            (duration / numPasses) * i +
+            Math.random() * (duration / numPasses / 2);
+        const los = aos + 5 * 60 * 1000 + Math.random() * (10 * 60 * 1000); // 5-15 minute passes
+
+        passes.push({
+            id: `pass-${satelliteId}-${i}`,
+            groundStationId: String((i % 3) + 1),
+            groundStationName:
+                MOCK_GROUND_STATIONS[i % 3]?.name || 'Unknown Station',
+            aos,
+            los,
+            maxElevation: 30 + Math.random() * 60, // 30-90 degrees
+        });
+    }
+
+    return passes;
+};
+
+export const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true';

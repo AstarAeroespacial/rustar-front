@@ -21,7 +21,9 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
 }) => {
     const [copied, setCopied] = useState(false);
     // Generate random velocity between 7.5 and 8.0 km/s (typical LEO satellite range)
-    const [velocity, setVelocity] = useState(() => (Math.random() * 0.5 + 7.5).toFixed(2));
+    const [velocity, setVelocity] = useState(() =>
+        (Math.random() * 0.5 + 7.5).toFixed(2)
+    );
 
     // Update velocity every second
     useEffect(() => {
@@ -34,14 +36,14 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
 
     if (isLoading)
         return (
-            <div className='bg-dark-800 rounded-lg border border-dark-700 p-6 text-dark-400'>
+            <div className='bg-[#141B23] rounded-lg border border-[#13181D] p-6 text-gray-400'>
                 Loading satellite data...
             </div>
         );
 
     if (!satellite)
         return (
-            <div className='bg-dark-800 rounded-lg border border-dark-700 p-6 text-dark-400'>
+            <div className='bg-[#141B23] rounded-lg border border-[#13181D] p-6 text-gray-400'>
                 No satellite data available.
             </div>
         );
@@ -56,11 +58,11 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
     };
 
     return (
-        <div className='bg-dark-900 rounded-xl border border-dark-700 p-5 shadow-md'>
+        <div className='bg-[#141B23] rounded-xl border border-[#13181D] p-5 shadow-md'>
             {/* Header */}
             <div className='flex justify-between items-start mb-5'>
                 <div>
-                    <h3 className='text-[11px] uppercase tracking-widest text-dark-400 mb-2'>
+                    <h3 className='text-[11px] uppercase tracking-widest text-gray-400 mb-2'>
                         Satellite
                     </h3>
                     <h2 className='text-lg font-semibold text-white tracking-wide'>
@@ -73,7 +75,7 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
                     size='sm'
                     variant='ghost'
                     iconOnly
-                    className='text-dark-400 hover:text-white'
+                    className='text-gray-400 hover:text-white'
                     iconLeft={
                         <svg
                             className='h-4 w-4'
@@ -95,36 +97,46 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
 
             {/* Position */}
             <section className='mb-6'>
-                <h3 className='text-[11px] uppercase tracking-widest text-dark-400 mb-3'>
+                <h3 className='text-[11px] uppercase tracking-widest text-gray-400 mb-3'>
                     Position
                 </h3>
                 <div className='grid grid-cols-2 gap-y-3'>
                     <InfoItem
                         label='Latitude'
-                        value={position ? `${position.latitude.toFixed(4)}°` : '—'}
+                        value={
+                            position ? `${position.latitude.toFixed(4)}°` : '—'
+                        }
                     />
                     <InfoItem
                         label='Longitude'
-                        value={position ? `${position.longitude.toFixed(4)}°` : '—'}
+                        value={
+                            position ? `${position.longitude.toFixed(4)}°` : '—'
+                        }
                     />
                     <InfoItem
                         label='Altitude'
-                        value={position ? `${position.altitude.toFixed(2)} km` : '—'}
+                        value={
+                            position
+                                ? `${position.altitude.toFixed(2)} km`
+                                : '—'
+                        }
                     />
                 </div>
             </section>
 
             {/* Velocity */}
             <section className='mb-6'>
-                <h3 className='text-[11px] uppercase tracking-widest text-dark-400 mb-3'>
+                <h3 className='text-[11px] uppercase tracking-widest text-gray-400 mb-3'>
                     Velocity
                 </h3>
-                <div className='text-white font-medium text-sm'>{velocity} km/s</div>
+                <div className='text-white font-medium text-sm'>
+                    {velocity} km/s
+                </div>
             </section>
 
             {/* Frequencies */}
             <section className='mb-6'>
-                <h3 className='text-[11px] uppercase tracking-widest text-dark-400 mb-3'>
+                <h3 className='text-[11px] uppercase tracking-widest text-gray-400 mb-3'>
                     Frequencies
                 </h3>
                 <div className='grid grid-cols-2 gap-y-3'>
@@ -140,9 +152,9 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
             </section>
 
             {/* Last contact */}
-            <div className='border-t border-dark-700 pt-3 text-dark-400 text-sm'>
+            <div className='border-t border-[#13181D] pt-3 text-gray-400 text-sm'>
                 Last contact:{' '}
-                <span className='text-dark-300'>
+                <span className='text-gray-300'>
                     {new Date().toLocaleString()}
                 </span>
             </div>
@@ -150,13 +162,13 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
             {/* TLE section */}
             {tle && (
                 <section className='mt-6'>
-                    <h3 className='text-[11px] uppercase tracking-widest text-dark-400 mb-2'>
+                    <h3 className='text-[11px] uppercase tracking-widest text-gray-400 mb-2'>
                         TLE (Two-Line Elements)
                     </h3>
 
                     <div className='relative group'>
                         {/* TLE text box */}
-                        <div className='bg-dark-800 rounded-md p-3 font-mono text-[11px] text-dark-300 leading-relaxed border border-dark-700/50 whitespace-pre-wrap break-all'>
+                        <div className='bg-[#0B0D10] rounded-md p-3 font-mono text-[11px] text-gray-300 leading-relaxed border border-[#13181D]/50 whitespace-pre-wrap break-all'>
                             {tle}
                         </div>
 
@@ -170,7 +182,7 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
                                 className={`${
                                     copied
                                         ? 'text-green-400 hover:text-green-300'
-                                        : 'text-dark-400 hover:text-white'
+                                        : 'text-gray-400 hover:text-white'
                                 }`}
                                 iconLeft={
                                     copied ? (
@@ -225,7 +237,7 @@ const InfoItem = ({
     value?: string | number | null;
 }) => (
     <div>
-        <div className='text-dark-400 text-sm'>{label}</div>
+        <div className='text-gray-400 text-sm'>{label}</div>
         <div className='text-white font-medium text-sm'>{value ?? '—'}</div>
     </div>
 );

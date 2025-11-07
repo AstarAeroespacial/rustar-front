@@ -1,6 +1,13 @@
 import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 import { apiClient } from '~/lib/api';
+import {
+    MOCK_SATELLITES,
+    MOCK_TELEMETRY,
+    MOCK_COMMANDS,
+    MOCK_PASSES,
+    USE_MOCK_DATA,
+} from '~/lib/mockData';
 
 export const satelliteRouter = createTRPCRouter({
     // Get historic telemetry data
@@ -28,9 +35,20 @@ export const satelliteRouter = createTRPCRouter({
             })
         )
         .query(async ({ input }) => {
-            return apiClient.getLatestTelemetry(input.satellite, {
-                amount: input.amount,
-            });
+            if (USE_MOCK_DATA) {
+                const amount = input.amount ?? 20;
+                return MOCK_TELEMETRY.slice(0, amount);
+            }
+
+            try {
+                return await apiClient.getLatestTelemetry(input.satellite, {
+                    amount: input.amount,
+                });
+            } catch (error) {
+                console.warn('API unavailable, using mock data');
+                const amount = input.amount ?? 20;
+                return MOCK_TELEMETRY.slice(0, amount);
+            }
         }),
 
     // Send command to satellite
@@ -52,13 +70,35 @@ export const satelliteRouter = createTRPCRouter({
 
     // Get satellites from API
     getSatellites: publicProcedure.query(async () => {
-        return apiClient.getSatellites();
+        if (USE_MOCK_DATA) {
+            return MOCK_SATELLITES;
+        }
+
+        try {
+            return await apiClient.getSatellites();
+        } catch (error) {
+            console.warn('API unavailable, using mock data');
+            return MOCK_SATELLITES;
+        }
     }),
 
     getSatelliteById: publicProcedure
         .input(z.object({ id: z.number() }))
         .query(async ({ input }) => {
-            return apiClient.getSatelliteById(input.id);
+            if (USE_MOCK_DATA) {
+                return (
+                    MOCK_SATELLITES.find((sat) => sat.id === input.id) ?? null
+                );
+            }
+
+            try {
+                return await apiClient.getSatelliteById(input.id);
+            } catch (error) {
+                console.warn('API unavailable, using mock data');
+                return (
+                    MOCK_SATELLITES.find((sat) => sat.id === input.id) ?? null
+                );
+            }
         }),
 
     // Update satellite data
@@ -80,6 +120,10 @@ export const satelliteRouter = createTRPCRouter({
 
     // Get available commands
     getAvailableCommands: publicProcedure.query(async () => {
+        if (USE_MOCK_DATA) {
+            return MOCK_COMMANDS;
+        }
+
         // Mock implementation - would call actual API endpoint
         return [
             {
@@ -137,6 +181,14 @@ export const satelliteRouter = createTRPCRouter({
             })
         )
         .query(async ({ input }) => {
+            if (USE_MOCK_DATA) {
+                return MOCK_PASSES(
+                    input.satelliteId,
+                    input.startTime,
+                    input.endTime
+                );
+            }
+
             // Mock implementation - would calculate actual passes using satellite.js
             const now = Date.now();
 

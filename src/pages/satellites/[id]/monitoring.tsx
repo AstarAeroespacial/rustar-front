@@ -1,7 +1,8 @@
 import { type NextPage } from 'next';
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
-import Layout from '~/components/Layout';
+import { useRouter } from 'next/router';
+import SatellitesLayout from '~/components/SatellitesLayout';
 import { api } from '~/utils/api';
 import {
     Chart as ChartJS,
@@ -25,13 +26,15 @@ ChartJS.register(
     Legend
 );
 
-const Telemetry: NextPage = () => {
+const SatellitesMonitoring: NextPage = () => {
+    const router = useRouter();
+    const { id } = router.query;
+    const satelliteId = id ? parseInt(id as string) : undefined;
     const [selectedSatellite, setSelectedSatellite] = useState('SAT-01A');
     const [telemetryType, setTelemetryType] = useState('Housekeeping');
     const [updateInterval, setUpdateInterval] = useState(5);
     const [isReceiving, setIsReceiving] = useState(true);
 
-    const { data: satellites } = api.satellite.getSatellites.useQuery();
     const { data: telemetryData, refetch } =
         api.satellite.getLatestTelemetry.useQuery(
             { satellite: selectedSatellite, amount: 20 },
@@ -118,13 +121,13 @@ const Telemetry: NextPage = () => {
     return (
         <>
             <Head>
-                <title>Telemetry - Rustar</title>
+                <title>Monitoring - Rustar</title>
                 <meta
                     name='description'
                     content='Satellite telemetry monitoring'
                 />
             </Head>
-            <Layout>
+            <SatellitesLayout>
                 <div className='py-6'>
                     <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
                         <h1 className='text-3xl font-bold text-white'>
@@ -134,11 +137,11 @@ const Telemetry: NextPage = () => {
 
                     {/* Update Interval Controls */}
                     <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-8'>
-                        <div className='bg-dark-800 rounded-lg border border-dark-700 p-4 mb-8'>
+                        <div className='bg-[#141B23] rounded-lg border border-[#13181D] p-4 mb-8'>
                             <div className='flex items-center justify-between'>
                                 <div className='flex items-center space-x-6'>
                                     <div className='flex items-center space-x-2'>
-                                        <span className='text-sm font-medium text-dark-300'>
+                                        <span className='text-sm font-medium text-gray-300'>
                                             Update Interval:
                                         </span>
                                         <select
@@ -148,7 +151,7 @@ const Telemetry: NextPage = () => {
                                                     Number(e.target.value)
                                                 )
                                             }
-                                            className='bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500'
+                                            className='bg-[#0b0f14] border border-[#13181D] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500'
                                         >
                                             <option value={1}>1s</option>
                                             <option value={5}>5s</option>
@@ -158,7 +161,7 @@ const Telemetry: NextPage = () => {
                                     </div>
 
                                     <div className='flex items-center space-x-2'>
-                                        <span className='text-sm font-medium text-dark-300'>
+                                        <span className='text-sm font-medium text-gray-300'>
                                             Status:
                                         </span>
                                         <span
@@ -195,7 +198,7 @@ const Telemetry: NextPage = () => {
                     <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
                         <div className='space-y-6'>
                             {/* Real-time Charts */}
-                            <div className='bg-dark-800 rounded-lg border border-dark-700 p-6'>
+                            <div className='bg-[#141B23] rounded-lg border border-[#13181D] p-6'>
                                 <h2 className='text-lg font-semibold text-white mb-4'>
                                     Real-time Charts
                                 </h2>
@@ -213,7 +216,7 @@ const Telemetry: NextPage = () => {
                                                 °C
                                             </span>
                                         </div>
-                                        <div className='text-sm text-dark-400 mb-4'>
+                                        <div className='text-sm text-gray-400 mb-4'>
                                             Last 30 minutes • +4.1%
                                         </div>
                                         <div style={{ height: '200px' }}>
@@ -236,7 +239,7 @@ const Telemetry: NextPage = () => {
                                                 V
                                             </span>
                                         </div>
-                                        <div className='text-sm text-dark-400 mb-4'>
+                                        <div className='text-sm text-gray-400 mb-4'>
                                             Last 30 minutes • -0.2%
                                         </div>
                                         <div style={{ height: '200px' }}>
@@ -250,12 +253,12 @@ const Telemetry: NextPage = () => {
                             </div>
 
                             {/* Raw Telemetry Data */}
-                            <div className='bg-dark-800 rounded-lg border border-dark-700 p-6'>
+                            <div className='bg-[#141B23] rounded-lg border border-[#13181D] p-6'>
                                 <h2 className='text-lg font-semibold text-white mb-4'>
                                     Raw Telemetry Data
                                 </h2>
 
-                                <div className='bg-dark-900 rounded-lg p-4 font-mono text-sm text-green-400 max-h-40 overflow-y-auto'>
+                                <div className='bg-[#0B0F14] rounded-lg p-4 font-mono text-sm text-green-400 max-h-40 overflow-y-auto'>
                                     {telemetryData
                                         ?.slice(0, 5)
                                         .map((data, index) => (
@@ -274,30 +277,30 @@ const Telemetry: NextPage = () => {
                             </div>
 
                             {/* Received Telemetry Packets */}
-                            <div className='bg-dark-800 rounded-lg border border-dark-700 p-6'>
+                            <div className='bg-[#141B23] rounded-lg border border-[#13181D] p-6'>
                                 <h2 className='text-lg font-semibold text-white mb-4'>
                                     Received Telemetry Packets
                                 </h2>
 
                                 <div className='overflow-hidden'>
-                                    <table className='min-w-full divide-y divide-dark-700'>
+                                    <table className='min-w-full divide-y divide-[#13181D]'>
                                         <thead>
                                             <tr>
-                                                <th className='px-6 py-3 text-left text-xs font-medium text-dark-400 uppercase tracking-wider'>
+                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
                                                     Timestamp
                                                 </th>
-                                                <th className='px-6 py-3 text-left text-xs font-medium text-dark-400 uppercase tracking-wider'>
+                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
                                                     Packet ID
                                                 </th>
-                                                <th className='px-6 py-3 text-left text-xs font-medium text-dark-400 uppercase tracking-wider'>
+                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
                                                     Size
                                                 </th>
-                                                <th className='px-6 py-3 text-left text-xs font-medium text-dark-400 uppercase tracking-wider'>
+                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
                                                     Status
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody className='divide-y divide-dark-700'>
+                                        <tbody className='divide-y divide-[#13181D]'>
                                             {telemetryData
                                                 ?.slice(0, 5)
                                                 .map((data, index) => (
@@ -308,10 +311,10 @@ const Telemetry: NextPage = () => {
                                                                     1000
                                                             ).toLocaleString()}
                                                         </td>
-                                                        <td className='px-6 py-4 whitespace-nowrap text-sm text-dark-300'>
+                                                        <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
                                                             {index + 1}
                                                         </td>
-                                                        <td className='px-6 py-4 whitespace-nowrap text-sm text-dark-300'>
+                                                        <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
                                                             128 bytes
                                                         </td>
                                                         <td className='px-6 py-4 whitespace-nowrap'>
@@ -328,9 +331,9 @@ const Telemetry: NextPage = () => {
                         </div>
                     </div>
                 </div>
-            </Layout>
+            </SatellitesLayout>
         </>
     );
 };
 
-export default Telemetry;
+export default SatellitesMonitoring;

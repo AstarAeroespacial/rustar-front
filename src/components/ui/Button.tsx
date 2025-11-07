@@ -16,12 +16,11 @@ export interface ButtonProps
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-    primary:
-        'bg-primary-700/90 hover:bg-primary-700 text-white border border-primary-700',
+    primary: 'bg-[#11435D] text-white border border-[#11435D]',
     secondary:
-        'bg-dark-700 hover:bg-dark-600 text-white border border-dark-600',
-    ghost: 'bg-transparent hover:bg-dark-700/40 text-dark-200 hover:text-white border border-dark-600/40',
-    danger: 'bg-red-600 hover:bg-red-500 text-white border border-red-600',
+        'bg-[#141B23] hover:bg-[#1a2332] text-white border border-[#13181D]',
+    ghost: 'bg-transparent hover:bg-[#1a2332] text-gray-400 hover:text-white border-0',
+    danger: 'bg-red-600 hover:bg-red-700 text-white border border-red-600',
 };
 
 // Default padding for regular buttons
@@ -53,15 +52,23 @@ export const Button: React.FC<ButtonProps> = ({
     ...rest
 }) => {
     const base =
-        'inline-flex items-center justify-center rounded-md font-medium transition-all duration-150 ease-in-out focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed';
+        'inline-flex items-center font-medium transition-all duration-150 ease-in-out focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed';
 
     // Use compact padding for iconOnly
     const paddingClasses = iconOnly
         ? iconOnlySizeClasses[size]
         : sizeClasses[size];
 
+    // Default to rounded-md unless className includes rounded-
+    const roundedClass = className.includes('rounded-') ? '' : 'rounded-md';
+
+    // Default to justify-center unless className includes justify-
+    const justifyClass = className.includes('justify-') ? '' : 'justify-center';
+
     const composed = [
         base,
+        justifyClass,
+        roundedClass,
         variantClasses[variant],
         paddingClasses,
         fullWidth ? 'w-full' : '',
@@ -103,7 +110,7 @@ export const Button: React.FC<ButtonProps> = ({
                 <span className={!iconOnly ? 'mr-2' : ''}>{iconLeft}</span>
             )}
 
-            {!iconOnly && (label || children)}
+            {iconOnly ? children : label || children}
 
             {iconRight && !iconOnly && (
                 <span className='ml-2'>{iconRight}</span>

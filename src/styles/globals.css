@@ -4,29 +4,99 @@
 
 @layer base {
     :root {
-        --background: 222.2 84% 4.9%;
-        --foreground: 210 40% 98%;
-        --card: 222.2 84% 4.9%;
-        --card-foreground: 210 40% 98%;
-        --popover: 222.2 84% 4.9%;
-        --popover-foreground: 210 40% 98%;
-        --primary: 217.2 91.2% 59.8%;
-        --primary-foreground: 222.2 84% 4.9%;
-        --secondary: 217.2 32.6% 17.5%;
-        --secondary-foreground: 210 40% 98%;
-        --muted: 217.2 32.6% 17.5%;
-        --muted-foreground: 215 20.2% 65.1%;
-        --accent: 217.2 32.6% 17.5%;
-        --accent-foreground: 210 40% 98%;
+        --background: 0 0% 100%;
+        --foreground: 224 71.4% 4.1%;
+        --card: 0 0% 100%;
+        --card-foreground: 224 71.4% 4.1%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 224 71.4% 4.1%;
+        --primary: 220.9 39.3% 11%;
+        --primary-foreground: 210 20% 98%;
+        --secondary: 220 14.3% 95.9%;
+        --secondary-foreground: 220.9 39.3% 11%;
+        --muted: 220 14.3% 95.9%;
+        --muted-foreground: 220 8.9% 46.1%;
+        --accent: 220 14.3% 95.9%;
+        --accent-foreground: 220.9 39.3% 11%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 210 20% 98%;
+        --border: 220 13% 91%;
+        --input: 220 13% 91%;
+        --ring: 224 71.4% 4.1%;
+        --chart-1: 12 76% 61%;
+        --chart-2: 173 58% 39%;
+        --chart-3: 197 37% 24%;
+        --chart-4: 43 74% 66%;
+        --chart-5: 27 87% 67%;
+        --radius: 0.5rem;
+        --sidebar-background: 0 0% 98%;
+        --sidebar-foreground: 240 5.3% 26.1%;
+        --sidebar-primary: 240 5.9% 10%;
+        --sidebar-primary-foreground: 0 0% 98%;
+        --sidebar-accent: 240 4.8% 95.9%;
+        --sidebar-accent-foreground: 240 5.9% 10%;
+        --sidebar-border: 220 13% 91%;
+        --sidebar-ring: 217.2 91.2% 59.8%;
+    }
+    .dark {
+        --background: 224 71.4% 4.1%;
+        --foreground: 210 20% 98%;
+        --card: 224 71.4% 4.1%;
+        --card-foreground: 210 20% 98%;
+        --popover: 224 71.4% 4.1%;
+        --popover-foreground: 210 20% 98%;
+        --primary: 210 20% 98%;
+        --primary-foreground: 220.9 39.3% 11%;
+        --secondary: 215 27.9% 16.9%;
+        --secondary-foreground: 210 20% 98%;
+        --muted: 215 27.9% 16.9%;
+        --muted-foreground: 217.9 10.6% 64.9%;
+        --accent: 215 27.9% 16.9%;
+        --accent-foreground: 210 20% 98%;
         --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 217.2 32.6% 17.5%;
-        --input: 217.2 32.6% 17.5%;
-        --ring: 224.3 76.3% 94.1%;
+        --destructive-foreground: 210 20% 98%;
+        --border: 215 27.9% 16.9%;
+        --input: 215 27.9% 16.9%;
+        --ring: 216 12.2% 83.9%;
+        --chart-1: 220 70% 50%;
+        --chart-2: 160 60% 45%;
+        --chart-3: 30 80% 55%;
+        --chart-4: 280 65% 60%;
+        --chart-5: 340 75% 55%;
+        --sidebar-background: 240 5.9% 10%;
+        --sidebar-foreground: 240 4.8% 95.9%;
+        --sidebar-primary: 224.3 76.3% 48%;
+        --sidebar-primary-foreground: 0 0% 100%;
+        --sidebar-accent: 240 3.7% 15.9%;
+        --sidebar-accent-foreground: 240 4.8% 95.9%;
+        --sidebar-border: 240 3.7% 15.9%;
+        --sidebar-ring: 217.2 91.2% 59.8%;
     }
 }
 
 @layer base {
+    :root {
+        --sidebar: oklch(0.985 0 0);
+        --sidebar-foreground: oklch(0.145 0 0);
+        --sidebar-primary: oklch(0.205 0 0);
+        --sidebar-primary-foreground: oklch(0.985 0 0);
+        --sidebar-accent: oklch(0.97 0 0);
+        --sidebar-accent-foreground: oklch(0.205 0 0);
+        --sidebar-border: oklch(0.922 0 0);
+        --sidebar-ring: oklch(0.708 0 0);
+    }
+
+    .dark {
+        --sidebar: oklch(0.205 0 0);
+        --sidebar-foreground: oklch(0.985 0 0);
+        --sidebar-primary: oklch(0.488 0.243 264.376);
+        --sidebar-primary-foreground: oklch(0.985 0 0);
+        --sidebar-accent: oklch(0.269 0 0);
+        --sidebar-accent-foreground: oklch(0.985 0 0);
+        --sidebar-border: oklch(1 0 0 / 10%);
+        --sidebar-ring: oklch(0.439 0 0);
+    }
+
     * {
         @apply border-border;
     }
@@ -37,7 +107,6 @@
 }
 
 @layer utilities {
-
     /* Hide scrollbar but keep scroll functionality */
     .scrollbar-hide::-webkit-scrollbar {
         display: none;
@@ -51,33 +120,43 @@
     }
 }
 
+/* Text Selection Color */
+::selection {
+    background-color: #11435d;
+    color: #ffffff;
+}
+
+::-moz-selection {
+    background-color: #11435d;
+    color: #ffffff;
+}
+
 /* React Calendar Timeline Dark Theme Overrides */
 .react-calendar-timeline {
-    background-color: #0f172a !important;
-    border: none !important;
+    background-color: #0b0f14 !important;
 }
 
 /* Sidebar */
 .react-calendar-timeline .rct-sidebar {
-    background-color: #1e293b !important;
-    border-right: 1px solid #334155 !important;
+    background-color: #0b0f14 !important;
+    border-right: 1px solid #13181d !important;
 }
 
 .react-calendar-timeline .rct-sidebar .rct-sidebar-row {
-    background-color: #1e293b !important;
-    border-bottom: 1px solid #334155 !important;
+    background-color: #0b0f14 !important;
+    border-bottom: 1px solid #13181d !important;
     color: #e2e8f0 !important;
 }
 
 .react-calendar-timeline .rct-sidebar .rct-sidebar-row.rct-sidebar-row-odd,
 .react-calendar-timeline .rct-sidebar .rct-sidebar-row.rct-sidebar-row-even {
-    background-color: #1e293b !important;
+    background-color: #0b0f14 !important;
 }
 
 /* Headers */
 .react-calendar-timeline .rct-header-root {
-    background-color: #1e293b !important;
-    border-bottom: none !important;
+    background-color: #0b0f14 !important;
+    border-bottom: 1px solid #13181d !important;
 }
 
 .react-calendar-timeline .rct-calendar-header {
@@ -85,18 +164,22 @@
 }
 
 .react-calendar-timeline .rct-dateHeader {
-    background-color: #1e293b !important;
-    border-left: 1px solid #334155 !important;
-    border-bottom: 1px solid #334155 !important;
-    color: #e2e8f0 !important;
+    background-color: #0b0f14 !important;
+    border-left: 1px solid #13181d !important;
+    border-bottom: 1px solid #13181d !important;
+    color: #9ca3af !important;
+    font-size: 12px !important;
 }
 
 .react-calendar-timeline .rct-dateHeader-primary {
-    background-color: #0f172a !important;
-    color: #e2e8f0 !important;
-    border-left: 1px solid #334155 !important;
+    background-color: #0b0f14 !important;
+    color: #9ca3af !important;
+    border-left: 1px solid #13181d !important;
     border-right: none !important;
-    border-bottom: 1px solid #334155 !important;
+    border-bottom: 1px solid #13181d !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    text-align: center !important;
 }
 
 /* Canvas area */
@@ -108,25 +191,27 @@
 
 /* Vertical grid lines */
 .react-calendar-timeline .rct-vertical-lines .rct-vl {
-    border-left: 1px solid #334155 !important;
+    border-left: 1px solid #1f2937 !important;
 }
 
 .react-calendar-timeline .rct-vertical-lines .rct-vl.rct-day-6,
 .react-calendar-timeline .rct-vertical-lines .rct-vl.rct-day-0 {
-    background: rgba(51, 65, 85, 0.2) !important;
+    background: rgba(31, 41, 55, 0.3) !important;
 }
 
 /* Timeline items (pass bars) */
 .react-calendar-timeline .rct-item {
-    background-color: #3b82f6 !important;
-    border: 1px solid #2563eb !important;
+    background-color: #11435d !important;
+    border: 1px solid #0d3348 !important;
     border-radius: 4px !important;
     color: white !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
 }
 
 .react-calendar-timeline .rct-item.selected {
-    background-color: #2563eb !important;
-    border: 2px solid #1d4ed8 !important;
+    background-color: #0d3348 !important;
+    border: 2px solid #11435d !important;
+    box-shadow: 0 0 0 2px rgba(17, 67, 93, 0.3) !important;
 }
 
 /* Scrollbar */
@@ -136,14 +221,14 @@
 }
 
 .react-calendar-timeline ::-webkit-scrollbar-track {
-    background: #1e293b;
+    background: #0b0f14;
 }
 
 .react-calendar-timeline ::-webkit-scrollbar-thumb {
-    background: #475569;
+    background: #0b0d10;
     border-radius: 4px;
 }
 
 .react-calendar-timeline ::-webkit-scrollbar-thumb:hover {
-    background: #64748b;
+    background: #11435d;
 }

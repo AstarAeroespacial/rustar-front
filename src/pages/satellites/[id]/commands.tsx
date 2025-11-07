@@ -1,8 +1,10 @@
 import { type NextPage } from 'next';
 import Head from 'next/head';
 import { useState } from 'react';
-import Layout from '~/components/Layout';
+import { useRouter } from 'next/router';
+import SatellitesLayout from '~/components/SatellitesLayout';
 import { api } from '~/utils/api';
+import { Button } from '~/components/ui/Button';
 
 interface Command {
     id: string;
@@ -11,7 +13,10 @@ interface Command {
     timestamp: string;
 }
 
-const Commands: NextPage = () => {
+const SatellitesCommands: NextPage = () => {
+    const router = useRouter();
+    const { id } = router.query;
+    const satelliteId = id ? parseInt(id as string) : undefined;
     const [selectedCommand, setSelectedCommand] = useState('');
     const [commandHistory] = useState<Command[]>([
         {
@@ -75,7 +80,7 @@ const Commands: NextPage = () => {
                     content='Satellite command center'
                 />
             </Head>
-            <Layout>
+            <SatellitesLayout>
                 <div className='py-6'>
                     <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
                         <h1 className='text-3xl font-bold text-white'>
@@ -88,13 +93,13 @@ const Commands: NextPage = () => {
                             {/* Command Center */}
                             <div className='lg:col-span-1 space-y-6'>
                                 {/* Send Command */}
-                                <div className='bg-dark-800 rounded-lg border border-dark-700 p-6'>
+                                <div className='bg-[#141B23] rounded-lg border border-[#13181D] p-6'>
                                     <h2 className='text-lg font-semibold text-white mb-4'>
                                         Send Command
                                     </h2>
 
                                     <div className='mb-4'>
-                                        <label className='block text-sm font-medium text-dark-300 mb-2'>
+                                        <label className='block text-sm font-medium text-gray-300 mb-2'>
                                             Select Command
                                         </label>
                                         <select
@@ -105,7 +110,7 @@ const Commands: NextPage = () => {
                                                 )
                                             }
                                             disabled={commandsLoading}
-                                            className='w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50'
+                                            className='w-full bg-[#0b0f14] border border-[#13181D] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#11435D] disabled:opacity-50'
                                         >
                                             <option value=''>
                                                 {commandsLoading
@@ -128,7 +133,7 @@ const Commands: NextPage = () => {
 
                                     {/* Command Details */}
                                     {selectedCommand && availableCommands && (
-                                        <div className='mb-4 p-3 bg-dark-700 rounded-md border border-dark-600'>
+                                        <div className='mb-4 p-3 bg-[#0B0F14] rounded-md border border-[#13181D]'>
                                             {(() => {
                                                 const command =
                                                     availableCommands.find(
@@ -162,7 +167,7 @@ const Commands: NextPage = () => {
                                                                 }
                                                             </span>
                                                         </div>
-                                                        <p className='text-sm text-dark-300 mb-2'>
+                                                        <p className='text-sm text-gray-300 mb-2'>
                                                             {
                                                                 command.description
                                                             }
@@ -190,45 +195,45 @@ const Commands: NextPage = () => {
                                         </div>
                                     )}
 
-                                    <button
+                                    <Button
                                         onClick={handleSendCommand}
                                         disabled={
                                             !selectedCommand ||
                                             sendCommandMutation.isLoading ||
                                             commandsLoading
                                         }
-                                        className='w-full bg-primary-700/90 hover:bg-primary-700 disabled:bg-dark-600 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-md transition-colors'
+                                        variant='primary'
+                                        fullWidth
+                                        loading={sendCommandMutation.isLoading}
                                     >
-                                        {sendCommandMutation.isLoading
-                                            ? 'Sending...'
-                                            : 'Send Command'}
-                                    </button>
+                                        Send Command
+                                    </Button>
                                 </div>
                             </div>
 
                             {/* Command History */}
                             <div className='lg:col-span-2'>
-                                <div className='bg-dark-800 rounded-lg border border-dark-700 p-6'>
+                                <div className='bg-[#141B23] rounded-lg border border-[#13181D] p-6'>
                                     <h2 className='text-lg font-semibold text-white mb-4'>
                                         Command History
                                     </h2>
 
                                     <div className='overflow-hidden'>
-                                        <table className='min-w-full divide-y divide-dark-700'>
+                                        <table className='min-w-full divide-y divide-[#13181D]'>
                                             <thead>
                                                 <tr>
-                                                    <th className='px-6 py-3 text-left text-xs font-medium text-dark-400 uppercase tracking-wider'>
+                                                    <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
                                                         Command
                                                     </th>
-                                                    <th className='px-6 py-3 text-left text-xs font-medium text-dark-400 uppercase tracking-wider'>
+                                                    <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
                                                         Status
                                                     </th>
-                                                    <th className='px-6 py-3 text-left text-xs font-medium text-dark-400 uppercase tracking-wider'>
+                                                    <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
                                                         Timestamp
                                                     </th>
                                                 </tr>
                                             </thead>
-                                            <tbody className='divide-y divide-dark-700'>
+                                            <tbody className='divide-y divide-[#13181D]'>
                                                 {commandHistory.map(
                                                     (command) => (
                                                         <tr key={command.id}>
@@ -254,7 +259,7 @@ const Commands: NextPage = () => {
                                                                     }
                                                                 </span>
                                                             </td>
-                                                            <td className='px-6 py-4 whitespace-nowrap text-sm text-dark-300'>
+                                                            <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
                                                                 {
                                                                     command.timestamp
                                                                 }
@@ -270,9 +275,9 @@ const Commands: NextPage = () => {
                         </div>
                     </div>
                 </div>
-            </Layout>
+            </SatellitesLayout>
         </>
     );
 };
 
-export default Commands;
+export default SatellitesCommands;

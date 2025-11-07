@@ -21,7 +21,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     href='/favicon.ico'
                 />
             </Head>
-            <div className='min-h-screen bg-dark-900 flex flex-col'>
+            <div className='min-h-screen bg-[#0B0F14] flex flex-col'>
                 {/* Navigation */}
                 <NavBar />
 
