@@ -27,24 +27,31 @@ export const MOCK_SATELLITES: Satellite[] = [
 export const MOCK_GROUND_STATIONS = [
     {
         id: 1,
-        name: 'Madrid Ground Station',
-        latitude: 40.4168,
-        longitude: -3.7038,
-        altitude: 667,
+        name: 'Buenos Aires',
+        latitude: -34.6037,
+        longitude: -58.3816,
+        altitude: 25,
     },
     {
         id: 2,
-        name: 'Barcelona Tracking Station',
-        latitude: 41.3851,
-        longitude: 2.1734,
-        altitude: 12,
+        name: 'Córdoba',
+        latitude: -31.4201,
+        longitude: -64.1888,
+        altitude: 390,
     },
     {
         id: 3,
-        name: 'Canary Islands Station',
-        latitude: 28.2916,
-        longitude: -16.6291,
-        altitude: 247,
+        name: 'Mendoza',
+        latitude: -32.8895,
+        longitude: -68.8458,
+        altitude: 760,
+    },
+    {
+        id: 4,
+        name: 'Ushuaia',
+        latitude: -54.8019,
+        longitude: -68.3030,
+        altitude: 30,
     },
 ];
 
