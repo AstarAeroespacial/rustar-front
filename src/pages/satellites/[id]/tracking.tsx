@@ -40,7 +40,7 @@ const SatellitePasses: NextPage = () => {
         <>
             <Head>
                 <title>
-                    {selectedSatData?.name || 'Satellite'} - Passes - Rustar
+                    {selectedSatData?.name || 'Satellite'} - Tracking
                 </title>
                 <meta
                     name='description'
@@ -55,7 +55,7 @@ const SatellitePasses: NextPage = () => {
                 <div className='py-6'>
                     <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
                         <h1 className='text-3xl font-bold text-white'>
-                            Passes
+                            Tracking
                         </h1>
                     </div>
 

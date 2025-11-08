@@ -23,23 +23,23 @@ const SatellitesLayout: React.FC<SatellitesLayoutProps> = ({ children }) => {
 
     const menuItems = [
         {
-            title: 'Tracking',
+            title: 'Overview',
             url: satelliteId ? `/satellites/${satelliteId}` : '#',
             icon: <Satellite className='w-5 h-5' />,
         },
         {
-            title: 'Monitoring',
-            url: satelliteId ? `/satellites/${satelliteId}/monitoring` : '#',
+            title: 'Telemetry',
+            url: satelliteId ? `/satellites/${satelliteId}/telemetry` : '#',
             icon: <BarChart3 className='w-5 h-5' />,
         },
         {
-            title: 'Passes',
-            url: satelliteId ? `/satellites/${satelliteId}/passes` : '#',
+            title: 'Tracking',
+            url: satelliteId ? `/satellites/${satelliteId}/tracking` : '#',
             icon: <Calendar className='w-5 h-5' />,
         },
         {
-            title: 'Commands',
-            url: satelliteId ? `/satellites/${satelliteId}/commands` : '#',
+            title: 'Command',
+            url: satelliteId ? `/satellites/${satelliteId}/command` : '#',
             icon: <Terminal className='w-5 h-5' />,
         },
     ];

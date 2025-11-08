@@ -62,7 +62,7 @@ const SatelliteTracking: NextPage = () => {
     return (
         <>
             <Head>
-                <title>{selectedSatData?.name || 'Satellite'} - Rustar</title>
+                <title>{selectedSatData?.name || 'Satellite'}</title>
                 <meta
                     name='description'
                     content='Satellite tracking and monitoring'

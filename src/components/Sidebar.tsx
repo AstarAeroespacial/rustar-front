@@ -57,7 +57,7 @@ const Sidebar: React.FC<SidebarProps> = ({ items, satelliteName }) => {
         const asPath = router.asPath;
         if (!pathname) return false;
 
-        // For tracking route (base satellite route /satellites/[id])
+        // For overview route (base satellite route /satellites/[id])
         if (url.match(/^\/satellites\/\d+$/)) {
             return (
                 pathname === '/satellites/[id]' ||
@@ -65,14 +65,19 @@ const Sidebar: React.FC<SidebarProps> = ({ items, satelliteName }) => {
             );
         }
 
-        // For monitoring route
-        if (url.match(/^\/satellites\/\d+\/monitoring$/)) {
-            return pathname === '/satellites/[id]/monitoring';
+        // For telemetry route
+        if (url.match(/^\/satellites\/\d+\/telemetry$/)) {
+            return pathname === '/satellites/[id]/telemetry';
         }
 
-        // For commands route
-        if (url.match(/^\/satellites\/\d+\/commands$/)) {
-            return pathname === '/satellites/[id]/commands';
+        // For tracking route
+        if (url.match(/^\/satellites\/\d+\/tracking$/)) {
+            return pathname === '/satellites/[id]/tracking';
+        }
+
+        // For command route
+        if (url.match(/^\/satellites\/\d+\/command$/)) {
+            return pathname === '/satellites/[id]/command';
         }
 
         return false;
@@ -111,10 +116,9 @@ const Sidebar: React.FC<SidebarProps> = ({ items, satelliteName }) => {
                     bg-[#141B23] border-r border-[#13181D]
                     transition-all duration-300 ease-in-out z-40
                     ${isCollapsed ? 'w-16' : 'w-48'}
-                    ${
-                        isOpen
-                            ? 'translate-x-0'
-                            : '-translate-x-full md:translate-x-0'
+                    ${isOpen
+                        ? 'translate-x-0'
+                        : '-translate-x-full md:translate-x-0'
                     }
                 `}
             >
@@ -130,9 +134,8 @@ const Sidebar: React.FC<SidebarProps> = ({ items, satelliteName }) => {
                         variant='ghost'
                         iconOnly
                         size='sm'
-                        className={`flex-shrink-0 ${
-                            isCollapsed ? 'mx-auto' : ''
-                        }`}
+                        className={`flex-shrink-0 ${isCollapsed ? 'mx-auto' : ''
+                            }`}
                         aria-label={
                             isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'
                         }

@@ -17,6 +17,13 @@ const SatellitesCommands: NextPage = () => {
     const router = useRouter();
     const { id } = router.query;
     const satelliteId = id ? parseInt(id as string) : undefined;
+
+    // Fetch satellite data
+    const { data: selectedSatData } = api.satellite.getSatelliteById.useQuery(
+        { id: satelliteId! },
+        { enabled: satelliteId !== undefined && !isNaN(satelliteId) }
+    );
+
     const [selectedCommand, setSelectedCommand] = useState('');
     const [commandHistory] = useState<Command[]>([
         {
@@ -74,7 +81,7 @@ const SatellitesCommands: NextPage = () => {
     return (
         <>
             <Head>
-                <title>Commands - Rustar</title>
+                <title>{selectedSatData?.name || 'Satellite'} - Command</title>
                 <meta
                     name='description'
                     content='Satellite command center'
@@ -84,7 +91,7 @@ const SatellitesCommands: NextPage = () => {
                 <div className='py-6'>
                     <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
                         <h1 className='text-3xl font-bold text-white'>
-                            Command Center
+                            Command
                         </h1>
                     </div>
 
