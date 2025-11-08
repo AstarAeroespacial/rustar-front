@@ -62,7 +62,7 @@ export interface Command {
 }
 
 export interface GroundStation {
-  id: number;
+  id: string;
   name: string;
   altitude: number;
   latitude: number;

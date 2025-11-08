@@ -18,7 +18,7 @@ export const groundStationRouter = createTRPCRouter({
     }),
 
     getGroundStationById: publicProcedure
-        .input(z.object({ id: z.number() }))
+        .input(z.object({ id: z.string() }))
         .query(async ({ input }) => {
             if (USE_MOCK_DATA) {
                 return (

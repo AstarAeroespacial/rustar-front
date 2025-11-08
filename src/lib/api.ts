@@ -87,7 +87,7 @@ class ApiClient {
     return this.request<GroundStation[]>('/api/ground-stations');
   }
 
-  async getGroundStationById(id: number): Promise<GroundStation> {
+  async getGroundStationById(id: string): Promise<GroundStation> {
     return this.request<GroundStation>(`/api/ground-stations/${id}`);
   }
 }

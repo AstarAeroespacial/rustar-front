@@ -7,7 +7,7 @@ import { api } from '~/utils/api';
 const GroundStations: NextPage = () => {
     const { data: groundStations } = api.groundStation.getGroundStations.useQuery();
 
-    const sortedStations = groundStations?.slice().sort((a, b) => a.id - b.id);
+    const sortedStations = groundStations?.slice().sort((a, b) => a.id.localeCompare(b.id));
 
     return (
         <>

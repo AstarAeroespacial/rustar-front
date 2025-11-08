@@ -23,7 +23,7 @@ const GroundStationDetail: NextPage = () => {
     const { id } = router.query;
 
     const { data: station } = api.groundStation.getGroundStationById.useQuery(
-        { id: Number(id) },
+        { id: id as string },
         { enabled: !!id }
     );
 
@@ -60,6 +60,7 @@ const GroundStationDetail: NextPage = () => {
                                     <h2 className='text-lg font-semibold text-white tracking-wide'>
                                         {station?.name ?? 'Loading...'}
                                     </h2>
+                                    <p className='text-dark-400 text-sm font-mono'>{station?.id}</p>
                                 </div>
 
                                 {/* Coordinates Section */}

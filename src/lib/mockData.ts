@@ -26,28 +26,28 @@ export const MOCK_SATELLITES: Satellite[] = [
 
 export const MOCK_GROUND_STATIONS = [
     {
-        id: 1,
+        id: 'GS-001',
         name: 'Buenos Aires',
         latitude: -34.6037,
         longitude: -58.3816,
         altitude: 25,
     },
     {
-        id: 2,
+        id: 'GS-002',
         name: 'Córdoba',
         latitude: -31.4201,
         longitude: -64.1888,
         altitude: 390,
     },
     {
-        id: 3,
+        id: 'GS-003',
         name: 'Mendoza',
         latitude: -32.8895,
         longitude: -68.8458,
         altitude: 760,
     },
     {
-        id: 4,
+        id: 'GS-004',
         name: 'Ushuaia',
         latitude: -54.8019,
         longitude: -68.3030,
