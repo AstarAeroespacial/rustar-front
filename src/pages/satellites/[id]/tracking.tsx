@@ -55,6 +55,17 @@ const SatellitePasses: NextPage = () => {
         return [...passes].sort((a, b) => a.aos - b.aos);
     }, [passes]);
 
+    // Transform passes to generic timeline items
+    const timelineItems = useMemo(() => {
+        return sortedPasses.map((pass) => ({
+            id: pass.id,
+            groupId: pass.groundStationId,
+            groupName: pass.groundStationName,
+            startTime: pass.aos,
+            endTime: pass.los,
+        }));
+    }, [sortedPasses]);
+
     // Helper function to format duration
     const formatDuration = (aos: number, los: number) => {
         const durationMinutes = Math.round((los - aos) / 60000);
@@ -86,11 +97,12 @@ const SatellitePasses: NextPage = () => {
 
                     <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-8'>
                         <PassTimeline
-                            passes={passes || []}
+                            items={timelineItems}
                             startTime={timeframe.startTime}
                             endTime={timeframe.endTime}
-                            hoveredPassId={hoveredPassId}
-                            onPassHover={setHoveredPassId}
+                            hoveredItemId={hoveredPassId}
+                            onItemHover={setHoveredPassId}
+                            tooltipContent={(item) => item.groupName}
                         />
                     </div>
 

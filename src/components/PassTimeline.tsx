@@ -9,63 +9,66 @@ import Timeline, {
 } from 'react-calendar-timeline';
 import 'react-calendar-timeline/style.css';
 
-interface Pass {
+// Generic timeline item interface
+interface TimelineItem {
     id: string;
-    groundStationId: string;
-    groundStationName: string;
-    aos: number; // Acquisition of Signal (timestamp in ms)
-    los: number; // Loss of Signal (timestamp in ms)
-    maxElevation: number;
+    groupId: string;
+    groupName: string;
+    startTime: number; // timestamp in ms
+    endTime: number; // timestamp in ms
 }
 
-interface PassTimelineProps {
-    passes: Pass[];
+interface TimelineProps<T extends TimelineItem> {
+    items: T[];
     startTime: number;
     endTime: number;
-    hoveredPassId?: string | null;
-    onPassHover?: (passId: string | null) => void;
+    hoveredItemId?: string | null;
+    onItemHover?: (itemId: string | null) => void;
+    tooltipContent?: (item: T) => string;
 }
 
-const PassTimeline: React.FC<PassTimelineProps> = ({
-    passes,
+const PassTimeline = <T extends TimelineItem>({
+    items,
     startTime,
     endTime,
-    hoveredPassId,
-    onPassHover,
-}) => {
-    // Transform passes into timeline format
-    const { groups, items } = useMemo(() => {
-        // Get unique ground stations
-        const stationMap = new Map<string, string>();
-        passes.forEach((pass) => {
-            stationMap.set(pass.groundStationId, pass.groundStationName);
+    hoveredItemId,
+    onItemHover,
+    tooltipContent,
+}: TimelineProps<T>) => {
+    // Transform items into timeline format
+    const { groups, timelineItems } = useMemo(() => {
+        // Get unique groups
+        const groupMap = new Map<string, string>();
+        items.forEach((item) => {
+            groupMap.set(item.groupId, item.groupName);
         });
 
-        // Create groups (one per ground station)
-        const groups = Array.from(stationMap.entries()).map(([id, name]) => ({
+        // Create groups
+        const groups = Array.from(groupMap.entries()).map(([id, name]) => ({
             id,
             title: name,
         }));
 
-        // Create items (one per pass) - include hover state in item data
-        const items = passes.map((pass) => ({
-            id: pass.id,
-            group: pass.groundStationId,
+        // Create timeline items - include hover state in item data
+        const timelineItems = items.map((item) => ({
+            id: item.id,
+            group: item.groupId,
             title: '',
-            start_time: pass.aos,
-            end_time: pass.los,
-            isHovered: hoveredPassId === pass.id,
+            start_time: item.startTime,
+            end_time: item.endTime,
+            isHovered: hoveredItemId === item.id,
+            originalItem: item,
         }));
 
-        return { groups, items };
-    }, [passes, hoveredPassId]);
+        return { groups, timelineItems };
+    }, [items, hoveredItemId]);
 
     return (
         <div className='bg-[#090d11] rounded-xl border border-[#13181D] shadow-md overflow-hidden'>
             <div>
                 <Timeline
                     groups={groups}
-                    items={items}
+                    items={timelineItems}
                     defaultTimeStart={startTime}
                     defaultTimeEnd={endTime}
                     sidebarWidth={0}
@@ -79,23 +82,26 @@ const PassTimeline: React.FC<PassTimelineProps> = ({
                         year: 1,
                     }}
                     itemRenderer={({ item, itemContext, getItemProps }) => {
-                        const pass = passes.find((p) => p.id === item.id);
-                        const isHovered = item.isHovered || false;
+                        const timelineItem = timelineItems.find((ti) => ti.id === item.id);
+                        const isHovered = timelineItem?.isHovered || false;
+                        const originalItem = timelineItem?.originalItem;
                         const props = getItemProps({});
 
                         const finalBackground = isHovered
                             ? '#f97316'
                             : props.style?.background;
 
+                        const tooltipText = originalItem && tooltipContent
+                            ? tooltipContent(originalItem)
+                            : '';
+
                         return (
                             <div
                                 {...props}
-                                data-tooltip-id='pass-tooltip'
-                                data-tooltip-content={
-                                    pass ? pass.groundStationName : ''
-                                }
-                                onMouseEnter={() => onPassHover?.(item.id)}
-                                onMouseLeave={() => onPassHover?.(null)}
+                                data-tooltip-id='timeline-tooltip'
+                                data-tooltip-content={tooltipText}
+                                onMouseEnter={() => onItemHover?.(item.id)}
+                                onMouseLeave={() => onItemHover?.(null)}
                                 style={{
                                     ...props.style,
                                     cursor: 'pointer',
@@ -176,7 +182,7 @@ const PassTimeline: React.FC<PassTimelineProps> = ({
                 </Timeline>
             </div>
             <Tooltip
-                id='pass-tooltip'
+                id='timeline-tooltip'
                 place='top'
                 style={{
                     backgroundColor: '#141B23',
