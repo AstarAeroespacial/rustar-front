@@ -58,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({ items, satelliteName }) => {
         if (!pathname) return false;
 
         // For overview route (base satellite route /satellites/[id])
-        if (url.match(/^\/satellites\/\d+$/)) {
+        if (url.match(/^\/satellites\/[^/]+$/)) {
             return (
                 pathname === '/satellites/[id]' ||
                 pathname === '/satellites/[id]/index'
@@ -66,17 +66,17 @@ const Sidebar: React.FC<SidebarProps> = ({ items, satelliteName }) => {
         }
 
         // For telemetry route
-        if (url.match(/^\/satellites\/\d+\/telemetry$/)) {
+        if (url.match(/^\/satellites\/[^/]+\/telemetry$/)) {
             return pathname === '/satellites/[id]/telemetry';
         }
 
         // For tracking route
-        if (url.match(/^\/satellites\/\d+\/tracking$/)) {
+        if (url.match(/^\/satellites\/[^/]+\/tracking$/)) {
             return pathname === '/satellites/[id]/tracking';
         }
 
         // For command route
-        if (url.match(/^\/satellites\/\d+\/command$/)) {
+        if (url.match(/^\/satellites\/[^/]+\/command$/)) {
             return pathname === '/satellites/[id]/command';
         }
 

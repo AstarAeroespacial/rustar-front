@@ -79,7 +79,7 @@ class ApiClient {
     return this.request<Satellite[]>('/api/satellites');
   }
 
-  async getSatelliteById(id: number): Promise<Satellite> {
+  async getSatelliteById(id: string): Promise<Satellite> {
     return this.request<Satellite>(`/api/satellites/${id}`);
   }
 

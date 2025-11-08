@@ -16,12 +16,12 @@ interface Command {
 const SatellitesCommands: NextPage = () => {
     const router = useRouter();
     const { id } = router.query;
-    const satelliteId = id ? parseInt(id as string) : undefined;
+    const satelliteId = id as string;
 
     // Fetch satellite data
     const { data: selectedSatData } = api.satellite.getSatelliteById.useQuery(
-        { id: satelliteId! },
-        { enabled: satelliteId !== undefined && !isNaN(satelliteId) }
+        { id: satelliteId },
+        { enabled: !!satelliteId }
     );
 
     const [selectedCommand, setSelectedCommand] = useState('');

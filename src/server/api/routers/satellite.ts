@@ -83,7 +83,7 @@ export const satelliteRouter = createTRPCRouter({
     }),
 
     getSatelliteById: publicProcedure
-        .input(z.object({ id: z.number() }))
+        .input(z.object({ id: z.string() }))
         .query(async ({ input }) => {
             if (USE_MOCK_DATA) {
                 return (
@@ -105,7 +105,7 @@ export const satelliteRouter = createTRPCRouter({
     updateSatellite: publicProcedure
         .input(
             z.object({
-                id: z.number(),
+                id: z.string(),
                 tle: z.string(),
             })
         )
@@ -175,7 +175,7 @@ export const satelliteRouter = createTRPCRouter({
     getSatellitePasses: publicProcedure
         .input(
             z.object({
-                satelliteId: z.number(),
+                satelliteId: z.string(),
                 startTime: z.number(),
                 endTime: z.number(),
             })

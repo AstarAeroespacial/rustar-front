@@ -45,7 +45,7 @@ export interface LatestTelemetryRequest {
 }
 
 export interface Satellite {
-  id: number;
+  id: string;
   name: string;
   tle: string;
   downlink_frequency: number;
@@ -69,7 +69,7 @@ export interface GroundStation {
   longitude: number;
   status: 'active' | 'inactive' | 'maintenance';
   trackingSatellite?: {
-    id: number;
+    id: string;
     name: string;
     tle: string;
   };

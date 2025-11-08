@@ -9,12 +9,12 @@ import PassTimeline from '~/components/PassTimeline';
 const SatellitePasses: NextPage = () => {
     const router = useRouter();
     const { id } = router.query;
-    const satelliteId = parseInt(id as string);
+    const satelliteId = id as string;
 
     // Fetch single satellite by ID
     const { data: selectedSatData } = api.satellite.getSatelliteById.useQuery(
         { id: satelliteId },
-        { enabled: !isNaN(satelliteId) }
+        { enabled: !!satelliteId }
     );
 
     // Fetch satellite passes for the selected satellite
@@ -33,7 +33,7 @@ const SatellitePasses: NextPage = () => {
             startTime: timeframe.startTime,
             endTime: timeframe.endTime,
         },
-        { enabled: !!satelliteId && !isNaN(satelliteId) }
+        { enabled: !!satelliteId }
     );
 
     return (

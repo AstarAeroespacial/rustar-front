@@ -22,7 +22,7 @@ const SatelliteMap = dynamic(() => import('~/components/SatelliteMap'), {
 const SatelliteTracking: NextPage = () => {
     const router = useRouter();
     const { id } = router.query;
-    const satelliteId = parseInt(id as string);
+    const satelliteId = id as string;
 
     // Fetch single satellite by ID for better performance
     const {
@@ -31,7 +31,7 @@ const SatelliteTracking: NextPage = () => {
         refetch,
     } = api.satellite.getSatelliteById.useQuery(
         { id: satelliteId },
-        { enabled: !isNaN(satelliteId) }
+        { enabled: !!satelliteId }
     );
 
     const [showEditModal, setShowEditModal] = useState(false);

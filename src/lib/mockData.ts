@@ -2,21 +2,21 @@ import type { Satellite } from '~/types/api';
 
 export const MOCK_SATELLITES: Satellite[] = [
     {
-        id: 1,
+        id: 'SAT-01A',
         name: 'SAT-01A',
         tle: '1 25544U 98067A   21275.51782528  .00016717  00000-0  10270-3 0  9005\n2 25544  51.6412 247.4627 0006703 130.5360 325.0288 15.48908950314314',
         downlink_frequency: 437.425,
         uplink_frequency: 145.825,
     },
     {
-        id: 2,
+        id: 'SAT-02B',
         name: 'SAT-02B',
         tle: '1 43013U 17073A   21275.51782528  .00000123  00000-0  12345-4 0  9991\n2 43013  98.2123 123.4567 0001234  45.6789  12.3456 14.19876543123456',
         downlink_frequency: 437.5,
         uplink_frequency: 145.9,
     },
     {
-        id: 3,
+        id: 'SAT-03C',
         name: 'SAT-03C',
         tle: '1 40967U 15052B   21275.51782528  .00000456  00000-0  23456-4 0  9992\n2 40967  97.4321 234.5678 0002345  67.8901  23.4567 14.98765432234567',
         downlink_frequency: 436.75,
@@ -124,7 +124,7 @@ export const MOCK_COMMAND_HISTORY = [
 ];
 
 export const MOCK_PASSES = (
-    satelliteId: number,
+    satelliteId: string,
     startTime: number,
     endTime: number
 ) => {
