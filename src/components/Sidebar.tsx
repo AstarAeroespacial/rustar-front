@@ -12,10 +12,10 @@ interface SidebarItem {
 
 interface SidebarProps {
     items: SidebarItem[];
-    satelliteName?: string;
+    title?: string;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ items, satelliteName }) => {
+const Sidebar: React.FC<SidebarProps> = ({ items, title }) => {
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(true);
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -54,33 +54,13 @@ const Sidebar: React.FC<SidebarProps> = ({ items, satelliteName }) => {
 
     const isActive = (url: string) => {
         const pathname = router.pathname;
-        const asPath = router.asPath;
         if (!pathname) return false;
 
-        // For overview route (base satellite route /satellites/[id])
-        if (url.match(/^\/satellites\/[^/]+$/)) {
-            return (
-                pathname === '/satellites/[id]' ||
-                pathname === '/satellites/[id]/index'
-            );
-        }
+        // Exact match for base routes
+        if (url === pathname) return true;
 
-        // For telemetry route
-        if (url.match(/^\/satellites\/[^/]+\/telemetry$/)) {
-            return pathname === '/satellites/[id]/telemetry';
-        }
-
-        // For tracking route
-        if (url.match(/^\/satellites\/[^/]+\/tracking$/)) {
-            return pathname === '/satellites/[id]/tracking';
-        }
-
-        // For command route
-        if (url.match(/^\/satellites\/[^/]+\/command$/)) {
-            return pathname === '/satellites/[id]/command';
-        }
-
-        return false;
+        // Check if the current path matches the URL pattern
+        return router.asPath === url;
     };
 
     return (
@@ -122,11 +102,11 @@ const Sidebar: React.FC<SidebarProps> = ({ items, satelliteName }) => {
                     }
                 `}
             >
-                {/* Header with satellite name and collapse button */}
+                {/* Header with title and collapse button */}
                 <div className='flex items-center justify-between p-3 border-b border-[#13181D]'>
                     {showText && (
                         <h2 className='text-white font-semibold text-sm truncate'>
-                            {satelliteName || 'Loading...'}
+                            {title || 'Loading...'}
                         </h2>
                     )}
                     <Button
