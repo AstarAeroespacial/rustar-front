@@ -37,7 +37,7 @@ const SatellitesMonitoring: NextPage = () => {
         { enabled: !!satelliteId }
     );
 
-    const [selectedSatellite, setSelectedSatellite] = useState('SAT-01A');
+    const [selectedSatellite, setSelectedSatellite] = useState('ASTAR-001');
     const [telemetryType, setTelemetryType] = useState('Housekeeping');
     const [updateInterval, setUpdateInterval] = useState(5);
     const [isReceiving, setIsReceiving] = useState(true);

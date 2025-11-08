@@ -2,22 +2,22 @@ import type { Satellite } from '~/types/api';
 
 export const MOCK_SATELLITES: Satellite[] = [
     {
-        id: 'SAT-01A',
-        name: 'SAT-01A',
+        id: 'ASTAR-001',
+        name: 'ASTAR-001',
         tle: '1 25544U 98067A   21275.51782528  .00016717  00000-0  10270-3 0  9005\n2 25544  51.6412 247.4627 0006703 130.5360 325.0288 15.48908950314314',
         downlink_frequency: 437.425,
         uplink_frequency: 145.825,
     },
     {
-        id: 'SAT-02B',
-        name: 'SAT-02B',
+        id: 'ASTAR-002',
+        name: 'ASTAR-002',
         tle: '1 43013U 17073A   21275.51782528  .00000123  00000-0  12345-4 0  9991\n2 43013  98.2123 123.4567 0001234  45.6789  12.3456 14.19876543123456',
         downlink_frequency: 437.5,
         uplink_frequency: 145.9,
     },
     {
-        id: 'SAT-03C',
-        name: 'SAT-03C',
+        id: 'ASTAR-003',
+        name: 'ASTAR-003',
         tle: '1 40967U 15052B   21275.51782528  .00000456  00000-0  23456-4 0  9992\n2 40967  97.4321 234.5678 0002345  67.8901  23.4567 14.98765432234567',
         downlink_frequency: 436.75,
         uplink_frequency: 145.95,
@@ -57,7 +57,7 @@ export const MOCK_GROUND_STATIONS = [
 
 export const MOCK_TELEMETRY = Array.from({ length: 20 }, (_, i) => ({
     id: i + 1,
-    satellite: 'SAT-01A',
+    satellite: 'ASTAR-001',
     timestamp: Math.floor(Date.now() / 1000) - i * 300, // 5 minute intervals
     temperature: 20 + Math.random() * 10 - 5,
     voltage: 12 + Math.random() * 2 - 1,
