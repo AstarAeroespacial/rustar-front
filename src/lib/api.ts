@@ -79,7 +79,7 @@ class ApiClient {
     return this.request<Satellite[]>('/api/satellites');
   }
 
-  async getSatelliteById(id: number): Promise<Satellite> {
+  async getSatelliteById(id: string): Promise<Satellite> {
     return this.request<Satellite>(`/api/satellites/${id}`);
   }
 
@@ -87,7 +87,7 @@ class ApiClient {
     return this.request<GroundStation[]>('/api/ground-stations');
   }
 
-  async getGroundStationById(id: number): Promise<GroundStation> {
+  async getGroundStationById(id: string): Promise<GroundStation> {
     return this.request<GroundStation>(`/api/ground-stations/${id}`);
   }
 }

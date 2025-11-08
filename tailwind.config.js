@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+    darkMode: ['class'],
     content: ['./src/**/*.{js,ts,jsx,tsx}'],
     theme: {
         extend: {
@@ -15,14 +16,13 @@ module.exports = {
                     foreground: 'hsl(var(--popover-foreground))',
                 },
                 primary: {
-                    DEFAULT: 'hsl(var(--primary))',
-                    foreground: 'hsl(var(--primary-foreground))',
                     50: '#eff6ff',
                     500: '#3b82f6',
-                    // Darker, less saturated shades to reduce button brightness
-                    600: '#1e40af', // was #2563eb
-                    700: '#1e3a8a', // was #1d4ed8
+                    600: '#1e40af',
+                    700: '#1e3a8a',
                     900: '#0b1220',
+                    DEFAULT: 'hsl(var(--primary))',
+                    foreground: 'hsl(var(--primary-foreground))',
                 },
                 secondary: {
                     DEFAULT: 'hsl(var(--secondary))',
@@ -55,9 +55,33 @@ module.exports = {
                     800: '#1e293b',
                     900: '#0f172a',
                 },
+                chart: {
+                    1: 'hsl(var(--chart-1))',
+                    2: 'hsl(var(--chart-2))',
+                    3: 'hsl(var(--chart-3))',
+                    4: 'hsl(var(--chart-4))',
+                    5: 'hsl(var(--chart-5))',
+                },
+                sidebar: {
+                    DEFAULT: 'hsl(var(--sidebar-background))',
+                    foreground: 'hsl(var(--sidebar-foreground))',
+                    primary: 'hsl(var(--sidebar-primary))',
+                    'primary-foreground':
+                        'hsl(var(--sidebar-primary-foreground))',
+                    accent: 'hsl(var(--sidebar-accent))',
+                    'accent-foreground':
+                        'hsl(var(--sidebar-accent-foreground))',
+                    border: 'hsl(var(--sidebar-border))',
+                    ring: 'hsl(var(--sidebar-ring))',
+                },
             },
             fontFamily: {
                 sans: ['Inter', 'system-ui', 'sans-serif'],
+            },
+            borderRadius: {
+                lg: 'var(--radius)',
+                md: 'calc(var(--radius) - 2px)',
+                sm: 'calc(var(--radius) - 4px)',
             },
         },
     },

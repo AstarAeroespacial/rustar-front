@@ -45,11 +45,12 @@ export interface LatestTelemetryRequest {
 }
 
 export interface Satellite {
-  id: number;
+  id: string;
   name: string;
   tle: string;
   downlink_frequency: number;
   uplink_frequency: number;
+  lastContact: Date;
 }
 
 export interface Command {
@@ -62,14 +63,14 @@ export interface Command {
 }
 
 export interface GroundStation {
-  id: number;
+  id: string;
   name: string;
   altitude: number;
   latitude: number;
   longitude: number;
   status: 'active' | 'inactive' | 'maintenance';
   trackingSatellite?: {
-    id: number;
+    id: string;
     name: string;
     tle: string;
   };

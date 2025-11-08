@@ -21,7 +21,7 @@ import {
 
 interface SatelliteMapProps {
     satellites: Satellite[];
-    selectedSatellite: number | null;
+    selectedSatellite: string | null;
     onPositionUpdate?: (position: { latitude: number; longitude: number; altitude: number } | null) => void;
 }
 

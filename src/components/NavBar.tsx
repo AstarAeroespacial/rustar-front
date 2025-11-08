@@ -1,70 +1,75 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { Button } from './ui/Button';
 
 const NavBar: React.FC = () => {
     const router = useRouter();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const navigation = [
-        { name: 'Tracking', href: '/', current: router.pathname === '/' },
+        {
+            name: 'Satellites',
+            href: '/',
+            current:
+                router.pathname === '/' ||
+                router.pathname.startsWith('/satellites'),
+        },
         {
             name: 'Ground Stations',
             href: '/ground-stations',
-            current: router.pathname === '/ground-stations',
-        },
-        {
-            name: 'Monitoring',
-            href: '/telemetry',
-            current: router.pathname === '/telemetry',
-        },
-        {
-            name: 'Commands',
-            href: '/commands',
-            current: router.pathname === '/commands',
+            current: router.pathname.startsWith('/ground-stations'),
         },
     ];
 
     return (
-        <nav className='bg-dark-800 border-b border-dark-700'>
-            <div className='mx-auto max-w-7xl px-2 sm:px-4 lg:px-6'>
-                <div className='flex h-16 items-center justify-between'>
-                    <div className='flex items-center'>
-                        <div className='flex-shrink-0'>
-                            <div className='flex items-center'>
-                                <img
-                                    src='/logo.jpg'
-                                    alt='Logo'
-                                    className='h-8 w-8 rounded-lg object-cover'
-                                />
-                                <span className='ml-2 text-white font-semibold text-lg'>
-                                    Rustar
-                                </span>
-                            </div>
-                        </div>
-                        <div className='hidden md:block'>
-                            <div className='ml-10 flex items-baseline space-x-4'>
-                                {navigation.map((item) => (
-                                    <Link
-                                        key={item.name}
-                                        href={item.href}
-                                        className={`${
-                                            item.current
-                                                ? 'bg-primary-700/90 text-white'
-                                                : 'text-dark-300 hover:bg-dark-700 hover:text-white'
-                                        } rounded-md px-3 py-2 text-sm font-medium transition-colors`}
+        <nav className='bg-[#141B23] border-b-2 border-[#0B0D10]'>
+            <div className='flex h-16 items-center justify-between px-4'>
+                <div className='flex items-center w-full'>
+                    <div className='flex-shrink-0'>
+                        <Link
+                            href='/'
+                            className='flex items-center'
+                        >
+                            <img
+                                src='/logo.png'
+                                alt='Logo'
+                                className='h-16 w-16 object-contain'
+                            />
+                            <span className='ml-4 text-white font-semibold text-lg'>
+                                RUSTAR
+                            </span>
+                        </Link>
+                    </div>
+                    <div className='hidden md:block flex-1'>
+                        <div className='ml-10 flex items-baseline space-x-4'>
+                            {navigation.map((item) => (
+                                <Link
+                                    key={item.name}
+                                    href={item.href}
+                                >
+                                    <Button
+                                        variant={
+                                            item.current ? 'primary' : 'ghost'
+                                        }
+                                        size='sm'
                                     >
                                         {item.name}
-                                    </Link>
-                                ))}
-                            </div>
+                                    </Button>
+                                </Link>
+                            ))}
                         </div>
                     </div>
+                </div>
+
+                <div className='flex items-center'>
                     <div className='flex md:hidden'>
                         {/* Mobile menu button */}
-                        <button
+                        <Button
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            className='inline-flex items-center justify-center rounded-md p-2 text-dark-400 hover:text-white hover:bg-dark-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white'
+                            variant='ghost'
+                            iconOnly
+                            size='md'
                             aria-controls='mobile-menu'
                             aria-expanded={mobileMenuOpen}
                         >
@@ -100,11 +105,16 @@ const NavBar: React.FC = () => {
                                     />
                                 </svg>
                             )}
-                        </button>
+                        </Button>
                     </div>
                     <div className='hidden md:block'>
-                        <div className='ml-4 flex items-center md:ml-6'>
-                            <button className='rounded-full bg-dark-800 p-1 text-dark-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-dark-800'>
+                        <div className='ml-4 flex items-center md:ml-6 gap-3'>
+                            <Button
+                                variant='ghost'
+                                iconOnly
+                                size='md'
+                                className='rounded-full'
+                            >
                                 <span className='sr-only'>
                                     View notifications
                                 </span>
@@ -121,10 +131,28 @@ const NavBar: React.FC = () => {
                                         d='M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0'
                                     />
                                 </svg>
-                            </button>
-                            <div className='ml-3 text-sm text-dark-300'>
-                                <span>Admin User</span>
-                            </div>
+                            </Button>
+                            <Button
+                                variant='ghost'
+                                iconOnly
+                                size='md'
+                                className='rounded-full'
+                            >
+                                <span className='sr-only'>User menu</span>
+                                <svg
+                                    className='h-6 w-6'
+                                    fill='none'
+                                    viewBox='0 0 24 24'
+                                    strokeWidth='1.5'
+                                    stroke='currentColor'
+                                >
+                                    <path
+                                        strokeLinecap='round'
+                                        strokeLinejoin='round'
+                                        d='M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z'
+                                    />
+                                </svg>
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -140,14 +168,15 @@ const NavBar: React.FC = () => {
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`block ${
-                                    item.current
-                                        ? 'bg-primary-600 text-white'
-                                        : 'text-dark-300 hover:bg-dark-700 hover:text-white'
-                                } rounded-md px-3 py-2 text-base font-medium transition-colors`}
                                 onClick={() => setMobileMenuOpen(false)}
                             >
-                                {item.name}
+                                <Button
+                                    variant={item.current ? 'primary' : 'ghost'}
+                                    size='md'
+                                    fullWidth
+                                >
+                                    {item.name}
+                                </Button>
                             </Link>
                         ))}
                     </div>

@@ -24,14 +24,18 @@ interface PassTimelineProps {
     endTime: number;
 }
 
-const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime }) => {
+const PassTimeline: React.FC<PassTimelineProps> = ({
+    passes,
+    startTime,
+    endTime,
+}) => {
     // Transform passes into timeline format
     const { groups, items } = useMemo(() => {
         console.log('PassTimeline - passes:', passes);
 
         // Get unique ground stations
         const stationMap = new Map<string, string>();
-        passes.forEach(pass => {
+        passes.forEach((pass) => {
             stationMap.set(pass.groundStationId, pass.groundStationName);
         });
 
@@ -42,7 +46,7 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
         }));
 
         // Create items (one per pass)
-        const items = passes.map(pass => ({
+        const items = passes.map((pass) => ({
             id: pass.id,
             group: pass.groundStationId,
             title: '',
@@ -57,7 +61,7 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
     }, [passes]);
 
     return (
-        <div className='bg-dark-900 rounded-xl border border-dark-700 shadow-md overflow-hidden'>
+        <div className='bg-[#090d11] rounded-xl border border-[#13181D] shadow-md overflow-hidden'>
             <div>
                 <Timeline
                     groups={groups}
@@ -65,40 +69,64 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
                     defaultTimeStart={startTime}
                     defaultTimeEnd={endTime}
                     sidebarWidth={0}
+                    lineHeight={40}
                     timeSteps={{
                         second: 1,
                         minute: 15,
                         hour: 1,
                         day: 0.5,
                         month: 1,
-                        year: 1
+                        year: 1,
                     }}
                     itemRenderer={({ item, itemContext, getItemProps }) => {
-                        const pass = passes.find(p => p.id === item.id);
+                        const pass = passes.find((p) => p.id === item.id);
                         const props = getItemProps({});
                         return (
                             <div
                                 {...props}
-                                data-tooltip-id="pass-tooltip"
-                                data-tooltip-content={pass ? pass.groundStationName : ''}
+                                data-tooltip-id='pass-tooltip'
+                                data-tooltip-content={
+                                    pass ? pass.groundStationName : ''
+                                }
                             >
-                                <div style={{ height: '100%', overflow: 'hidden' }}></div>
+                                <div
+                                    style={{
+                                        height: '100%',
+                                        overflow: 'hidden',
+                                    }}
+                                ></div>
                             </div>
                         );
                     }}
                     canMove={false}
                     canResize={false}
                     canChangeGroup={false}
-                    onTimeChange={(visibleTimeStart, visibleTimeEnd, updateScrollCanvas) => {
+                    onTimeChange={(
+                        visibleTimeStart,
+                        visibleTimeEnd,
+                        updateScrollCanvas
+                    ) => {
                         // Restrict scrolling to the fetched time window
-                        if (visibleTimeStart < startTime && visibleTimeEnd > endTime) {
+                        if (
+                            visibleTimeStart < startTime &&
+                            visibleTimeEnd > endTime
+                        ) {
                             updateScrollCanvas(startTime, endTime);
                         } else if (visibleTimeStart < startTime) {
-                            updateScrollCanvas(startTime, startTime + (visibleTimeEnd - visibleTimeStart));
+                            updateScrollCanvas(
+                                startTime,
+                                startTime + (visibleTimeEnd - visibleTimeStart)
+                            );
                         } else if (visibleTimeEnd > endTime) {
-                            updateScrollCanvas(endTime - (visibleTimeEnd - visibleTimeStart), endTime);
+                            updateScrollCanvas(
+                                endTime - (visibleTimeEnd - visibleTimeStart),
+                                endTime
+                            );
                         } else {
-                            updateScrollCanvas(visibleTimeStart, visibleTimeEnd);
+                            updateScrollCanvas(
+                                visibleTimeStart,
+                                visibleTimeEnd
+                            );
                         }
                     }}
                     buffer={1}
@@ -110,7 +138,7 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
                             )}
                         </SidebarHeader>
                         <DateHeader
-                            unit="primaryHeader"
+                            unit='primaryHeader'
                             labelFormat={([startTime]) => {
                                 return startTime.format('MMMM D');
                             }}
@@ -120,23 +148,29 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
                     <TimelineMarkers>
                         <TodayMarker>
                             {({ styles }) => (
-                                <div style={{ ...styles, backgroundColor: '#ef4444', width: '2px' }} />
+                                <div
+                                    style={{
+                                        ...styles,
+                                        backgroundColor: '#ef4444',
+                                        width: '2px',
+                                    }}
+                                />
                             )}
                         </TodayMarker>
                     </TimelineMarkers>
                 </Timeline>
             </div>
             <Tooltip
-                id="pass-tooltip"
-                place="top"
+                id='pass-tooltip'
+                place='top'
                 style={{
-                    backgroundColor: '#1e293b',
+                    backgroundColor: '#141B23',
                     color: '#e2e8f0',
                     borderRadius: '6px',
-                    border: '1px solid #334155',
+                    border: '1px solid #13181D',
                     fontSize: '12px',
                     padding: '6px 10px',
-                    zIndex: 1000
+                    zIndex: 1000,
                 }}
             />
         </div>
