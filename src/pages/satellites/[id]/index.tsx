@@ -1,5 +1,5 @@
 import { type NextPage } from 'next';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import SatellitesLayout from '~/components/SatellitesLayout';
@@ -7,7 +7,6 @@ import { api } from '~/utils/api';
 import dynamic from 'next/dynamic';
 import type { Satellite } from '~/types/api';
 import SatelliteInfoCard from '~/components/SatelliteInfoCard';
-import PassTimeline from '~/components/PassTimeline';
 import { Button } from '~/components/ui/Button';
 
 // Dynamically import the map component to avoid SSR issues
@@ -45,25 +44,6 @@ const SatelliteTracking: NextPage = () => {
         longitude: number;
         altitude: number;
     } | null>(null);
-
-    // Fetch satellite passes for the selected satellite
-    const timeframe = useMemo(() => {
-        const now = Date.now();
-        return {
-            now,
-            startTime: now,
-            endTime: now + 24 * 60 * 60 * 1000, // 24 hours from now
-        };
-    }, []);
-
-    const { data: passes } = api.satellite.getSatellitePasses.useQuery(
-        {
-            satelliteId: satelliteId,
-            startTime: timeframe.startTime,
-            endTime: timeframe.endTime,
-        },
-        { enabled: !!satelliteId && !isNaN(satelliteId) }
-    );
 
     const updateSatelliteMutation = api.satellite.updateSatellite.useMutation({
         onSuccess: () => {
@@ -112,18 +92,6 @@ const SatelliteTracking: NextPage = () => {
                                 position={satellitePosition}
                             />
                         </div>
-                    </div>
-
-                    {/* Satellite Passes Timeline */}
-                    <div className='bg-[#141B23] rounded-lg border border-[#13181D] p-6 mt-6'>
-                        <h3 className='text-lg font-semibold text-white mb-4'>
-                            Next Passes
-                        </h3>
-                        <PassTimeline
-                            passes={passes || []}
-                            startTime={timeframe.startTime}
-                            endTime={timeframe.endTime}
-                        />
                     </div>
                 </div>
 

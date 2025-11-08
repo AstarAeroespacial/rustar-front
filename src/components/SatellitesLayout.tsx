@@ -1,5 +1,5 @@
 import React from 'react';
-import { Satellite, BarChart3, Terminal } from 'lucide-react';
+import { Satellite, BarChart3, Terminal, Calendar } from 'lucide-react';
 import { useRouter } from 'next/router';
 import NavBar from '~/components/NavBar';
 import Footer from '~/components/Footer';
@@ -31,6 +31,11 @@ const SatellitesLayout: React.FC<SatellitesLayoutProps> = ({ children }) => {
             title: 'Monitoring',
             url: satelliteId ? `/satellites/${satelliteId}/monitoring` : '#',
             icon: <BarChart3 className='w-5 h-5' />,
+        },
+        {
+            title: 'Passes',
+            url: satelliteId ? `/satellites/${satelliteId}/passes` : '#',
+            icon: <Calendar className='w-5 h-5' />,
         },
         {
             title: 'Commands',
