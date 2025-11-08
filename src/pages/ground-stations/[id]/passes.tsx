@@ -1,27 +1,25 @@
 import { type NextPage } from 'next';
-import { useMemo, useState } from 'react';
-import { useRouter } from 'next/router';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
+import { useMemo, useState } from 'react';
 import { format } from 'date-fns';
-import SatellitesLayout from '~/components/SatellitesLayout';
-import { api } from '~/utils/api';
+import GroundStationLayout from '~/components/GroundStationLayout';
 import PassTimeline from '~/components/PassTimeline';
+import { api } from '~/utils/api';
 
-const SatellitePasses: NextPage = () => {
+const GroundStationPasses: NextPage = () => {
     const router = useRouter();
     const { id } = router.query;
-    const satelliteId = id as string;
+    const groundStationId = id as string;
 
-    // State for hover interaction between table and timeline
     const [hoveredPassId, setHoveredPassId] = useState<string | null>(null);
 
-    // Fetch single satellite by ID
-    const { data: selectedSatData } = api.satellite.getSatelliteById.useQuery(
-        { id: satelliteId },
-        { enabled: !!satelliteId }
+    const { data: station } = api.groundStation.getGroundStationById.useQuery(
+        { id: groundStationId },
+        { enabled: !!groundStationId }
     );
 
-    // Fetch satellite passes for the selected satellite
+    // Calculate time range (today + tomorrow)
     const timeframe = useMemo(() => {
         const now = new Date();
 
@@ -40,13 +38,14 @@ const SatellitePasses: NextPage = () => {
         };
     }, []);
 
-    const { data: passes } = api.satellite.getSatellitePasses.useQuery(
+    // Fetch passes for this ground station
+    const { data: passes } = api.groundStation.getGroundStationPasses.useQuery(
         {
-            satelliteId: satelliteId,
+            groundStationId: groundStationId,
             startTime: timeframe.startTime,
             endTime: timeframe.endTime,
         },
-        { enabled: !!satelliteId }
+        { enabled: !!groundStationId }
     );
 
     // Sort passes by AOS time
@@ -55,12 +54,12 @@ const SatellitePasses: NextPage = () => {
         return [...passes].sort((a, b) => a.aos - b.aos);
     }, [passes]);
 
-    // Transform passes to generic timeline items
+    // Transform passes to timeline items
     const timelineItems = useMemo(() => {
         return sortedPasses.map((pass) => ({
             id: pass.id,
-            groupId: pass.groundStationId,
-            groupName: pass.groundStationName,
+            groupId: pass.satelliteId,
+            groupName: pass.satelliteName,
             startTime: pass.aos,
             endTime: pass.los,
         }));
@@ -75,26 +74,19 @@ const SatellitePasses: NextPage = () => {
     return (
         <>
             <Head>
-                <title>
-                    {selectedSatData?.name || 'Satellite'} - Tracking
-                </title>
-                <meta
-                    name='description'
-                    content='Satellite pass predictions'
-                />
-                <link
-                    rel='icon'
-                    href='/favicon.ico'
-                />
+                <title>{station?.name ?? 'Ground Station'} - Passes</title>
+                <meta name='description' content='Ground station passes' />
+                <link rel='icon' href='/favicon.ico' />
             </Head>
-            <SatellitesLayout>
+            <GroundStationLayout>
                 <div className='py-6'>
                     <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
                         <h1 className='text-3xl font-bold text-white'>
-                            Tracking
+                            Passes
                         </h1>
                     </div>
 
+                    {/* Pass Timeline Section */}
                     <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-8'>
                         <PassTimeline
                             items={timelineItems}
@@ -113,7 +105,7 @@ const SatellitePasses: NextPage = () => {
                                 <thead className='bg-[#0B0D10]'>
                                     <tr>
                                         <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
-                                            Ground Station
+                                            Satellite
                                         </th>
                                         <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
                                             AOS
@@ -133,24 +125,37 @@ const SatellitePasses: NextPage = () => {
                                     {sortedPasses.map((pass) => (
                                         <tr
                                             key={pass.id}
-                                            onMouseEnter={() => setHoveredPassId(pass.id)}
-                                            onMouseLeave={() => setHoveredPassId(null)}
+                                            onMouseEnter={() =>
+                                                setHoveredPassId(pass.id)
+                                            }
+                                            onMouseLeave={() =>
+                                                setHoveredPassId(null)
+                                            }
                                             className={`transition-colors cursor-pointer ${hoveredPassId === pass.id
-                                                ? 'bg-[#1a2632]'
-                                                : 'hover:bg-[#1a2632]/50'
+                                                    ? 'bg-[#1a2632]'
+                                                    : 'hover:bg-[#1a2632]/50'
                                                 }`}
                                         >
                                             <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-white'>
-                                                {pass.groundStationName}
+                                                {pass.satelliteName}
                                             </td>
                                             <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
-                                                {format(new Date(pass.aos), 'MMM d, HH:mm:ss')}
+                                                {format(
+                                                    new Date(pass.aos),
+                                                    'MMM d, HH:mm:ss'
+                                                )}
                                             </td>
                                             <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
-                                                {format(new Date(pass.los), 'MMM d, HH:mm:ss')}
+                                                {format(
+                                                    new Date(pass.los),
+                                                    'MMM d, HH:mm:ss'
+                                                )}
                                             </td>
                                             <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
-                                                {formatDuration(pass.aos, pass.los)}
+                                                {formatDuration(
+                                                    pass.aos,
+                                                    pass.los
+                                                )}
                                             </td>
                                             <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
                                                 {pass.maxElevation.toFixed(1)}°
@@ -162,9 +167,9 @@ const SatellitePasses: NextPage = () => {
                         </div>
                     </div>
                 </div>
-            </SatellitesLayout>
+            </GroundStationLayout>
         </>
     );
 };
 
-export default SatellitePasses;
+export default GroundStationPasses;

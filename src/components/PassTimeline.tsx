@@ -9,63 +9,66 @@ import Timeline, {
 } from 'react-calendar-timeline';
 import 'react-calendar-timeline/style.css';
 
-interface Pass {
+// Generic timeline item interface
+interface TimelineItem {
     id: string;
-    groundStationId: string;
-    groundStationName: string;
-    aos: number; // Acquisition of Signal (timestamp in ms)
-    los: number; // Loss of Signal (timestamp in ms)
-    maxElevation: number;
+    groupId: string;
+    groupName: string;
+    startTime: number; // timestamp in ms
+    endTime: number; // timestamp in ms
 }
 
-interface PassTimelineProps {
-    passes: Pass[];
+interface TimelineProps<T extends TimelineItem> {
+    items: T[];
     startTime: number;
     endTime: number;
+    hoveredItemId?: string | null;
+    onItemHover?: (itemId: string | null) => void;
+    tooltipContent?: (item: T) => string;
 }
 
-const PassTimeline: React.FC<PassTimelineProps> = ({
-    passes,
+const PassTimeline = <T extends TimelineItem>({
+    items,
     startTime,
     endTime,
-}) => {
-    // Transform passes into timeline format
-    const { groups, items } = useMemo(() => {
-        console.log('PassTimeline - passes:', passes);
-
-        // Get unique ground stations
-        const stationMap = new Map<string, string>();
-        passes.forEach((pass) => {
-            stationMap.set(pass.groundStationId, pass.groundStationName);
+    hoveredItemId,
+    onItemHover,
+    tooltipContent,
+}: TimelineProps<T>) => {
+    // Transform items into timeline format
+    const { groups, timelineItems } = useMemo(() => {
+        // Get unique groups
+        const groupMap = new Map<string, string>();
+        items.forEach((item) => {
+            groupMap.set(item.groupId, item.groupName);
         });
 
-        // Create groups (one per ground station)
-        const groups = Array.from(stationMap.entries()).map(([id, name]) => ({
+        // Create groups
+        const groups = Array.from(groupMap.entries()).map(([id, name]) => ({
             id,
             title: name,
         }));
 
-        // Create items (one per pass)
-        const items = passes.map((pass) => ({
-            id: pass.id,
-            group: pass.groundStationId,
+        // Create timeline items - include hover state in item data
+        const timelineItems = items.map((item) => ({
+            id: item.id,
+            group: item.groupId,
             title: '',
-            start_time: pass.aos,
-            end_time: pass.los,
+            start_time: item.startTime,
+            end_time: item.endTime,
+            isHovered: hoveredItemId === item.id,
+            originalItem: item,
         }));
 
-        console.log('PassTimeline - groups:', groups);
-        console.log('PassTimeline - items:', items);
-
-        return { groups, items };
-    }, [passes]);
+        return { groups, timelineItems };
+    }, [items, hoveredItemId]);
 
     return (
         <div className='bg-[#090d11] rounded-xl border border-[#13181D] shadow-md overflow-hidden'>
             <div>
                 <Timeline
                     groups={groups}
-                    items={items}
+                    items={timelineItems}
                     defaultTimeStart={startTime}
                     defaultTimeEnd={endTime}
                     sidebarWidth={0}
@@ -79,22 +82,40 @@ const PassTimeline: React.FC<PassTimelineProps> = ({
                         year: 1,
                     }}
                     itemRenderer={({ item, itemContext, getItemProps }) => {
-                        const pass = passes.find((p) => p.id === item.id);
+                        const timelineItem = timelineItems.find((ti) => ti.id === item.id);
+                        const isHovered = timelineItem?.isHovered || false;
+                        const originalItem = timelineItem?.originalItem;
                         const props = getItemProps({});
+
+                        const finalBackground = isHovered
+                            ? '#f97316'
+                            : props.style?.background;
+
+                        const tooltipText = originalItem && tooltipContent
+                            ? tooltipContent(originalItem)
+                            : '';
+
                         return (
                             <div
                                 {...props}
-                                data-tooltip-id='pass-tooltip'
-                                data-tooltip-content={
-                                    pass ? pass.groundStationName : ''
-                                }
+                                data-tooltip-id='timeline-tooltip'
+                                data-tooltip-content={tooltipText}
+                                onMouseEnter={() => onItemHover?.(item.id)}
+                                onMouseLeave={() => onItemHover?.(null)}
+                                style={{
+                                    ...props.style,
+                                    cursor: 'pointer',
+                                    borderRadius: '4px',
+                                }}
                             >
                                 <div
                                     style={{
                                         height: '100%',
                                         overflow: 'hidden',
+                                        background: finalBackground,
+                                        borderRadius: '4px',
                                     }}
-                                ></div>
+                                />
                             </div>
                         );
                     }}
@@ -106,7 +127,7 @@ const PassTimeline: React.FC<PassTimelineProps> = ({
                         visibleTimeEnd,
                         updateScrollCanvas
                     ) => {
-                        // Restrict scrolling to the fetched time window
+                        // Restrict scrolling to the fetched time window (today + tomorrow)
                         if (
                             visibleTimeStart < startTime &&
                             visibleTimeEnd > endTime
@@ -161,7 +182,7 @@ const PassTimeline: React.FC<PassTimelineProps> = ({
                 </Timeline>
             </div>
             <Tooltip
-                id='pass-tooltip'
+                id='timeline-tooltip'
                 place='top'
                 style={{
                     backgroundColor: '#141B23',

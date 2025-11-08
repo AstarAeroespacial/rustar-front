@@ -21,28 +21,28 @@ const SatellitesLayout: React.FC<SatellitesLayoutProps> = ({ children }) => {
         { enabled: !!satelliteId }
     );
 
-    const menuItems = [
+    const menuItems = satelliteId ? [
         {
             title: 'Overview',
-            url: satelliteId ? `/satellites/${satelliteId}` : '#',
+            url: `/satellites/${satelliteId}`,
             icon: <Satellite className='w-5 h-5' />,
         },
         {
             title: 'Telemetry',
-            url: satelliteId ? `/satellites/${satelliteId}/telemetry` : '#',
+            url: `/satellites/${satelliteId}/telemetry`,
             icon: <BarChart3 className='w-5 h-5' />,
         },
         {
             title: 'Tracking',
-            url: satelliteId ? `/satellites/${satelliteId}/tracking` : '#',
+            url: `/satellites/${satelliteId}/tracking`,
             icon: <Calendar className='w-5 h-5' />,
         },
         {
             title: 'Command',
-            url: satelliteId ? `/satellites/${satelliteId}/command` : '#',
+            url: `/satellites/${satelliteId}/command`,
             icon: <Terminal className='w-5 h-5' />,
         },
-    ];
+    ] : [];
 
     return (
         <div className='min-h-screen bg-[#0B0F14] flex flex-col'>
@@ -50,7 +50,7 @@ const SatellitesLayout: React.FC<SatellitesLayoutProps> = ({ children }) => {
             <div className='flex flex-1'>
                 <Sidebar
                     items={menuItems}
-                    satelliteName={selectedSatData?.name}
+                    title={selectedSatData?.name}
                 />
                 <main className='flex-1 overflow-auto pb-8'>{children}</main>
             </div>
