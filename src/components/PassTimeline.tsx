@@ -22,12 +22,16 @@ interface PassTimelineProps {
     passes: Pass[];
     startTime: number;
     endTime: number;
+    hoveredPassId?: string | null;
+    onPassHover?: (passId: string | null) => void;
 }
 
 const PassTimeline: React.FC<PassTimelineProps> = ({
     passes,
     startTime,
     endTime,
+    hoveredPassId,
+    onPassHover,
 }) => {
     // Transform passes into timeline format
     const { groups, items } = useMemo(() => {
@@ -88,6 +92,8 @@ const PassTimeline: React.FC<PassTimelineProps> = ({
                                 data-tooltip-content={
                                     pass ? pass.groundStationName : ''
                                 }
+                                onMouseEnter={() => onPassHover?.(item.id)}
+                                onMouseLeave={() => onPassHover?.(null)}
                             >
                                 <div
                                     style={{

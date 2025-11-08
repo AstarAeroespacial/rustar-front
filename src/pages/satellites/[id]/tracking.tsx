@@ -1,7 +1,8 @@
 import { type NextPage } from 'next';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+import { format } from 'date-fns';
 import SatellitesLayout from '~/components/SatellitesLayout';
 import { api } from '~/utils/api';
 import PassTimeline from '~/components/PassTimeline';
@@ -10,6 +11,9 @@ const SatellitePasses: NextPage = () => {
     const router = useRouter();
     const { id } = router.query;
     const satelliteId = id as string;
+
+    // State for hover interaction between table and timeline
+    const [hoveredPassId, setHoveredPassId] = useState<string | null>(null);
 
     // Fetch single satellite by ID
     const { data: selectedSatData } = api.satellite.getSatelliteById.useQuery(
@@ -45,6 +49,18 @@ const SatellitePasses: NextPage = () => {
         { enabled: !!satelliteId }
     );
 
+    // Sort passes by AOS time
+    const sortedPasses = useMemo(() => {
+        if (!passes) return [];
+        return [...passes].sort((a, b) => a.aos - b.aos);
+    }, [passes]);
+
+    // Helper function to format duration
+    const formatDuration = (aos: number, los: number) => {
+        const durationMinutes = Math.round((los - aos) / 60000);
+        return `${durationMinutes} min`;
+    };
+
     return (
         <>
             <Head>
@@ -73,7 +89,65 @@ const SatellitePasses: NextPage = () => {
                             passes={passes || []}
                             startTime={timeframe.startTime}
                             endTime={timeframe.endTime}
+                            hoveredPassId={hoveredPassId}
+                            onPassHover={setHoveredPassId}
                         />
+                    </div>
+
+                    {/* Pass Details Table */}
+                    <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-8'>
+                        <div className='bg-[#141B23] rounded-xl border border-[#13181D] shadow-md overflow-hidden'>
+                            <table className='min-w-full divide-y divide-[#13181D]'>
+                                <thead className='bg-[#0B0D10]'>
+                                    <tr>
+                                        <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
+                                            Ground Station
+                                        </th>
+                                        <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
+                                            AOS
+                                        </th>
+                                        <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
+                                            LOS
+                                        </th>
+                                        <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
+                                            Duration
+                                        </th>
+                                        <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
+                                            Max Elevation
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className='divide-y divide-[#13181D]'>
+                                    {sortedPasses.map((pass) => (
+                                        <tr
+                                            key={pass.id}
+                                            onMouseEnter={() => setHoveredPassId(pass.id)}
+                                            onMouseLeave={() => setHoveredPassId(null)}
+                                            className={`transition-colors cursor-pointer ${hoveredPassId === pass.id
+                                                ? 'bg-[#1a2632]'
+                                                : 'hover:bg-[#1a2632]/50'
+                                                }`}
+                                        >
+                                            <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-white'>
+                                                {pass.groundStationName}
+                                            </td>
+                                            <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
+                                                {format(new Date(pass.aos), 'MMM d, HH:mm:ss')}
+                                            </td>
+                                            <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
+                                                {format(new Date(pass.los), 'MMM d, HH:mm:ss')}
+                                            </td>
+                                            <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
+                                                {formatDuration(pass.aos, pass.los)}
+                                            </td>
+                                            <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
+                                                {pass.maxElevation.toFixed(1)}°
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </SatellitesLayout>
