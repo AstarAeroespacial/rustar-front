@@ -2,7 +2,7 @@ import { type NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
-import Layout from '~/components/Layout';
+import GroundStationLayout from '~/components/GroundStationLayout';
 import { api } from '~/utils/api';
 
 // Dynamically import the map component to avoid SSR issues
@@ -21,10 +21,11 @@ const GroundStationMap = dynamic(
 const GroundStationDetail: NextPage = () => {
     const router = useRouter();
     const { id } = router.query;
+    const groundStationId = id as string;
 
     const { data: station } = api.groundStation.getGroundStationById.useQuery(
-        { id: id as string },
-        { enabled: !!id }
+        { id: groundStationId },
+        { enabled: !!groundStationId }
     );
 
     return (
@@ -40,7 +41,7 @@ const GroundStationDetail: NextPage = () => {
                     href='/favicon.ico'
                 />
             </Head>
-            <Layout>
+            <GroundStationLayout>
                 <div className='mx-auto max-w-7xl px-2 sm:px-4 lg:px-6 mt-6'>
                     <div className='grid grid-cols-1 lg:grid-cols-12 gap-6'>
                         <div className='lg:col-span-9 h-[600px]'>
@@ -102,7 +103,7 @@ const GroundStationDetail: NextPage = () => {
                         </div>
                     </div>
                 </div>
-            </Layout>
+            </GroundStationLayout>
         </>
     );
 };
