@@ -7,7 +7,7 @@ import { api } from '~/utils/api';
 const Home: NextPage = () => {
     const { data: satellites } = api.satellite.getSatellites.useQuery();
 
-    const sortedSatellites = satellites?.slice().sort((a, b) => a.id - b.id);
+    const sortedSatellites = satellites?.slice().sort((a, b) => a.id.localeCompare(b.id));
 
     return (
         <>
