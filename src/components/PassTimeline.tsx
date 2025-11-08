@@ -35,8 +35,6 @@ const PassTimeline: React.FC<PassTimelineProps> = ({
 }) => {
     // Transform passes into timeline format
     const { groups, items } = useMemo(() => {
-        console.log('PassTimeline - passes:', passes);
-
         // Get unique ground stations
         const stationMap = new Map<string, string>();
         passes.forEach((pass) => {
@@ -49,20 +47,18 @@ const PassTimeline: React.FC<PassTimelineProps> = ({
             title: name,
         }));
 
-        // Create items (one per pass)
+        // Create items (one per pass) - include hover state in item data
         const items = passes.map((pass) => ({
             id: pass.id,
             group: pass.groundStationId,
             title: '',
             start_time: pass.aos,
             end_time: pass.los,
+            isHovered: hoveredPassId === pass.id,
         }));
 
-        console.log('PassTimeline - groups:', groups);
-        console.log('PassTimeline - items:', items);
-
         return { groups, items };
-    }, [passes]);
+    }, [passes, hoveredPassId]);
 
     return (
         <div className='bg-[#090d11] rounded-xl border border-[#13181D] shadow-md overflow-hidden'>
@@ -84,7 +80,13 @@ const PassTimeline: React.FC<PassTimelineProps> = ({
                     }}
                     itemRenderer={({ item, itemContext, getItemProps }) => {
                         const pass = passes.find((p) => p.id === item.id);
+                        const isHovered = item.isHovered || false;
                         const props = getItemProps({});
+
+                        const finalBackground = isHovered
+                            ? '#f97316'
+                            : props.style?.background;
+
                         return (
                             <div
                                 {...props}
@@ -94,13 +96,20 @@ const PassTimeline: React.FC<PassTimelineProps> = ({
                                 }
                                 onMouseEnter={() => onPassHover?.(item.id)}
                                 onMouseLeave={() => onPassHover?.(null)}
+                                style={{
+                                    ...props.style,
+                                    cursor: 'pointer',
+                                    borderRadius: '4px',
+                                }}
                             >
                                 <div
                                     style={{
                                         height: '100%',
                                         overflow: 'hidden',
+                                        background: finalBackground,
+                                        borderRadius: '4px',
                                     }}
-                                ></div>
+                                />
                             </div>
                         );
                     }}
