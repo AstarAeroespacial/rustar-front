@@ -1,4 +1,4 @@
-import type { Satellite } from '~/types/api';
+import type { Satellite, GroundStation, TelemetryResponse, AvailableCommand, Command } from '~/types/api';
 
 export const MOCK_SATELLITES: Satellite[] = [
     {
@@ -27,13 +27,15 @@ export const MOCK_SATELLITES: Satellite[] = [
     },
 ];
 
-export const MOCK_GROUND_STATIONS = [
+export const MOCK_GROUND_STATIONS: GroundStation[] = [
     {
         id: 'GS-001',
         name: 'Buenos Aires',
         latitude: -34.6037,
         longitude: -58.3816,
         altitude: 25,
+        status: 'active',
+        lastUpdate: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
     },
     {
         id: 'GS-002',
@@ -41,6 +43,13 @@ export const MOCK_GROUND_STATIONS = [
         latitude: -31.4201,
         longitude: -64.1888,
         altitude: 390,
+        status: 'active',
+        trackingSatellite: {
+            id: 'ASTAR-002',
+            name: 'ASTAR-002',
+            tle: '1 43013U 17073A   21275.51782528  .00000123  00000-0  12345-4 0  9991\n2 43013  98.2123 123.4567 0001234  45.6789  12.3456 14.19876543123456',
+        },
+        lastUpdate: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
     },
     {
         id: 'GS-003',
@@ -48,6 +57,8 @@ export const MOCK_GROUND_STATIONS = [
         latitude: -32.8895,
         longitude: -68.8458,
         altitude: 760,
+        status: 'active',
+        lastUpdate: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago
     },
     {
         id: 'GS-004',
@@ -55,31 +66,32 @@ export const MOCK_GROUND_STATIONS = [
         latitude: -54.8019,
         longitude: -68.3030,
         altitude: 30,
+        status: 'maintenance',
+        lastUpdate: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
     },
 ];
 
-export const MOCK_TELEMETRY = Array.from({ length: 20 }, (_, i) => ({
-    id: i + 1,
-    satellite: 'ASTAR-001',
+export const MOCK_TELEMETRY: TelemetryResponse[] = Array.from({ length: 20 }, (_, i) => ({
     timestamp: Math.floor(Date.now() / 1000) - i * 300, // 5 minute intervals
     temperature: 20 + Math.random() * 10 - 5,
     voltage: 12 + Math.random() * 2 - 1,
     current: 2 + Math.random() * 0.5 - 0.25,
+    battery_level: 85 + Math.random() * 10 - 5, // 80-90%
 }));
 
-export const MOCK_COMMANDS = [
+export const MOCK_COMMANDS: AvailableCommand[] = [
     {
         id: '1',
         name: 'Power On',
         description: 'Turn on satellite subsystem',
-        category: 'power',
+        category: 'control',
         requiresConfirmation: false,
     },
     {
         id: '2',
         name: 'Power Off',
         description: 'Turn off satellite subsystem',
-        category: 'power',
+        category: 'control',
         requiresConfirmation: true,
     },
     {
@@ -93,36 +105,40 @@ export const MOCK_COMMANDS = [
         id: '4',
         name: 'Deploy Antenna',
         description: 'Deploy communication antenna',
-        category: 'payload',
+        category: 'control',
         requiresConfirmation: true,
     },
     {
         id: '5',
         name: 'Camera Capture',
         description: 'Take a photo',
-        category: 'payload',
+        category: 'telemetry',
         requiresConfirmation: false,
     },
 ];
 
-export const MOCK_COMMAND_HISTORY = [
+export const MOCK_COMMAND_HISTORY: Command[] = [
     {
-        id: 1,
+        id: '1',
+        satellite: 'ASTAR-001',
         command: 'Power On',
-        status: 'received',
-        timestamp: new Date(Date.now() - 3600000).toISOString(),
+        status: 'success',
+        timestamp: new Date(Date.now() - 3600000),
     },
     {
-        id: 2,
+        id: '2',
+        satellite: 'ASTAR-001',
         command: 'Camera Capture',
-        status: 'received',
-        timestamp: new Date(Date.now() - 7200000).toISOString(),
+        status: 'success',
+        timestamp: new Date(Date.now() - 7200000),
     },
     {
-        id: 3,
+        id: '3',
+        satellite: 'ASTAR-001',
         command: 'Reset',
         status: 'failed',
-        timestamp: new Date(Date.now() - 10800000).toISOString(),
+        timestamp: new Date(Date.now() - 10800000),
+        response: 'Connection timeout',
     },
 ];
 
