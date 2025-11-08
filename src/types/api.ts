@@ -50,6 +50,7 @@ export interface Satellite {
   tle: string;
   downlink_frequency: number;
   uplink_frequency: number;
+  lastContact: Date;
 }
 
 export interface Command {

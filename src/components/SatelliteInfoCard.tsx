@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { formatDistanceToNow } from 'date-fns';
 import Button from '~/components/ui/Button';
 import type { Satellite } from '~/types/api';
 
@@ -155,7 +156,12 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
             <div className='border-t border-[#13181D] pt-3 text-gray-400 text-sm'>
                 Last contact:{' '}
                 <span className='text-gray-300'>
-                    {new Date().toLocaleString()}
+                    {formatDistanceToNow(
+                        satellite.lastContact instanceof Date
+                            ? satellite.lastContact
+                            : new Date(satellite.lastContact),
+                        { addSuffix: true }
+                    )}
                 </span>
             </div>
 
@@ -179,11 +185,10 @@ const SatelliteInfoCard: React.FC<SatelliteInfoCardProps> = ({
                                 variant='secondary'
                                 iconOnly
                                 onClick={handleCopyTLE}
-                                className={`${
-                                    copied
-                                        ? 'text-green-400 hover:text-green-300'
-                                        : 'text-gray-400 hover:text-white'
-                                }`}
+                                className={`${copied
+                                    ? 'text-green-400 hover:text-green-300'
+                                    : 'text-gray-400 hover:text-white'
+                                    }`}
                                 iconLeft={
                                     copied ? (
                                         <svg

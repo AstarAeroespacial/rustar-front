@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { formatDistanceToNow } from 'date-fns';
 import type { Satellite } from '~/types/api';
 
 interface SatelliteCardProps {
@@ -15,20 +16,22 @@ const SatelliteCard: React.FC<SatelliteCardProps> = ({ satellite }) => {
                     <h2 className='text-lg font-semibold text-white tracking-wide'>
                         {satellite.name}
                     </h2>
+                    <p className='text-dark-400 text-sm font-mono'>{satellite.id}</p>
                 </div>
 
                 {/* Info Section */}
                 <div className='space-y-3'>
-                    {satellite.tle && (
-                        <div>
-                            <div className='text-gray-400 text-sm'>
-                                TLE Available
-                            </div>
-                            <div className='text-white font-medium text-sm'>
-                                <span className='text-green-500'>✓ Yes</span>
-                            </div>
+                    <div>
+                        <div className='text-gray-400 text-sm'>Last contact</div>
+                        <div className='text-white font-medium text-sm'>
+                            {formatDistanceToNow(
+                                satellite.lastContact instanceof Date
+                                    ? satellite.lastContact
+                                    : new Date(satellite.lastContact),
+                                { addSuffix: true }
+                            )}
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
         </Link>
