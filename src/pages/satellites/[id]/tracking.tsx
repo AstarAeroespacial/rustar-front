@@ -19,11 +19,20 @@ const SatellitePasses: NextPage = () => {
 
     // Fetch satellite passes for the selected satellite
     const timeframe = useMemo(() => {
-        const now = Date.now();
+        const now = new Date();
+
+        // Start of today (00:00:00)
+        const startOfToday = new Date(now);
+        startOfToday.setHours(0, 0, 0, 0);
+
+        // End of tomorrow (23:59:59.999)
+        const endOfTomorrow = new Date(now);
+        endOfTomorrow.setDate(endOfTomorrow.getDate() + 1);
+        endOfTomorrow.setHours(23, 59, 59, 999);
+
         return {
-            now,
-            startTime: now,
-            endTime: now + 24 * 60 * 60 * 1000, // 24 hours from now
+            startTime: startOfToday.getTime(),
+            endTime: endOfTomorrow.getTime(),
         };
     }, []);
 

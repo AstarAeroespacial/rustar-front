@@ -106,7 +106,7 @@ const PassTimeline: React.FC<PassTimelineProps> = ({
                         visibleTimeEnd,
                         updateScrollCanvas
                     ) => {
-                        // Restrict scrolling to the fetched time window
+                        // Restrict scrolling to the fetched time window (today + tomorrow)
                         if (
                             visibleTimeStart < startTime &&
                             visibleTimeEnd > endTime
