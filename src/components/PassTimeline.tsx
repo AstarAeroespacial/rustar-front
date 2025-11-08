@@ -11,8 +11,8 @@ import 'react-calendar-timeline/style.css';
 
 interface Pass {
     id: string;
-    groundStationId: string;
-    groundStationName: string;
+    entityId: string;
+    entityName: string;
     aos: number; // Acquisition of Signal (timestamp in ms)
     los: number; // Loss of Signal (timestamp in ms)
     maxElevation: number;
@@ -29,14 +29,14 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
     const { groups, items } = useMemo(() => {
         console.log('PassTimeline - passes:', passes);
 
-        // Get unique ground stations
-        const stationMap = new Map<string, string>();
+        // Get unique entities (ground stations or satellites)
+        const entityMap = new Map<string, string>();
         passes.forEach(pass => {
-            stationMap.set(pass.groundStationId, pass.groundStationName);
+            entityMap.set(pass.entityId, pass.entityName);
         });
 
-        // Create groups (one per ground station)
-        const groups = Array.from(stationMap.entries()).map(([id, name]) => ({
+        // Create groups (one per entity)
+        const groups = Array.from(entityMap.entries()).map(([id, name]) => ({
             id,
             title: name,
         }));
@@ -44,7 +44,7 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
         // Create items (one per pass)
         const items = passes.map(pass => ({
             id: pass.id,
-            group: pass.groundStationId,
+            group: pass.entityId,
             title: '',
             start_time: pass.aos,
             end_time: pass.los,
@@ -80,7 +80,7 @@ const PassTimeline: React.FC<PassTimelineProps> = ({ passes, startTime, endTime 
                             <div
                                 {...props}
                                 data-tooltip-id="pass-tooltip"
-                                data-tooltip-content={pass ? pass.groundStationName : ''}
+                                data-tooltip-content={pass ? pass.entityName : ''}
                             >
                                 <div style={{ height: '100%', overflow: 'hidden' }}></div>
                             </div>

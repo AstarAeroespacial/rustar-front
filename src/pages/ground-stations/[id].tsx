@@ -1,8 +1,10 @@
 import { type NextPage } from 'next';
+import { useMemo } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import Layout from '~/components/Layout';
+import PassTimeline from '~/components/PassTimeline';
 import { api } from '~/utils/api';
 
 // Dynamically import the map component to avoid SSR issues
@@ -21,6 +23,25 @@ const GroundStationDetail: NextPage = () => {
 
     const { data: station } = api.groundStation.getGroundStationById.useQuery(
         { id: id as string },
+        { enabled: !!id }
+    );
+
+    // Fetch satellite passes for this ground station
+    const timeframe = useMemo(() => {
+        const now = Date.now();
+        return {
+            now,
+            startTime: now,
+            endTime: now + 24 * 60 * 60 * 1000, // 24 hours from now
+        };
+    }, []);
+
+    const { data: passes } = api.groundStation.getGroundStationPasses.useQuery(
+        {
+            groundStationId: id as string,
+            startTime: timeframe.startTime,
+            endTime: timeframe.endTime,
+        },
         { enabled: !!id }
     );
 
@@ -87,6 +108,17 @@ const GroundStationDetail: NextPage = () => {
                             </div>
                         </div>
                     </div>
+
+                    {/* Pass Timeline */}
+                    {passes && (
+                        <div className='mt-6'>
+                            <PassTimeline
+                                passes={passes}
+                                startTime={timeframe.startTime}
+                                endTime={timeframe.endTime}
+                            />
+                        </div>
+                    )}
                 </div>
             </Layout>
         </>

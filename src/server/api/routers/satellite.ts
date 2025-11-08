@@ -243,32 +243,32 @@ export const satelliteRouter = createTRPCRouter({
             return [
                 {
                     id: 'pass-1',
-                    groundStationId: 'GS-001',
-                    groundStationName: 'Buenos Aires',
+                    entityId: 'GS-001',
+                    entityName: 'Buenos Aires',
                     aos: now + 2 * 60 * 60 * 1000, // 2 hours from now
                     los: now + 2.15 * 60 * 60 * 1000, // 9 minutes later
                     maxElevation: 45.2,
                 },
                 {
                     id: 'pass-2',
-                    groundStationId: 'GS-002',
-                    groundStationName: 'Córdoba',
+                    entityId: 'GS-002',
+                    entityName: 'Córdoba',
                     aos: now + 5 * 60 * 60 * 1000, // 5 hours from now
                     los: now + 5.12 * 60 * 60 * 1000, // 7 minutes later
                     maxElevation: 38.5,
                 },
                 {
                     id: 'pass-3',
-                    groundStationId: 'GS-001',
-                    groundStationName: 'Buenos Aires',
+                    entityId: 'GS-001',
+                    entityName: 'Buenos Aires',
                     aos: now + 8 * 60 * 60 * 1000, // 8 hours from now
                     los: now + 8.18 * 60 * 60 * 1000, // 11 minutes later
                     maxElevation: 52.1,
                 },
                 {
                     id: 'pass-4',
-                    groundStationId: 'GS-003',
-                    groundStationName: 'Mendoza',
+                    entityId: 'GS-003',
+                    entityName: 'Mendoza',
                     aos: now + 10 * 60 * 60 * 1000, // 10 hours from now
                     los: now + 10.1 * 60 * 60 * 1000, // 6 minutes later
                     maxElevation: 31.8,
