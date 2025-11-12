@@ -128,7 +128,9 @@ const SatellitesMonitoring: NextPage = () => {
     return (
         <>
             <Head>
-                <title>{selectedSatData?.name || 'Satellite'} - Telemetry</title>
+                <title>
+                    {selectedSatData?.name || 'Satellite'} - Telemetry
+                </title>
                 <meta
                     name='description'
                     content='Satellite telemetry monitoring'
@@ -145,10 +147,10 @@ const SatellitesMonitoring: NextPage = () => {
                     {/* Update Interval Controls */}
                     <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-8'>
                         <div className='bg-[#141B23] rounded-lg border border-[#13181D] p-4 mb-8'>
-                            <div className='flex items-center justify-between'>
-                                <div className='flex items-center space-x-6'>
-                                    <div className='flex items-center space-x-2'>
-                                        <span className='text-sm font-medium text-gray-300'>
+                            <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
+                                <div className='flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6'>
+                                    <div className='flex items-center gap-2'>
+                                        <span className='text-sm font-medium text-gray-300 whitespace-nowrap'>
                                             Update Interval:
                                         </span>
                                         <select
@@ -158,7 +160,7 @@ const SatellitesMonitoring: NextPage = () => {
                                                     Number(e.target.value)
                                                 )
                                             }
-                                            className='bg-[#0b0f14] border border-[#13181D] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500'
+                                            className='bg-[#0b0f14] border border-[#13181D] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm'
                                         >
                                             <option value={1}>1s</option>
                                             <option value={5}>5s</option>
@@ -167,15 +169,15 @@ const SatellitesMonitoring: NextPage = () => {
                                         </select>
                                     </div>
 
-                                    <div className='flex items-center space-x-2'>
-                                        <span className='text-sm font-medium text-gray-300'>
+                                    <div className='flex items-center gap-2'>
+                                        <span className='text-sm font-medium text-gray-300 whitespace-nowrap'>
                                             Status:
                                         </span>
                                         <span
-                                            className={`px-2 py-1 rounded text-xs font-medium ${
+                                            className={`px-3 py-1 rounded text-xs font-medium ${
                                                 isReceiving
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-red-100 text-red-800'
+                                                    ? 'bg-green-900/50 text-green-400 border border-green-600'
+                                                    : 'bg-red-900/50 text-red-400 border border-red-600'
                                             }`}
                                         >
                                             {isReceiving
@@ -187,7 +189,7 @@ const SatellitesMonitoring: NextPage = () => {
 
                                 <button
                                     onClick={() => setIsReceiving(!isReceiving)}
-                                    className={`px-4 py-2 rounded text-sm font-medium ${
+                                    className={`px-4 py-2 rounded text-sm font-medium transition-colors whitespace-nowrap ${
                                         isReceiving
                                             ? 'bg-red-600 hover:bg-red-700 text-white'
                                             : 'bg-green-600 hover:bg-green-700 text-white'
@@ -205,14 +207,14 @@ const SatellitesMonitoring: NextPage = () => {
                     <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
                         <div className='space-y-6'>
                             {/* Real-time Charts */}
-                            <div className='bg-[#141B23] rounded-lg border border-[#13181D] p-6'>
+                            <div className='bg-[#141B23] rounded-lg border border-[#13181D] p-4 sm:p-6'>
                                 <h2 className='text-lg font-semibold text-white mb-4'>
                                     Real-time Charts
                                 </h2>
 
                                 <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
                                     <div>
-                                        <div className='flex items-center justify-between mb-2'>
+                                        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2'>
                                             <h3 className='text-white font-medium'>
                                                 Temperature
                                             </h3>
@@ -235,7 +237,7 @@ const SatellitesMonitoring: NextPage = () => {
                                     </div>
 
                                     <div>
-                                        <div className='flex items-center justify-between mb-2'>
+                                        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2'>
                                             <h3 className='text-white font-medium'>
                                                 Voltage
                                             </h3>
@@ -260,18 +262,18 @@ const SatellitesMonitoring: NextPage = () => {
                             </div>
 
                             {/* Raw Telemetry Data */}
-                            <div className='bg-[#141B23] rounded-lg border border-[#13181D] p-6'>
+                            <div className='bg-[#141B23] rounded-lg border border-[#13181D] p-4 sm:p-6'>
                                 <h2 className='text-lg font-semibold text-white mb-4'>
                                     Raw Telemetry Data
                                 </h2>
 
-                                <div className='bg-[#0B0F14] rounded-lg p-4 font-mono text-sm text-green-400 max-h-40 overflow-y-auto'>
+                                <div className='bg-[#0B0F14] rounded-lg p-3 sm:p-4 font-mono text-xs sm:text-sm text-green-400 max-h-40 overflow-y-auto overflow-x-auto'>
                                     {telemetryData
                                         ?.slice(0, 5)
                                         .map((data, index) => (
                                             <div
                                                 key={index}
-                                                className='mb-1'
+                                                className='mb-1 whitespace-nowrap'
                                             >
                                                 {new Date(
                                                     data.timestamp * 1000
@@ -284,55 +286,57 @@ const SatellitesMonitoring: NextPage = () => {
                             </div>
 
                             {/* Received Telemetry Packets */}
-                            <div className='bg-[#141B23] rounded-lg border border-[#13181D] p-6'>
+                            <div className='bg-[#141B23] rounded-lg border border-[#13181D] p-4 sm:p-6'>
                                 <h2 className='text-lg font-semibold text-white mb-4'>
                                     Received Telemetry Packets
                                 </h2>
 
-                                <div className='overflow-hidden'>
-                                    <table className='min-w-full divide-y divide-[#13181D]'>
-                                        <thead>
-                                            <tr>
-                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
-                                                    Timestamp
-                                                </th>
-                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
-                                                    Packet ID
-                                                </th>
-                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
-                                                    Size
-                                                </th>
-                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
-                                                    Status
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className='divide-y divide-[#13181D]'>
-                                            {telemetryData
-                                                ?.slice(0, 5)
-                                                .map((data, index) => (
-                                                    <tr key={index}>
-                                                        <td className='px-6 py-4 whitespace-nowrap text-sm text-white'>
-                                                            {new Date(
-                                                                data.timestamp *
-                                                                    1000
-                                                            ).toLocaleString()}
-                                                        </td>
-                                                        <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
-                                                            {index + 1}
-                                                        </td>
-                                                        <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
-                                                            128 bytes
-                                                        </td>
-                                                        <td className='px-6 py-4 whitespace-nowrap'>
-                                                            <span className='inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800'>
-                                                                Received
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                        </tbody>
-                                    </table>
+                                <div className='overflow-x-auto -mx-4 sm:mx-0'>
+                                    <div className='inline-block min-w-full align-middle'>
+                                        <table className='min-w-full divide-y divide-[#13181D]'>
+                                            <thead>
+                                                <tr>
+                                                    <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                                        Timestamp
+                                                    </th>
+                                                    <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                                        Packet ID
+                                                    </th>
+                                                    <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                                        Size
+                                                    </th>
+                                                    <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                                        Status
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className='divide-y divide-[#13181D]'>
+                                                {telemetryData
+                                                    ?.slice(0, 5)
+                                                    .map((data, index) => (
+                                                        <tr key={index}>
+                                                            <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-white'>
+                                                                {new Date(
+                                                                    data.timestamp *
+                                                                        1000
+                                                                ).toLocaleString()}
+                                                            </td>
+                                                            <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
+                                                                {index + 1}
+                                                            </td>
+                                                            <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
+                                                                128 bytes
+                                                            </td>
+                                                            <td className='px-4 sm:px-6 py-4 whitespace-nowrap'>
+                                                                <span className='inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-900/50 text-green-400 border border-green-600'>
+                                                                    Received
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
