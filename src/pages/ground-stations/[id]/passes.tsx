@@ -75,8 +75,14 @@ const GroundStationPasses: NextPage = () => {
         <>
             <Head>
                 <title>{station?.name ?? 'Ground Station'} - Passes</title>
-                <meta name='description' content='Ground station passes' />
-                <link rel='icon' href='/favicon.ico' />
+                <meta
+                    name='description'
+                    content='Ground station passes'
+                />
+                <link
+                    rel='icon'
+                    href='/favicon.ico'
+                />
             </Head>
             <GroundStationLayout>
                 <div className='py-6'>
@@ -101,69 +107,75 @@ const GroundStationPasses: NextPage = () => {
                     {/* Pass Details Table */}
                     <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-8'>
                         <div className='bg-[#141B23] rounded-xl border border-[#13181D] shadow-md overflow-hidden'>
-                            <table className='min-w-full divide-y divide-[#13181D]'>
-                                <thead className='bg-[#0B0D10]'>
-                                    <tr>
-                                        <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
-                                            Satellite
-                                        </th>
-                                        <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
-                                            AOS
-                                        </th>
-                                        <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
-                                            LOS
-                                        </th>
-                                        <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
-                                            Duration
-                                        </th>
-                                        <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
-                                            Max Elevation
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className='divide-y divide-[#13181D]'>
-                                    {sortedPasses.map((pass) => (
-                                        <tr
-                                            key={pass.id}
-                                            onMouseEnter={() =>
-                                                setHoveredPassId(pass.id)
-                                            }
-                                            onMouseLeave={() =>
-                                                setHoveredPassId(null)
-                                            }
-                                            className={`transition-colors cursor-pointer ${hoveredPassId === pass.id
-                                                    ? 'bg-[#1a2632]'
-                                                    : 'hover:bg-[#1a2632]/50'
-                                                }`}
-                                        >
-                                            <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-white'>
-                                                {pass.satelliteName}
-                                            </td>
-                                            <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
-                                                {format(
-                                                    new Date(pass.aos),
-                                                    'MMM d, HH:mm:ss'
-                                                )}
-                                            </td>
-                                            <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
-                                                {format(
-                                                    new Date(pass.los),
-                                                    'MMM d, HH:mm:ss'
-                                                )}
-                                            </td>
-                                            <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
-                                                {formatDuration(
-                                                    pass.aos,
-                                                    pass.los
-                                                )}
-                                            </td>
-                                            <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
-                                                {pass.maxElevation.toFixed(1)}°
-                                            </td>
+                            <div className='overflow-x-auto'>
+                                <table className='min-w-full divide-y divide-[#13181D]'>
+                                    <thead className='bg-[#0B0D10]'>
+                                        <tr>
+                                            <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                                Satellite
+                                            </th>
+                                            <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                                AOS
+                                            </th>
+                                            <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                                LOS
+                                            </th>
+                                            <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                                Duration
+                                            </th>
+                                            <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                                Max Elevation
+                                            </th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody className='divide-y divide-[#13181D]'>
+                                        {sortedPasses.map((pass) => (
+                                            <tr
+                                                key={pass.id}
+                                                onMouseEnter={() =>
+                                                    setHoveredPassId(pass.id)
+                                                }
+                                                onMouseLeave={() =>
+                                                    setHoveredPassId(null)
+                                                }
+                                                className={`transition-colors cursor-pointer ${
+                                                    hoveredPassId === pass.id
+                                                        ? 'bg-[#1a2632]'
+                                                        : 'hover:bg-[#1a2632]/50'
+                                                }`}
+                                            >
+                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-white'>
+                                                    {pass.satelliteName}
+                                                </td>
+                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
+                                                    {format(
+                                                        new Date(pass.aos),
+                                                        'MMM d, HH:mm:ss'
+                                                    )}
+                                                </td>
+                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
+                                                    {format(
+                                                        new Date(pass.los),
+                                                        'MMM d, HH:mm:ss'
+                                                    )}
+                                                </td>
+                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
+                                                    {formatDuration(
+                                                        pass.aos,
+                                                        pass.los
+                                                    )}
+                                                </td>
+                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
+                                                    {pass.maxElevation.toFixed(
+                                                        1
+                                                    )}
+                                                    °
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

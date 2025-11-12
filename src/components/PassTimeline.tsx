@@ -65,121 +65,129 @@ const PassTimeline = <T extends TimelineItem>({
 
     return (
         <div className='bg-[#090d11] rounded-xl border border-[#13181D] shadow-md overflow-hidden'>
-            <div>
-                <Timeline
-                    groups={groups}
-                    items={timelineItems}
-                    defaultTimeStart={startTime}
-                    defaultTimeEnd={endTime}
-                    sidebarWidth={0}
-                    lineHeight={40}
-                    timeSteps={{
-                        second: 1,
-                        minute: 15,
-                        hour: 1,
-                        day: 0.5,
-                        month: 1,
-                        year: 1,
-                    }}
-                    itemRenderer={({ item, itemContext, getItemProps }) => {
-                        const timelineItem = timelineItems.find((ti) => ti.id === item.id);
-                        const isHovered = timelineItem?.isHovered || false;
-                        const originalItem = timelineItem?.originalItem;
-                        const props = getItemProps({});
+            {/* Wrapper with horizontal scroll for mobile */}
+            <div className='overflow-x-auto'>
+                <div className='min-w-[640px]'>
+                    <Timeline
+                        groups={groups}
+                        items={timelineItems}
+                        defaultTimeStart={startTime}
+                        defaultTimeEnd={endTime}
+                        sidebarWidth={0}
+                        lineHeight={40}
+                        timeSteps={{
+                            second: 1,
+                            minute: 15,
+                            hour: 1,
+                            day: 0.5,
+                            month: 1,
+                            year: 1,
+                        }}
+                        itemRenderer={({ item, itemContext, getItemProps }) => {
+                            const timelineItem = timelineItems.find(
+                                (ti) => ti.id === item.id
+                            );
+                            const isHovered = timelineItem?.isHovered || false;
+                            const originalItem = timelineItem?.originalItem;
+                            const props = getItemProps({});
 
-                        const finalBackground = isHovered
-                            ? '#f97316'
-                            : props.style?.background;
+                            const finalBackground = isHovered
+                                ? '#f97316'
+                                : props.style?.background;
 
-                        const tooltipText = originalItem && tooltipContent
-                            ? tooltipContent(originalItem)
-                            : '';
+                            const tooltipText =
+                                originalItem && tooltipContent
+                                    ? tooltipContent(originalItem)
+                                    : '';
 
-                        return (
-                            <div
-                                {...props}
-                                data-tooltip-id='timeline-tooltip'
-                                data-tooltip-content={tooltipText}
-                                onMouseEnter={() => onItemHover?.(item.id)}
-                                onMouseLeave={() => onItemHover?.(null)}
-                                style={{
-                                    ...props.style,
-                                    cursor: 'pointer',
-                                    borderRadius: '4px',
-                                }}
-                            >
+                            return (
                                 <div
+                                    {...props}
+                                    data-tooltip-id='timeline-tooltip'
+                                    data-tooltip-content={tooltipText}
+                                    onMouseEnter={() => onItemHover?.(item.id)}
+                                    onMouseLeave={() => onItemHover?.(null)}
                                     style={{
-                                        height: '100%',
-                                        overflow: 'hidden',
-                                        background: finalBackground,
+                                        ...props.style,
+                                        cursor: 'pointer',
                                         borderRadius: '4px',
                                     }}
-                                />
-                            </div>
-                        );
-                    }}
-                    canMove={false}
-                    canResize={false}
-                    canChangeGroup={false}
-                    onTimeChange={(
-                        visibleTimeStart,
-                        visibleTimeEnd,
-                        updateScrollCanvas
-                    ) => {
-                        // Restrict scrolling to the fetched time window (today + tomorrow)
-                        if (
-                            visibleTimeStart < startTime &&
-                            visibleTimeEnd > endTime
-                        ) {
-                            updateScrollCanvas(startTime, endTime);
-                        } else if (visibleTimeStart < startTime) {
-                            updateScrollCanvas(
-                                startTime,
-                                startTime + (visibleTimeEnd - visibleTimeStart)
+                                >
+                                    <div
+                                        style={{
+                                            height: '100%',
+                                            overflow: 'hidden',
+                                            background: finalBackground,
+                                            borderRadius: '4px',
+                                        }}
+                                    />
+                                </div>
                             );
-                        } else if (visibleTimeEnd > endTime) {
-                            updateScrollCanvas(
-                                endTime - (visibleTimeEnd - visibleTimeStart),
-                                endTime
-                            );
-                        } else {
-                            updateScrollCanvas(
-                                visibleTimeStart,
-                                visibleTimeEnd
-                            );
-                        }
-                    }}
-                    buffer={1}
-                >
-                    <TimelineHeaders>
-                        <SidebarHeader>
-                            {({ getRootProps }) => (
-                                <div {...getRootProps()}></div>
-                            )}
-                        </SidebarHeader>
-                        <DateHeader
-                            unit='primaryHeader'
-                            labelFormat={([startTime]) => {
-                                return startTime.format('MMMM D');
-                            }}
-                        />
-                        <DateHeader />
-                    </TimelineHeaders>
-                    <TimelineMarkers>
-                        <TodayMarker>
-                            {({ styles }) => (
-                                <div
-                                    style={{
-                                        ...styles,
-                                        backgroundColor: '#ef4444',
-                                        width: '2px',
-                                    }}
-                                />
-                            )}
-                        </TodayMarker>
-                    </TimelineMarkers>
-                </Timeline>
+                        }}
+                        canMove={false}
+                        canResize={false}
+                        canChangeGroup={false}
+                        onTimeChange={(
+                            visibleTimeStart,
+                            visibleTimeEnd,
+                            updateScrollCanvas
+                        ) => {
+                            // Restrict scrolling to the fetched time window (today + tomorrow)
+                            if (
+                                visibleTimeStart < startTime &&
+                                visibleTimeEnd > endTime
+                            ) {
+                                updateScrollCanvas(startTime, endTime);
+                            } else if (visibleTimeStart < startTime) {
+                                updateScrollCanvas(
+                                    startTime,
+                                    startTime +
+                                        (visibleTimeEnd - visibleTimeStart)
+                                );
+                            } else if (visibleTimeEnd > endTime) {
+                                updateScrollCanvas(
+                                    endTime -
+                                        (visibleTimeEnd - visibleTimeStart),
+                                    endTime
+                                );
+                            } else {
+                                updateScrollCanvas(
+                                    visibleTimeStart,
+                                    visibleTimeEnd
+                                );
+                            }
+                        }}
+                        buffer={1}
+                    >
+                        <TimelineHeaders>
+                            <SidebarHeader>
+                                {({ getRootProps }) => (
+                                    <div {...getRootProps()}></div>
+                                )}
+                            </SidebarHeader>
+                            <DateHeader
+                                unit='primaryHeader'
+                                labelFormat={([startTime]) => {
+                                    return startTime.format('MMMM D');
+                                }}
+                            />
+                            <DateHeader />
+                        </TimelineHeaders>
+                        <TimelineMarkers>
+                            <TodayMarker>
+                                {({ styles }) => (
+                                    <div
+                                        style={{
+                                            ...styles,
+                                            backgroundColor: '#ef4444',
+                                            width: '2px',
+                                        }}
+                                    />
+                                )}
+                            </TodayMarker>
+                        </TimelineMarkers>
+                    </Timeline>
+                </div>
             </div>
             <Tooltip
                 id='timeline-tooltip'
