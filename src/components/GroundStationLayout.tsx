@@ -5,6 +5,7 @@ import NavBar from '~/components/NavBar';
 import Footer from '~/components/Footer';
 import Sidebar from '~/components/Sidebar';
 import { api } from '~/utils/api';
+import { SidebarProvider } from '~/contexts/SidebarContext';
 
 interface GroundStationLayoutProps {
     children: React.ReactNode;
@@ -18,36 +19,43 @@ const GroundStationLayout: React.FC<GroundStationLayoutProps> = ({
     const groundStationId = id as string;
 
     // Fetch ground station data once at layout level
-    const { data: stationData } = api.groundStation.getGroundStationById.useQuery(
-        { id: groundStationId },
-        { enabled: !!groundStationId }
-    );
+    const { data: stationData } =
+        api.groundStation.getGroundStationById.useQuery(
+            { id: groundStationId },
+            { enabled: !!groundStationId }
+        );
 
-    const menuItems = groundStationId ? [
-        {
-            title: 'Overview',
-            url: `/ground-stations/${groundStationId}`,
-            icon: <MapPin className='w-5 h-5' />,
-        },
-        {
-            title: 'Passes',
-            url: `/ground-stations/${groundStationId}/passes`,
-            icon: <Calendar className='w-5 h-5' />,
-        },
-    ] : [];
+    const menuItems = groundStationId
+        ? [
+              {
+                  title: 'Overview',
+                  url: `/ground-stations/${groundStationId}`,
+                  icon: <MapPin className='w-5 h-5' />,
+              },
+              {
+                  title: 'Passes',
+                  url: `/ground-stations/${groundStationId}/passes`,
+                  icon: <Calendar className='w-5 h-5' />,
+              },
+          ]
+        : [];
 
     return (
-        <div className='min-h-screen bg-[#0B0F14] flex flex-col'>
-            <NavBar />
-            <div className='flex flex-1'>
-                <Sidebar
-                    items={menuItems}
-                    title={stationData?.name}
-                />
-                <main className='flex-1 overflow-auto pb-8'>{children}</main>
+        <SidebarProvider>
+            <div className='min-h-screen bg-[#0B0F14] flex flex-col'>
+                <NavBar />
+                <div className='flex flex-1 relative'>
+                    <Sidebar
+                        items={menuItems}
+                        title={stationData?.name}
+                    />
+                    <main className='flex-1 overflow-auto pb-8 w-full md:w-auto'>
+                        {children}
+                    </main>
+                </div>
+                <Footer />
             </div>
-            <Footer />
-        </div>
+        </SidebarProvider>
     );
 };
 

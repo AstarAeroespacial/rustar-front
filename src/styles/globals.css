@@ -134,6 +134,13 @@
 /* React Calendar Timeline Dark Theme Overrides */
 .react-calendar-timeline {
     background-color: #0b0f14 !important;
+    position: relative !important;
+    z-index: 0 !important;
+}
+
+/* Ensure timeline items don't appear over sidebar */
+.react-calendar-timeline * {
+    z-index: auto !important;
 }
 
 /* Sidebar */
