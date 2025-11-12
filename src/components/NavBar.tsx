@@ -2,10 +2,26 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Button } from './ui/Button';
+import { PanelLeft } from 'lucide-react';
+import { useSidebar } from '~/contexts/SidebarContext';
 
 const NavBar: React.FC = () => {
     const router = useRouter();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+    // Try to get sidebar context, but don't fail if it doesn't exist
+    let sidebarContext;
+    try {
+        sidebarContext = useSidebar();
+    } catch {
+        sidebarContext = null;
+    }
+
+    // Check if we're on a page that has a sidebar (satellites or ground stations detail pages)
+    const hasSidebar =
+        router.pathname.startsWith('/satellites/') ||
+        router.pathname.startsWith('/ground-stations/');
+    const showSidebarToggle = hasSidebar && sidebarContext;
 
     const navigation = [
         {
@@ -25,7 +41,18 @@ const NavBar: React.FC = () => {
     return (
         <nav className='bg-[#141B23] border-b-2 border-[#0B0D10]'>
             <div className='flex h-16 items-center justify-between px-4'>
-                <div className='flex items-center w-full'>
+                <div className='flex items-center w-full gap-2'>
+                    {/* Sidebar toggle button for mobile - only show on pages with sidebar */}
+                    {showSidebarToggle && (
+                        <button
+                            onClick={() => sidebarContext?.toggleSidebar()}
+                            className='md:hidden p-2 rounded-lg text-white hover:bg-[#1a2632] transition-colors flex-shrink-0'
+                            aria-label='Toggle sidebar'
+                        >
+                            <PanelLeft className='w-5 h-5' />
+                        </button>
+                    )}
+
                     <div className='flex-shrink-0'>
                         <Link
                             href='/'
@@ -36,7 +63,7 @@ const NavBar: React.FC = () => {
                                 alt='Logo'
                                 className='h-16 w-16 object-contain'
                             />
-                            <span className='ml-4 text-white font-semibold text-lg'>
+                            <span className='ml-2 sm:ml-4 text-white font-semibold text-base sm:text-lg'>
                                 RUSTAR
                             </span>
                         </Link>
