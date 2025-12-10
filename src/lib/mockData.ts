@@ -7,7 +7,7 @@ export const MOCK_SATELLITES: Satellite[] = [
         tle: '1 25544U 98067A   21275.51782528  .00016717  00000-0  10270-3 0  9005\n2 25544  51.6412 247.4627 0006703 130.5360 325.0288 15.48908950314314',
         downlink_frequency: 437.425,
         uplink_frequency: 145.825,
-        lastContact: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+        last_contact: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
     },
     {
         id: 'ASTAR-002',
@@ -15,7 +15,7 @@ export const MOCK_SATELLITES: Satellite[] = [
         tle: '1 43013U 17073A   21275.51782528  .00000123  00000-0  12345-4 0  9991\n2 43013  98.2123 123.4567 0001234  45.6789  12.3456 14.19876543123456',
         downlink_frequency: 437.5,
         uplink_frequency: 145.9,
-        lastContact: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
+        last_contact: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
     },
     {
         id: 'ASTAR-003',
@@ -23,7 +23,7 @@ export const MOCK_SATELLITES: Satellite[] = [
         tle: '1 40967U 15052B   21275.51782528  .00000456  00000-0  23456-4 0  9992\n2 40967  97.4321 234.5678 0002345  67.8901  23.4567 14.98765432234567',
         downlink_frequency: 436.75,
         uplink_frequency: 145.95,
-        lastContact: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
+        last_contact: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
     },
 ];
 

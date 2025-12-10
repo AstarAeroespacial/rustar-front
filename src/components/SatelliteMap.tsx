@@ -34,18 +34,21 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
     const [position, setPosition] = useState<[number, number] | null>(null);
     const [altitude, setAltitude] = useState<number | null>(null);
     const [track, setTrack] = useState<[number, number][][]>([]);
-    const [utcTime, setUtcTime] = useState<string>(new Date().toUTCString());
+    const [localTime, setLocalTime] = useState<string>('');
 
     const selectedSatelliteObj = satellites.find(
         (s) => s.id === selectedSatellite
     );
 
-    // 🕒 Update UTC clock
+    // 🕒 Update GMT-3 clock
     useEffect(() => {
-        const interval = setInterval(
-            () => setUtcTime(new Date().toUTCString()),
-            60000
-        );
+        const updateTime = () => {
+            const now = new Date();
+            const gmt3Time = new Date(now.getTime() - 3 * 60 * 60 * 1000);
+            setLocalTime(gmt3Time.toUTCString().replace('GMT', 'GMT-3'));
+        };
+        updateTime();
+        const interval = setInterval(updateTime, 60000);
         return () => clearInterval(interval);
     }, []);
 
@@ -181,9 +184,9 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
                     )}
                 </MapContainer>
 
-                {/* 🕓 UTC clock overlay */}
+                {/* 🕓 GMT-3 clock overlay */}
                 <div className='absolute bottom-2 right-3 text-base text-white bg-black/60 px-3 py-1 rounded flex items-center'>
-                    {utcTime}
+                    {localTime}
                 </div>
             </div>
         </div>
