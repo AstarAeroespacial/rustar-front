@@ -79,12 +79,9 @@ const SatellitePasses: NextPage = () => {
                 sat_id: satelliteId,
                 start: new Date(pass.aos).toISOString(),
                 end: new Date(pass.los).toISOString(),
-                commands: ["tracking"],
+                commands: [],
             };
-            
-            console.log('Creating job with:', requestBody);
-            
-            // Use Next.js API route as proxy to avoid CORS issues
+                        
             const response = await fetch('/api/jobs', {
                 method: 'POST',
                 headers: {
@@ -92,20 +89,12 @@ const SatellitePasses: NextPage = () => {
                 },
                 body: JSON.stringify(requestBody),
             });
-            
-            console.log('Response status:', response.status);
-            console.log('Response ok:', response.ok);
-            
+                        
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(`Failed to create job: ${response.status} - ${errorData.error || 'Unknown error'}`);
             }
 
-            const job = await response.json();
-            console.log('Job created:', job);
-            
-            // Keep the button disabled after successful creation
-            // You can add additional logic here to update the status column
         } catch (error) {
             console.error('Error creating job:', error);
             // Re-enable the button on error
@@ -153,22 +142,22 @@ const SatellitePasses: NextPage = () => {
                                 <table className='min-w-full divide-y divide-[#13181D]'>
                                     <thead className='bg-[#0B0D10]'>
                                         <tr>
-                                            <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                            <th className='px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
                                                 Ground Station
                                             </th>
-                                            <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                            <th className='px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
                                                 AOS
                                             </th>
-                                            <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                            <th className='px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
                                                 LOS
                                             </th>
-                                            <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                            <th className='px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
                                                 Duration
                                             </th>
-                                            <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                            <th className='px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
                                                 Max Elevation
                                             </th>
-                                            <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                            <th className='px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
                                                 Actions
                                             </th>
                                         </tr>
@@ -189,41 +178,41 @@ const SatellitePasses: NextPage = () => {
                                                         : 'hover:bg-[#1a2632]/50'
                                                 }`}
                                             >
-                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-white'>
+                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-white text-center'>
                                                     {pass.groundStationName}
                                                 </td>
-                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
+                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300 text-center'>
                                                     {format(
                                                         new Date(pass.aos),
                                                         'MMM d, HH:mm:ss'
                                                     )}
                                                 </td>
-                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
+                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300 text-center'>
                                                     {format(
                                                         new Date(pass.los),
                                                         'MMM d, HH:mm:ss'
                                                     )}
                                                 </td>
-                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
+                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300 text-center'>
                                                     {formatDuration(
                                                         pass.aos,
                                                         pass.los
                                                     )}
                                                 </td>
-                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
+                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300 text-center'>
                                                     {pass.maxElevation.toFixed(
                                                         1
                                                     )}
                                                     °
                                                 </td>
-                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm'>
+                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-center'>
                                                     <Button
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             handleTrack(pass);
                                                         }}
                                                         disabled={trackingJobs[pass.id]}
-                                                        className='bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-1.5 rounded text-xs font-medium'
+                                                        className='bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-1.5 rounded text-xs font-medium'
                                                     >
                                                         {trackingJobs[pass.id] ? 'To be tracked' : 'Track'}
                                                     </Button>
