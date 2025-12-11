@@ -90,7 +90,7 @@ class ApiClient {
         // Add lastContact if not provided by API
         return satellites.map((sat) => ({
             ...sat,
-            lastContact: sat.lastContact || new Date(),
+            lastContact: sat.last_contact || new Date(),
         }));
     }
 
@@ -101,7 +101,7 @@ class ApiClient {
         // Add lastContact if not provided by API
         return {
             ...satellite,
-            lastContact: satellite.lastContact || new Date(),
+            last_contact: satellite.last_contact || new Date(),
         };
     }
 
