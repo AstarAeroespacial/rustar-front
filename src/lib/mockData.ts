@@ -40,8 +40,6 @@ export const MOCK_GROUND_STATIONS: GroundStation[] = [
         latitude: -34.6037,
         longitude: -58.3816,
         altitude: 25,
-        status: 'active',
-        lastUpdate: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
     },
     {
         id: 'GS-002',
@@ -49,13 +47,6 @@ export const MOCK_GROUND_STATIONS: GroundStation[] = [
         latitude: -31.4201,
         longitude: -64.1888,
         altitude: 390,
-        status: 'active',
-        trackingSatellite: {
-            id: 'ASTAR-002',
-            name: 'ASTAR-002',
-            tle: '1 43013U 17073A   21275.51782528  .00000123  00000-0  12345-4 0  9991\n2 43013  98.2123 123.4567 0001234  45.6789  12.3456 14.19876543123456',
-        },
-        lastUpdate: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
     },
     {
         id: 'GS-003',
@@ -63,8 +54,6 @@ export const MOCK_GROUND_STATIONS: GroundStation[] = [
         latitude: -32.8895,
         longitude: -68.8458,
         altitude: 760,
-        status: 'active',
-        lastUpdate: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago
     },
     {
         id: 'GS-004',
@@ -72,8 +61,6 @@ export const MOCK_GROUND_STATIONS: GroundStation[] = [
         latitude: -54.8019,
         longitude: -68.303,
         altitude: 30,
-        status: 'maintenance',
-        lastUpdate: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
     },
 ];
 
