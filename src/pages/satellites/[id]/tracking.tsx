@@ -25,9 +25,8 @@ const SatellitePasses: NextPage = () => {
     const timeframe = useMemo(() => {
         const now = new Date();
 
-        // Start of today (00:00:00)
-        const startOfToday = new Date(now);
-        startOfToday.setHours(0, 0, 0, 0);
+        // Start from current time
+        const startTime = now.getTime();
 
         // End of tomorrow (23:59:59.999)
         const endOfTomorrow = new Date(now);
@@ -35,7 +34,7 @@ const SatellitePasses: NextPage = () => {
         endOfTomorrow.setHours(23, 59, 59, 999);
 
         return {
-            startTime: startOfToday.getTime(),
+            startTime: startTime,
             endTime: endOfTomorrow.getTime(),
         };
     }, []);
