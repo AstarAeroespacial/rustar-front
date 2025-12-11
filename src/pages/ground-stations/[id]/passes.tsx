@@ -74,7 +74,6 @@ const GroundStationPasses: NextPage = () => {
         {
             enabled: !!groundStationId,
             staleTime: 24 * 60 * 60 * 1000, // Consider data fresh for 24 hours
-            gcTime: 48 * 60 * 60 * 1000, // Keep in cache for 48 hours
             refetchOnMount: false, // Don't refetch when component mounts
             refetchOnWindowFocus: false, // Don't refetch when window regains focus
         }
