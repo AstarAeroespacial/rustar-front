@@ -1,5 +1,5 @@
 import { type NextPage } from 'next';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { format } from 'date-fns';
@@ -15,13 +15,41 @@ const SatellitePasses: NextPage = () => {
     // State for hover interaction between table and timeline
     const [hoveredPassId, setHoveredPassId] = useState<string | null>(null);
 
+    // State to force recalculation of timeframe
+    const [refreshKey, setRefreshKey] = useState(0);
+
     // Fetch single satellite by ID
     const { data: selectedSatData } = api.satellite.getSatelliteById.useQuery(
         { id: satelliteId },
         { enabled: !!satelliteId }
     );
 
+    // Recalculate timeframe at midnight every day
+    useEffect(() => {
+        const scheduleNextUpdate = () => {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+
+            // Calculate time until next midnight
+            const timeUntilMidnight = tomorrow.getTime() - now.getTime();
+
+            // Schedule refresh at midnight
+            return setTimeout(() => {
+                setRefreshKey((prev) => prev + 1);
+                // Recursively schedule next update
+                scheduleNextUpdate();
+            }, timeUntilMidnight);
+        };
+
+        const timeout = scheduleNextUpdate();
+
+        return () => clearTimeout(timeout);
+    }, [refreshKey]);
+
     // Fetch satellite passes for the selected satellite
+    // Calculate from now until end of tomorrow
     const timeframe = useMemo(() => {
         const now = new Date();
 
@@ -37,7 +65,7 @@ const SatellitePasses: NextPage = () => {
             startTime: startTime,
             endTime: endOfTomorrow.getTime(),
         };
-    }, []);
+    }, [refreshKey]); // Recalculate when refreshKey changes
 
     const { data: passes } = api.satellite.getSatellitePasses.useQuery(
         {
@@ -45,7 +73,11 @@ const SatellitePasses: NextPage = () => {
             startTime: timeframe.startTime,
             endTime: timeframe.endTime,
         },
-        { enabled: !!satelliteId }
+        {
+            enabled: !!satelliteId,
+            staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+            cacheTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+        }
     );
 
     // Sort passes by AOS time

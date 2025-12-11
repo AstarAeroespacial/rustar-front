@@ -1,7 +1,7 @@
 import { type NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import GroundStationLayout from '~/components/GroundStationLayout';
 import PassTimeline from '~/components/PassTimeline';
@@ -14,12 +14,39 @@ const GroundStationPasses: NextPage = () => {
 
     const [hoveredPassId, setHoveredPassId] = useState<string | null>(null);
 
+    // State to force recalculation of timeframe
+    const [refreshKey, setRefreshKey] = useState(0);
+
     const { data: station } = api.groundStation.getGroundStationById.useQuery(
         { id: groundStationId },
         { enabled: !!groundStationId }
     );
 
-    // Calculate time range (today + tomorrow)
+    // Recalculate timeframe at midnight every day
+    useEffect(() => {
+        const scheduleNextUpdate = () => {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+
+            // Calculate time until next midnight
+            const timeUntilMidnight = tomorrow.getTime() - now.getTime();
+
+            // Schedule refresh at midnight
+            return setTimeout(() => {
+                setRefreshKey((prev) => prev + 1);
+                // Recursively schedule next update
+                scheduleNextUpdate();
+            }, timeUntilMidnight);
+        };
+
+        const timeout = scheduleNextUpdate();
+
+        return () => clearTimeout(timeout);
+    }, [refreshKey]);
+
+    // Calculate time range (from now until end of tomorrow)
     const timeframe = useMemo(() => {
         const now = new Date();
 
@@ -35,7 +62,7 @@ const GroundStationPasses: NextPage = () => {
             startTime: startTime,
             endTime: endOfTomorrow.getTime(),
         };
-    }, []);
+    }, [refreshKey]); // Recalculate when refreshKey changes
 
     // Fetch passes for this ground station
     const { data: passes } = api.groundStation.getGroundStationPasses.useQuery(
@@ -44,7 +71,13 @@ const GroundStationPasses: NextPage = () => {
             startTime: timeframe.startTime,
             endTime: timeframe.endTime,
         },
-        { enabled: !!groundStationId }
+        {
+            enabled: !!groundStationId,
+            staleTime: 24 * 60 * 60 * 1000, // Consider data fresh for 24 hours
+            gcTime: 48 * 60 * 60 * 1000, // Keep in cache for 48 hours
+            refetchOnMount: false, // Don't refetch when component mounts
+            refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        }
     );
 
     // Sort passes by AOS time
