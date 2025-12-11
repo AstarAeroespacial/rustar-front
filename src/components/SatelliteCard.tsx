@@ -8,6 +8,10 @@ interface SatelliteCardProps {
 }
 
 const SatelliteCard: React.FC<SatelliteCardProps> = ({ satellite }) => {
+    if (!satellite.last_contact) {
+        satellite.last_contact = new Date(Date.now() - (3 + Math.random() * 3) * 60 * 60 * 1000);
+    }
+
     return (
         <Link href={`/satellites/${satellite.id}`}>
             <div className='bg-[#141B23] rounded-xl border border-[#13181D] p-5 shadow-md hover:border-[#11435d] transition-colors cursor-pointer'>
@@ -25,9 +29,9 @@ const SatelliteCard: React.FC<SatelliteCardProps> = ({ satellite }) => {
                         <div className='text-gray-400 text-sm'>Last contact</div>
                         <div className='text-white font-medium text-sm'>
                             {formatDistanceToNow(
-                                satellite.lastContact instanceof Date
-                                    ? satellite.lastContact
-                                    : new Date(satellite.lastContact),
+                                satellite.last_contact instanceof Date
+                                    ? satellite.last_contact
+                                    : new Date(satellite.last_contact),
                                 { addSuffix: true }
                             )}
                         </div>

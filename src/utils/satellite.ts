@@ -16,6 +16,7 @@ export function parseTLE(tle: string): { line1: string; line2: string } | null {
     if (line1 && line2) {
         return { line1, line2 };
     }
+
     return null;
 }
 
@@ -46,7 +47,6 @@ export const createSatelliteIcon = (): L.DivIcon => {
     });
 };
 
-// Create a text label for the satellite
 export const createSatelliteLabel = (name: string): L.DivIcon =>
     L.divIcon({
         html: `

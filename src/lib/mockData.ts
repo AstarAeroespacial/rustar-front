@@ -13,7 +13,7 @@ export const MOCK_SATELLITES: Satellite[] = [
         tle: '1 25544U 98067A   24345.51782528  .00016717  00000-0  10270-3 0  9005\n2 25544  51.6412 247.4627 0006703 130.5360 325.0288 15.48908950314314',
         downlink_frequency: 437.425,
         uplink_frequency: 145.825,
-        lastContact: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+        last_contact: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
     },
     {
         id: 'ASTAR-002',
@@ -35,28 +35,28 @@ export const MOCK_SATELLITES: Satellite[] = [
 
 export const MOCK_GROUND_STATIONS: GroundStation[] = [
     {
-        id: 'GS-001',
+        id: 'GS_BSAS_01',
         name: 'Buenos Aires',
         latitude: -34.6037,
         longitude: -58.3816,
         altitude: 25,
     },
     {
-        id: 'GS-002',
+        id: 'GS_CBA_01',
         name: 'Córdoba',
         latitude: -31.4201,
         longitude: -64.1888,
         altitude: 390,
     },
     {
-        id: 'GS-003',
+        id: 'GS_MZA_01',
         name: 'Mendoza',
         latitude: -32.8895,
         longitude: -68.8458,
         altitude: 760,
     },
     {
-        id: 'GS-004',
+        id: 'GS_USH_01',
         name: 'Ushuaia',
         latitude: -54.8019,
         longitude: -68.303,
@@ -145,7 +145,7 @@ export const MOCK_PASSES = (
 ) => {
     const passes = [];
     const duration = endTime - startTime;
-    const numPasses = 3; // Generate 3 passes
+    const numPasses = 3;
 
     for (let i = 0; i < numPasses; i++) {
         const aos =

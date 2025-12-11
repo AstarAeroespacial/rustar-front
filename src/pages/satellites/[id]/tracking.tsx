@@ -5,6 +5,7 @@ import Head from 'next/head';
 import { format } from 'date-fns';
 import SatellitesLayout from '~/components/SatellitesLayout';
 import { api } from '~/utils/api';
+import { Button } from '~/components/ui/Button';
 import PassTimeline from '~/components/PassTimeline';
 
 const SatellitePasses: NextPage = () => {
@@ -12,13 +13,14 @@ const SatellitePasses: NextPage = () => {
     const { id } = router.query;
     const satelliteId = id as string;
 
-    // State for hover interaction between table and timeline
     const [hoveredPassId, setHoveredPassId] = useState<string | null>(null);
+    const [trackingJobs, setTrackingJobs] = useState<Record<string, boolean>>(
+        {}
+    );
 
     // State to force recalculation of timeframe
     const [refreshKey, setRefreshKey] = useState(0);
 
-    // Fetch single satellite by ID
     const { data: selectedSatData } = api.satellite.getSatelliteById.useQuery(
         { id: satelliteId },
         { enabled: !!satelliteId }
@@ -97,10 +99,49 @@ const SatellitePasses: NextPage = () => {
         }));
     }, [sortedPasses]);
 
-    // Helper function to format duration
     const formatDuration = (aos: number, los: number) => {
         const durationMinutes = Math.round((los - aos) / 60000);
         return `${durationMinutes} min`;
+    };
+
+    const handleTrack = async (pass: (typeof sortedPasses)[0]) => {
+        try {
+            setTrackingJobs((prev) => ({ ...prev, [pass.id]: true }));
+
+            const requestBody = {
+                gs_id: pass.groundStationId,
+                sat_id: satelliteId,
+                start: new Date(pass.aos).toISOString(),
+                end: new Date(pass.los).toISOString(),
+                commands: [],
+            };
+
+            const response = await fetch('/api/jobs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(
+                    `Failed to create job: ${response.status} - ${
+                        errorData.error || 'Unknown error'
+                    }`
+                );
+            }
+        } catch (error) {
+            console.error('Error creating job:', error);
+            // Re-enable the button on error
+            setTrackingJobs((prev) => ({ ...prev, [pass.id]: false }));
+            alert(
+                `Failed to create tracking job: ${
+                    error instanceof Error ? error.message : 'Unknown error'
+                }`
+            );
+        }
     };
 
     return (
@@ -142,20 +183,23 @@ const SatellitePasses: NextPage = () => {
                                 <table className='min-w-full divide-y divide-[#13181D]'>
                                     <thead className='bg-[#0B0D10]'>
                                         <tr>
-                                            <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                            <th className='px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
                                                 Ground Station
                                             </th>
-                                            <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                            <th className='px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
                                                 AOS
                                             </th>
-                                            <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                            <th className='px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
                                                 LOS
                                             </th>
-                                            <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                            <th className='px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
                                                 Duration
                                             </th>
-                                            <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                            <th className='px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
                                                 Max Elevation
+                                            </th>
+                                            <th className='px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                                Actions
                                             </th>
                                         </tr>
                                     </thead>
@@ -175,32 +219,50 @@ const SatellitePasses: NextPage = () => {
                                                         : 'hover:bg-[#1a2632]/50'
                                                 }`}
                                             >
-                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-white'>
+                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-white text-center'>
                                                     {pass.groundStationName}
                                                 </td>
-                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
+                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300 text-center'>
                                                     {format(
                                                         new Date(pass.aos),
                                                         'MMM d, HH:mm:ss'
                                                     )}
                                                 </td>
-                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
+                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300 text-center'>
                                                     {format(
                                                         new Date(pass.los),
                                                         'MMM d, HH:mm:ss'
                                                     )}
                                                 </td>
-                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
+                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300 text-center'>
                                                     {formatDuration(
                                                         pass.aos,
                                                         pass.los
                                                     )}
                                                 </td>
-                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
+                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300 text-center'>
                                                     {pass.maxElevation.toFixed(
                                                         1
                                                     )}
                                                     °
+                                                </td>
+                                                <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-center'>
+                                                    <Button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleTrack(pass);
+                                                        }}
+                                                        disabled={
+                                                            trackingJobs[
+                                                                pass.id
+                                                            ]
+                                                        }
+                                                        className='bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-1.5 rounded text-xs font-medium'
+                                                    >
+                                                        {trackingJobs[pass.id]
+                                                            ? 'To be tracked'
+                                                            : 'Track'}
+                                                    </Button>
                                                 </td>
                                             </tr>
                                         ))}
