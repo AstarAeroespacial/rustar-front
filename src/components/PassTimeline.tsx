@@ -6,6 +6,7 @@ import Timeline, {
     DateHeader,
     TimelineMarkers,
     TodayMarker,
+    CustomMarker,
 } from 'react-calendar-timeline';
 import 'react-calendar-timeline/style.css';
 
@@ -36,8 +37,13 @@ const PassTimeline = <T extends TimelineItem>({
     tooltipContent,
 }: TimelineProps<T>) => {
     const timelineRef = useRef<HTMLDivElement>(null);
+
+    // Calculate initial zoom level (85% of full range)
+    const initialRange = (endTime - startTime) * 0.7;
     const [visibleTimeStart, setVisibleTimeStart] = useState(startTime);
-    const [visibleTimeEnd, setVisibleTimeEnd] = useState(endTime);
+    const [visibleTimeEnd, setVisibleTimeEnd] = useState(
+        startTime + initialRange
+    );
 
     // Touch gesture handling
     const touchRef = useRef({
@@ -225,6 +231,8 @@ const PassTimeline = <T extends TimelineItem>({
                         visibleTimeEnd={visibleTimeEnd}
                         sidebarWidth={0}
                         lineHeight={40}
+                        minZoom={30 * 60 * 1000}
+                        maxZoom={(endTime - startTime) * 0.7}
                         timeSteps={{
                             second: 1,
                             minute: 15,
@@ -282,36 +290,29 @@ const PassTimeline = <T extends TimelineItem>({
                             newVisibleTimeEnd,
                             updateScrollCanvas
                         ) => {
-                            // Update state when timeline scrolls/zooms
-                            setVisibleTimeStart(newVisibleTimeStart);
-                            setVisibleTimeEnd(newVisibleTimeEnd);
+                            const newRange =
+                                newVisibleTimeEnd - newVisibleTimeStart;
 
-                            // Restrict scrolling to the fetched time window (today + tomorrow)
-                            if (
-                                newVisibleTimeStart < startTime &&
-                                newVisibleTimeEnd > endTime
-                            ) {
-                                updateScrollCanvas(startTime, endTime);
-                            } else if (newVisibleTimeStart < startTime) {
-                                updateScrollCanvas(
-                                    startTime,
-                                    startTime +
-                                        (newVisibleTimeEnd -
-                                            newVisibleTimeStart)
-                                );
-                            } else if (newVisibleTimeEnd > endTime) {
-                                updateScrollCanvas(
-                                    endTime -
-                                        (newVisibleTimeEnd -
-                                            newVisibleTimeStart),
-                                    endTime
-                                );
-                            } else {
-                                updateScrollCanvas(
-                                    newVisibleTimeStart,
-                                    newVisibleTimeEnd
-                                );
+                            // Restrict scrolling within the time window (now to end of tomorrow)
+                            let adjustedStart = newVisibleTimeStart;
+                            let adjustedEnd = newVisibleTimeEnd;
+
+                            // Don't allow scrolling before startTime (now)
+                            if (adjustedStart < startTime) {
+                                adjustedStart = startTime;
+                                adjustedEnd = startTime + newRange;
                             }
+
+                            // Don't allow scrolling after endTime (end of tomorrow)
+                            if (adjustedEnd > endTime) {
+                                adjustedEnd = endTime;
+                                adjustedStart = endTime - newRange;
+                            }
+
+                            // Update state and canvas
+                            setVisibleTimeStart(adjustedStart);
+                            setVisibleTimeEnd(adjustedEnd);
+                            updateScrollCanvas(adjustedStart, adjustedEnd);
                         }}
                         buffer={1}
                     >
@@ -341,6 +342,25 @@ const PassTimeline = <T extends TimelineItem>({
                                     />
                                 )}
                             </TodayMarker>
+                            {/* Midnight marker - start of tomorrow */}
+                            <CustomMarker
+                                date={(() => {
+                                    const midnight = new Date();
+                                    midnight.setHours(24, 0, 0, 0);
+                                    return midnight.getTime();
+                                })()}
+                            >
+                                {({ styles }) => (
+                                    <div
+                                        style={{
+                                            ...styles,
+                                            backgroundColor: '#3b82f6',
+                                            width: '2px',
+                                            zIndex: 80,
+                                        }}
+                                    />
+                                )}
+                            </CustomMarker>
                         </TimelineMarkers>
                     </Timeline>
                 </div>
