@@ -30,31 +30,31 @@ const SatellitesCommands: NextPage = () => {
             id: '1',
             command: 'REBOOT',
             status: 'received',
-            timestamp: '2024-01-02 14:30:02',
+            timestamp: '2025-10-02 19:30:02',
         },
         {
             id: '2',
             command: 'STATUS_CHECK',
             status: 'received',
-            timestamp: '2024-01-02 14:29:18',
+            timestamp: '2025-10-02 18:29:18',
         },
         {
             id: '3',
             command: 'SIGNAL_ADJUST_POWER',
             status: 'failed',
-            timestamp: '2024-01-02 14:28:42',
+            timestamp: '2025-10-02 18:28:42',
         },
         {
             id: '4',
             command: 'REBOOT',
             status: 'received',
-            timestamp: '2024-01-02 14:28:02',
+            timestamp: '2025-10-02 15:28:02',
         },
         {
             id: '5',
             command: 'STATUS_CHECK',
             status: 'pending',
-            timestamp: '2024-01-02 14:27:46',
+            timestamp: '2025-10-02 14:27:46',
         },
     ]);
 

@@ -4,7 +4,7 @@ export const MOCK_SATELLITES: Satellite[] = [
     {
         id: 'ASTAR-001',
         name: 'ASTAR-001',
-        tle: '1 25544U 98067A   21275.51782528  .00016717  00000-0  10270-3 0  9005\n2 25544  51.6412 247.4627 0006703 130.5360 325.0288 15.48908950314314',
+        tle: 'ASTAR-001\n1 25544U 98067A   21275.51782528  .00016717  00000-0  10270-3 0  9005\n2 25544  51.6412 247.4627 0006703 130.5360 325.0288 15.48908950314314',
         downlink_frequency: 437.425,
         uplink_frequency: 145.825,
         last_contact: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
@@ -12,24 +12,16 @@ export const MOCK_SATELLITES: Satellite[] = [
     {
         id: 'ASTAR-002',
         name: 'ASTAR-002',
-        tle: '1 43013U 17073A   21275.51782528  .00000123  00000-0  12345-4 0  9991\n2 43013  98.2123 123.4567 0001234  45.6789  12.3456 14.19876543123456',
+        tle: 'ASTAR-002\n1 43013U 17073A   21275.51782528  .00000123  00000-0  12345-4 0  9991\n2 43013  98.2123 123.4567 0001234  45.6789  12.3456 14.19876543123456',
         downlink_frequency: 437.5,
         uplink_frequency: 145.9,
         last_contact: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
-    },
-    {
-        id: 'ASTAR-003',
-        name: 'ASTAR-003',
-        tle: '1 40967U 15052B   21275.51782528  .00000456  00000-0  23456-4 0  9992\n2 40967  97.4321 234.5678 0002345  67.8901  23.4567 14.98765432234567',
-        downlink_frequency: 436.75,
-        uplink_frequency: 145.95,
-        last_contact: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
     },
 ];
 
 export const MOCK_GROUND_STATIONS: GroundStation[] = [
     {
-        id: 'GS-001',
+        id: 'GS_BSAS_01',
         name: 'Buenos Aires',
         latitude: -34.6037,
         longitude: -58.3816,
@@ -38,7 +30,7 @@ export const MOCK_GROUND_STATIONS: GroundStation[] = [
         lastUpdate: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
     },
     {
-        id: 'GS-002',
+        id: 'GS_CBA_01',
         name: 'Córdoba',
         latitude: -31.4201,
         longitude: -64.1888,
@@ -47,12 +39,12 @@ export const MOCK_GROUND_STATIONS: GroundStation[] = [
         trackingSatellite: {
             id: 'ASTAR-002',
             name: 'ASTAR-002',
-            tle: '1 43013U 17073A   21275.51782528  .00000123  00000-0  12345-4 0  9991\n2 43013  98.2123 123.4567 0001234  45.6789  12.3456 14.19876543123456',
+            tle: 'ASTAR-002\n1 43013U 17073A   21275.51782528  .00000123  00000-0  12345-4 0  9991\n2 43013  98.2123 123.4567 0001234  45.6789  12.3456 14.19876543123456',
         },
         lastUpdate: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
     },
     {
-        id: 'GS-003',
+        id: 'GS_MZA_01',
         name: 'Mendoza',
         latitude: -32.8895,
         longitude: -68.8458,
@@ -61,7 +53,7 @@ export const MOCK_GROUND_STATIONS: GroundStation[] = [
         lastUpdate: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago
     },
     {
-        id: 'GS-004',
+        id: 'GS_USH_01',
         name: 'Ushuaia',
         latitude: -54.8019,
         longitude: -68.3030,
@@ -149,7 +141,7 @@ export const MOCK_PASSES = (
 ) => {
     const passes = [];
     const duration = endTime - startTime;
-    const numPasses = 3; // Generate 3 passes
+    const numPasses = 3;
 
     for (let i = 0; i < numPasses; i++) {
         const aos =
