@@ -1,11 +1,17 @@
 import L from 'leaflet';
 import * as satellite from 'satellite.js';
 
-export function parseTLE(tle: string): { line1: string; line2: string } | null {
+export function parseTLE(tle: string): { line1: string; line2: string; satelliteId?: string } | null {
     const lines = tle.trim().split('\n').map(line => line.trim());
-    if (lines.length >= 2 && lines[0] && lines[1]) {
-        return { line1: lines[0], line2: lines[1] };
+    
+    if (lines.length >= 3 && lines[0] && lines[1] && lines[2]) {
+        return { 
+            satelliteId: lines[0],
+            line1: lines[1], 
+            line2: lines[2] 
+        };
     }
+
     return null;
 }
 
@@ -36,7 +42,6 @@ export const createSatelliteIcon = (): L.DivIcon => {
     });
 };
 
-// Create a text label for the satellite
 export const createSatelliteLabel = (name: string): L.DivIcon =>
     L.divIcon({
         html: `

@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import SatellitesLayout from '~/components/SatellitesLayout';
+import { toISOStringGMT3, toLocaleStringGMT3 } from '~/utils/dateUtils';
 import { api } from '~/utils/api';
 import {
     Chart as ChartJS,
@@ -275,9 +276,9 @@ const SatellitesMonitoring: NextPage = () => {
                                                 key={index}
                                                 className='mb-1 whitespace-nowrap'
                                             >
-                                                {new Date(
+                                                {toISOStringGMT3(
                                                     data.timestamp * 1000
-                                                ).toISOString()}{' '}
+                                                )}{' '}
                                                 | PKT_ID: {index + 1} |
                                                 DATA_SIZE: 128 bytes
                                             </div>
@@ -316,10 +317,10 @@ const SatellitesMonitoring: NextPage = () => {
                                                     .map((data, index) => (
                                                         <tr key={index}>
                                                             <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-white'>
-                                                                {new Date(
+                                                                {toLocaleStringGMT3(
                                                                     data.timestamp *
                                                                         1000
-                                                                ).toLocaleString()}
+                                                                )}
                                                             </td>
                                                             <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
                                                                 {index + 1}

@@ -54,7 +54,7 @@ export const groundStationRouter = createTRPCRouter({
             const passes = MOCK_SATELLITES.flatMap((satellite, satIndex) => {
                 return Array.from({ length: passesPerSatellite }, (_, passIndex) => {
                     const passOffset = (satIndex * 1.5 + passIndex * 6) * 60 * 60 * 1000;
-                    const aos = input.startTime + passOffset;
+                    const aos = input.startTime + passOffset + 2 * 60 * 60 * 1000; // Add 2 hours
                     const duration = (5 + Math.random() * 10) * 60 * 1000; // 5-15 minutes
 
                     return {
