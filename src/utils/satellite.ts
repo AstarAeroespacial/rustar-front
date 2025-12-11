@@ -1,15 +1,20 @@
 import L from 'leaflet';
 import * as satellite from 'satellite.js';
 
-export function parseTLE(tle: string): { line1: string; line2: string; satelliteId?: string } | null {
-    const lines = tle.trim().split('\n').map(line => line.trim());
-    
-    if (lines.length >= 3 && lines[0] && lines[1] && lines[2]) {
-        return { 
-            satelliteId: lines[0],
-            line1: lines[1], 
-            line2: lines[2] 
-        };
+export function parseTLE(tle: string): { line1: string; line2: string } | null {
+    const lines = tle
+        .trim()
+        .split('\n')
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0);
+
+    // TLE can be 2 or 3 lines (with satellite name as first line)
+    // We need the lines that start with "1 " and "2 "
+    const line1 = lines.find((line) => line.startsWith('1 '));
+    const line2 = lines.find((line) => line.startsWith('2 '));
+
+    if (line1 && line2) {
+        return { line1, line2 };
     }
 
     return null;
@@ -68,6 +73,13 @@ export function getGroundTrack(
     minutes = 90
 ): [number, number][][] {
     const satrec = satellite.twoline2satrec(tle1, tle2);
+
+    // Check for TLE parsing errors
+    if (satrec.error) {
+        console.error('TLE parsing error in getGroundTrack:', satrec.error);
+        return [];
+    }
+
     const now = new Date();
     const segments: [number, number][][] = [];
     let current: [number, number][] = [];
@@ -82,6 +94,12 @@ export function getGroundTrack(
         const gd = satellite.eciToGeodetic(pv.position, gmst);
         const lat = satellite.degreesLat(gd.latitude);
         const lon = normalizeLongitude(satellite.degreesLong(gd.longitude));
+
+        // Validate coordinates before adding
+        if (isNaN(lat) || isNaN(lon)) {
+            console.warn('Invalid coordinates generated:', { lat, lon });
+            continue;
+        }
 
         if (prevLon !== null && Math.abs(lon - prevLon) > 180) {
             segments.push(current);

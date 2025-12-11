@@ -9,7 +9,9 @@ interface SatelliteCardProps {
 
 const SatelliteCard: React.FC<SatelliteCardProps> = ({ satellite }) => {
     if (!satellite.last_contact) {
-        satellite.last_contact = new Date(Date.now() - (3 + Math.random() * 3) * 60 * 60 * 1000);
+        satellite.last_contact = new Date(
+            Date.now() - (3 + Math.random() * 3) * 60 * 60 * 1000
+        );
     }
 
     return (
@@ -20,13 +22,17 @@ const SatelliteCard: React.FC<SatelliteCardProps> = ({ satellite }) => {
                     <h2 className='text-lg font-semibold text-white tracking-wide'>
                         {satellite.name}
                     </h2>
-                    <p className='text-dark-400 text-sm font-mono'>{satellite.id}</p>
+                    <p className='text-dark-400 text-sm font-mono'>
+                        {satellite.id}
+                    </p>
                 </div>
 
                 {/* Info Section */}
                 <div className='space-y-3'>
                     <div>
-                        <div className='text-gray-400 text-sm'>Last contact</div>
+                        <div className='text-gray-400 text-sm'>
+                            Last contact
+                        </div>
                         <div className='text-white font-medium text-sm'>
                             {formatDistanceToNow(
                                 satellite.last_contact instanceof Date

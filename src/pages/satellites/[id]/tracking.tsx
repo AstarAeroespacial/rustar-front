@@ -1,5 +1,5 @@
 import { type NextPage } from 'next';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { format } from 'date-fns';
@@ -14,14 +14,44 @@ const SatellitePasses: NextPage = () => {
     const satelliteId = id as string;
 
     const [hoveredPassId, setHoveredPassId] = useState<string | null>(null);
-    const [trackingJobs, setTrackingJobs] = useState<Record<string, boolean>>({});
+    const [trackingJobs, setTrackingJobs] = useState<Record<string, boolean>>(
+        {}
+    );
+
+    // State to force recalculation of timeframe
+    const [refreshKey, setRefreshKey] = useState(0);
 
     const { data: selectedSatData } = api.satellite.getSatelliteById.useQuery(
         { id: satelliteId },
         { enabled: !!satelliteId }
     );
 
+    // Recalculate timeframe at midnight every day
+    useEffect(() => {
+        const scheduleNextUpdate = () => {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+
+            // Calculate time until next midnight
+            const timeUntilMidnight = tomorrow.getTime() - now.getTime();
+
+            // Schedule refresh at midnight
+            return setTimeout(() => {
+                setRefreshKey((prev) => prev + 1);
+                // Recursively schedule next update
+                scheduleNextUpdate();
+            }, timeUntilMidnight);
+        };
+
+        const timeout = scheduleNextUpdate();
+
+        return () => clearTimeout(timeout);
+    }, [refreshKey]);
+
     // Fetch satellite passes for the selected satellite
+    // Calculate from now until end of tomorrow
     const timeframe = useMemo(() => {
         const now = new Date();
 
@@ -37,7 +67,7 @@ const SatellitePasses: NextPage = () => {
             startTime: startTime,
             endTime: endOfTomorrow.getTime(),
         };
-    }, []);
+    }, [refreshKey]); // Recalculate when refreshKey changes
 
     const { data: passes } = api.satellite.getSatellitePasses.useQuery(
         {
@@ -45,7 +75,11 @@ const SatellitePasses: NextPage = () => {
             startTime: timeframe.startTime,
             endTime: timeframe.endTime,
         },
-        { enabled: !!satelliteId }
+        {
+            enabled: !!satelliteId,
+            staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+            cacheTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+        }
     );
 
     // Sort passes by AOS time
@@ -70,10 +104,10 @@ const SatellitePasses: NextPage = () => {
         return `${durationMinutes} min`;
     };
 
-    const handleTrack = async (pass: typeof sortedPasses[0]) => {
+    const handleTrack = async (pass: (typeof sortedPasses)[0]) => {
         try {
-            setTrackingJobs(prev => ({ ...prev, [pass.id]: true }));
-            
+            setTrackingJobs((prev) => ({ ...prev, [pass.id]: true }));
+
             const requestBody = {
                 gs_id: pass.groundStationId,
                 sat_id: satelliteId,
@@ -81,7 +115,7 @@ const SatellitePasses: NextPage = () => {
                 end: new Date(pass.los).toISOString(),
                 commands: [],
             };
-                        
+
             const response = await fetch('/api/jobs', {
                 method: 'POST',
                 headers: {
@@ -89,17 +123,24 @@ const SatellitePasses: NextPage = () => {
                 },
                 body: JSON.stringify(requestBody),
             });
-                        
+
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(`Failed to create job: ${response.status} - ${errorData.error || 'Unknown error'}`);
+                throw new Error(
+                    `Failed to create job: ${response.status} - ${
+                        errorData.error || 'Unknown error'
+                    }`
+                );
             }
-
         } catch (error) {
             console.error('Error creating job:', error);
             // Re-enable the button on error
-            setTrackingJobs(prev => ({ ...prev, [pass.id]: false }));
-            alert(`Failed to create tracking job: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            setTrackingJobs((prev) => ({ ...prev, [pass.id]: false }));
+            alert(
+                `Failed to create tracking job: ${
+                    error instanceof Error ? error.message : 'Unknown error'
+                }`
+            );
         }
     };
 
@@ -211,10 +252,16 @@ const SatellitePasses: NextPage = () => {
                                                             e.stopPropagation();
                                                             handleTrack(pass);
                                                         }}
-                                                        disabled={trackingJobs[pass.id]}
+                                                        disabled={
+                                                            trackingJobs[
+                                                                pass.id
+                                                            ]
+                                                        }
                                                         className='bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-1.5 rounded text-xs font-medium'
                                                     >
-                                                        {trackingJobs[pass.id] ? 'To be tracked' : 'Track'}
+                                                        {trackingJobs[pass.id]
+                                                            ? 'To be tracked'
+                                                            : 'Track'}
                                                     </Button>
                                                 </td>
                                             </tr>

@@ -1,10 +1,16 @@
-import type { Satellite, GroundStation, TelemetryResponse, AvailableCommand, Command } from '~/types/api';
+import type {
+    Satellite,
+    GroundStation,
+    TelemetryResponse,
+    AvailableCommand,
+    Command,
+} from '~/types/api';
 
 export const MOCK_SATELLITES: Satellite[] = [
     {
         id: 'ASTAR-001',
         name: 'ASTAR-001',
-        tle: 'ASTAR-001\n1 25544U 98067A   21275.51782528  .00016717  00000-0  10270-3 0  9005\n2 25544  51.6412 247.4627 0006703 130.5360 325.0288 15.48908950314314',
+        tle: '1 25544U 98067A   24345.51782528  .00016717  00000-0  10270-3 0  9005\n2 25544  51.6412 247.4627 0006703 130.5360 325.0288 15.48908950314314',
         downlink_frequency: 437.425,
         uplink_frequency: 145.825,
         last_contact: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
@@ -12,10 +18,18 @@ export const MOCK_SATELLITES: Satellite[] = [
     {
         id: 'ASTAR-002',
         name: 'ASTAR-002',
-        tle: 'ASTAR-002\n1 43013U 17073A   21275.51782528  .00000123  00000-0  12345-4 0  9991\n2 43013  98.2123 123.4567 0001234  45.6789  12.3456 14.19876543123456',
+        tle: '1 43013U 17073A   24345.51782528  .00000123  00000-0  12345-4 0  9991\n2 43013  98.2123 123.4567 0001234  45.6789  12.3456 14.19876543123456',
         downlink_frequency: 437.5,
         uplink_frequency: 145.9,
         last_contact: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
+    },
+    {
+        id: 'ASTAR-003',
+        name: 'ASTAR-003',
+        tle: '1 40967U 15052B   24345.51782528  .00000456  00000-0  23456-4 0  9992\n2 40967  97.4321 234.5678 0002345  67.8901  23.4567 14.98765432234567',
+        downlink_frequency: 436.75,
+        uplink_frequency: 145.95,
+        last_contact: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
     },
 ];
 
@@ -26,8 +40,6 @@ export const MOCK_GROUND_STATIONS: GroundStation[] = [
         latitude: -34.6037,
         longitude: -58.3816,
         altitude: 25,
-        status: 'active',
-        lastUpdate: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
     },
     {
         id: 'GS_CBA_01',
@@ -35,13 +47,6 @@ export const MOCK_GROUND_STATIONS: GroundStation[] = [
         latitude: -31.4201,
         longitude: -64.1888,
         altitude: 390,
-        status: 'active',
-        trackingSatellite: {
-            id: 'ASTAR-002',
-            name: 'ASTAR-002',
-            tle: 'ASTAR-002\n1 43013U 17073A   21275.51782528  .00000123  00000-0  12345-4 0  9991\n2 43013  98.2123 123.4567 0001234  45.6789  12.3456 14.19876543123456',
-        },
-        lastUpdate: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
     },
     {
         id: 'GS_MZA_01',
@@ -49,27 +54,26 @@ export const MOCK_GROUND_STATIONS: GroundStation[] = [
         latitude: -32.8895,
         longitude: -68.8458,
         altitude: 760,
-        status: 'active',
-        lastUpdate: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago
     },
     {
         id: 'GS_USH_01',
         name: 'Ushuaia',
         latitude: -54.8019,
-        longitude: -68.3030,
+        longitude: -68.303,
         altitude: 30,
-        status: 'maintenance',
-        lastUpdate: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
     },
 ];
 
-export const MOCK_TELEMETRY: TelemetryResponse[] = Array.from({ length: 20 }, (_, i) => ({
-    timestamp: Math.floor(Date.now() / 1000) - i * 300, // 5 minute intervals
-    temperature: 20 + Math.random() * 10 - 5,
-    voltage: 12 + Math.random() * 2 - 1,
-    current: 2 + Math.random() * 0.5 - 0.25,
-    battery_level: 85 + Math.random() * 10 - 5, // 80-90%
-}));
+export const MOCK_TELEMETRY: TelemetryResponse[] = Array.from(
+    { length: 20 },
+    (_, i) => ({
+        timestamp: Math.floor(Date.now() / 1000) - i * 300, // 5 minute intervals
+        temperature: 20 + Math.random() * 10 - 5,
+        voltage: 12 + Math.random() * 2 - 1,
+        current: 2 + Math.random() * 0.5 - 0.25,
+        battery_level: 85 + Math.random() * 10 - 5, // 80-90%
+    })
+);
 
 export const MOCK_COMMANDS: AvailableCommand[] = [
     {

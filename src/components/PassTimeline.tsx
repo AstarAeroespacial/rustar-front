@@ -169,30 +169,80 @@ const PassTimeline = <T extends TimelineItem>({
         };
     }, [startTime, endTime, visibleTimeStart, visibleTimeEnd]);
 
+    // Color palette for satellites
+    const getColorForGroup = (groupId: string, groupName: string) => {
+        // Generate consistent color based on groupId
+        const colors = [
+            '#3b82f6', // blue
+            '#f97316', // orange
+            '#10b981', // green
+            '#8b5cf6', // purple
+            '#ec4899', // pink
+            '#14b8a6', // teal
+            '#f59e0b', // amber
+            '#6366f1', // indigo
+        ];
+        const hash = groupId
+            .split('')
+            .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        return colors[hash % colors.length];
+    };
+
     // Transform items into timeline format
     const { groups, timelineItems } = useMemo(() => {
-        // Get unique groups
-        const groupMap = new Map<string, string>();
-        items.forEach((item) => {
-            groupMap.set(item.groupId, item.groupName);
-        });
+        // Sort items by start time
+        const sortedItems = [...items].sort(
+            (a, b) => a.startTime - b.startTime
+        );
 
-        // Create groups
-        const groups = Array.from(groupMap.entries()).map(([id, name]) => ({
-            id,
-            title: name,
-        }));
+        // Assign items to rows/groups to avoid overlaps
+        const rows: TimelineItem[][] = [];
 
-        // Create timeline items - include hover state in item data
-        const timelineItems = items.map((item) => ({
-            id: item.id,
-            group: item.groupId,
+        for (const item of sortedItems) {
+            // Find first row where this item doesn't overlap with existing items
+            let placed = false;
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i]!;
+                const overlaps = row.some(
+                    (existingItem) =>
+                        item.startTime < existingItem.endTime &&
+                        item.endTime > existingItem.startTime
+                );
+
+                if (!overlaps) {
+                    row.push(item);
+                    placed = true;
+                    break;
+                }
+            }
+
+            // If no suitable row found, create a new one
+            if (!placed) {
+                rows.push([item]);
+            }
+        }
+
+        // Create groups for each row
+        const groups = rows.map((_, index) => ({
+            id: `row-${index}`,
             title: '',
-            start_time: item.startTime,
-            end_time: item.endTime,
-            isHovered: hoveredItemId === item.id,
-            originalItem: item,
         }));
+
+        // Create timeline items with assigned groups
+        const timelineItems = sortedItems.map((item) => {
+            const rowIndex = rows.findIndex((row) => row.includes(item));
+            return {
+                id: item.id,
+                group: `row-${rowIndex}`,
+                title: '',
+                start_time: item.startTime,
+                end_time: item.endTime,
+                isHovered: hoveredItemId === item.id,
+                originalItem: item,
+                groupId: item.groupId,
+                groupName: item.groupName,
+            };
+        });
 
         return { groups, timelineItems };
     }, [items, hoveredItemId]);
@@ -230,9 +280,11 @@ const PassTimeline = <T extends TimelineItem>({
                         visibleTimeStart={visibleTimeStart}
                         visibleTimeEnd={visibleTimeEnd}
                         sidebarWidth={0}
-                        lineHeight={40}
+                        lineHeight={35}
                         minZoom={30 * 60 * 1000}
                         maxZoom={(endTime - startTime) * 0.7}
+                        stackItems={false}
+                        itemHeightRatio={0.75}
                         timeSteps={{
                             second: 1,
                             minute: 15,

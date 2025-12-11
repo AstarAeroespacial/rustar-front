@@ -22,7 +22,13 @@ import {
 interface SatelliteMapProps {
     satellites: Satellite[];
     selectedSatellite: string | null;
-    onPositionUpdate?: (position: { latitude: number; longitude: number; altitude: number } | null) => void;
+    onPositionUpdate?: (
+        position: {
+            latitude: number;
+            longitude: number;
+            altitude: number;
+        } | null
+    ) => void;
 }
 
 const SatelliteMap: React.FC<SatelliteMapProps> = ({
@@ -56,12 +62,23 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
     useEffect(() => {
         if (!selectedSatelliteObj?.tle) return;
         let cancelled = false;
-        
+
         const tleData = parseTLE(selectedSatelliteObj.tle);
         if (!tleData) return;
-        
+
         const { line1, line2 } = tleData;
         const satrec = satellite.twoline2satrec(line1, line2);
+
+        // Check for TLE parsing errors
+        if (satrec.error) {
+            console.error(
+                'TLE parsing error:',
+                satrec.error,
+                'for satellite:',
+                selectedSatelliteObj.name
+            );
+            return;
+        }
 
         const updatePosition = () => {
             if (cancelled) return;
@@ -73,10 +90,20 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
             const lat = satellite.degreesLat(gd.latitude);
             const lon = normalizeLongitude(satellite.degreesLong(gd.longitude));
             const alt = gd.height;
-            
+
+            // Validate coordinates before updating
+            if (isNaN(lat) || isNaN(lon) || isNaN(alt)) {
+                console.warn('Invalid satellite position calculated:', {
+                    lat,
+                    lon,
+                    alt,
+                });
+                return;
+            }
+
             setPosition([lat, lon]);
             setAltitude(alt);
-            
+
             // Notify parent component of position update
             if (onPositionUpdate) {
                 onPositionUpdate({
@@ -105,9 +132,9 @@ const SatelliteMap: React.FC<SatelliteMapProps> = ({
     const minElevationRad = (minElevationDeg * Math.PI) / 180;
     const theta = altitude
         ? Math.acos(
-            (earthRadiusKm / (earthRadiusKm + altitude)) *
-            Math.cos(minElevationRad)
-        ) - minElevationRad
+              (earthRadiusKm / (earthRadiusKm + altitude)) *
+                  Math.cos(minElevationRad)
+          ) - minElevationRad
         : 0;
     const radiusKm = Math.max(0, Math.min(earthRadiusKm * theta, 4000));
 

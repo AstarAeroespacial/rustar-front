@@ -8,6 +8,10 @@ import {
     MOCK_PASSES,
     USE_MOCK_DATA,
 } from '~/lib/mockData';
+import {
+    calculatePassesForMultipleStations,
+    parseTLE,
+} from '~/utils/passCalculator';
 
 export const satelliteRouter = createTRPCRouter({
     // Get historic telemetry data
@@ -178,6 +182,7 @@ export const satelliteRouter = createTRPCRouter({
                 satelliteId: z.string(),
                 startTime: z.number(),
                 endTime: z.number(),
+                minElevation: z.number().optional().default(10),
             })
         )
         .query(async ({ input }) => {
@@ -189,42 +194,49 @@ export const satelliteRouter = createTRPCRouter({
                 );
             }
 
-            // Mock implementation - would calculate actual passes using satellite.js
-            const now = Date.now();
+            try {
+                // Fetch satellite data (with TLE)
+                const satellite = await apiClient.getSatelliteById(
+                    input.satelliteId
+                );
 
-            return [
-                {
-                    id: 'pass-1',
-                    groundStationId: 'GS_BSAS_01',
-                    groundStationName: 'Buenos Aires',
-                    aos: now + 2 * 60 * 60 * 1000, // 2 hours from now
-                    los: now + 2.15 * 60 * 60 * 1000, // 9 minutes later
-                    maxElevation: 45.2,
-                },
-                {
-                    id: 'pass-2',
-                    groundStationId: 'GS_CBA_01',
-                    groundStationName: 'Córdoba',
-                    aos: now + 5 * 60 * 60 * 1000, // 5 hours from now
-                    los: now + 5.12 * 60 * 60 * 1000, // 7 minutes later
-                    maxElevation: 38.5,
-                },
-                {
-                    id: 'pass-3',
-                    groundStationId: 'GS_BSAS_01',
-                    groundStationName: 'Buenos Aires',
-                    aos: now + 8 * 60 * 60 * 1000, // 8 hours from now
-                    los: now + 8.18 * 60 * 60 * 1000, // 11 minutes later
-                    maxElevation: 52.1,
-                },
-                {
-                    id: 'pass-4',
-                    groundStationId: 'GS_MZA_01',
-                    groundStationName: 'Mendoza',
-                    aos: now + 10 * 60 * 60 * 1000, // 10 hours from now
-                    los: now + 10.1 * 60 * 60 * 1000, // 6 minutes later
-                    maxElevation: 31.8,
-                },
-            ];
+                if (!satellite || !satellite.tle) {
+                    throw new Error('Satellite or TLE not found');
+                }
+
+                // Parse TLE (handles 2 or 3 line format)
+                const tleData = parseTLE(satellite.tle);
+                if (!tleData) {
+                    throw new Error('Invalid TLE format');
+                }
+                const { line1: tleLine1, line2: tleLine2 } = tleData;
+
+                // Fetch all ground stations
+                const groundStations = await apiClient.getGroundStations();
+
+                const stations = groundStations.map((gs) => ({
+                    id: gs.id,
+                    name: gs.name,
+                    latitude: gs.latitude,
+                    longitude: gs.longitude,
+                    altitude: gs.altitude,
+                }));
+
+                // Calculate passes using satellite.js
+                const passes = calculatePassesForMultipleStations(
+                    tleLine1!,
+                    tleLine2!,
+                    stations,
+                    input.startTime,
+                    input.endTime,
+                    input.minElevation
+                );
+
+                return passes;
+            } catch (error) {
+                console.error('Error calculating satellite passes:', error);
+                // Return empty array on error
+                return [];
+            }
         }),
 });
