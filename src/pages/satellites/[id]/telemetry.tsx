@@ -11,17 +11,25 @@ import {
     LinearScale,
     PointElement,
     LineElement,
+    BarElement,
+    BarController,
     Title,
     Tooltip,
     Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { getStats, formatNumber } from '~/utils/statistics';
+import { saveAs } from 'file-saver';
+import { Button } from '~/components/ui/Button';
+import type { TelemetryResponse } from '~/types/api';
 
 ChartJS.register(
     CategoryScale,
     LinearScale,
     PointElement,
     LineElement,
+    BarElement,
+    BarController,
     Title,
     Tooltip,
     Legend
@@ -38,15 +46,13 @@ const SatellitesMonitoring: NextPage = () => {
         { enabled: !!satelliteId }
     );
 
-    const [selectedSatellite, setSelectedSatellite] = useState('ASTAR-001');
-    const [telemetryType, setTelemetryType] = useState('Housekeeping');
     const [updateInterval, setUpdateInterval] = useState(5);
     const [isReceiving, setIsReceiving] = useState(true);
 
     const { data: telemetryData, refetch } =
         api.satellite.getLatestTelemetry.useQuery(
-            { satellite: selectedSatellite, amount: 20 },
-            { enabled: !!selectedSatellite }
+            { satellite: satelliteId, amount: 20 },
+            { enabled: !!satelliteId }
         );
 
     // Auto-refresh telemetry data
@@ -92,37 +98,123 @@ const SatellitesMonitoring: NextPage = () => {
         },
     };
 
-    const temperatureData = {
-        labels:
-            telemetryData?.map(
-                (_, index) => `T-${telemetryData.length - index}`
-            ) || [],
-        datasets: [
-            {
-                label: 'Temperature (°C)',
-                data: telemetryData?.map((d) => d.temperature) || [],
-                borderColor: 'rgb(59, 130, 246)',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                tension: 0.4,
-            },
-        ],
-    };
+    // Reverse data to show oldest to newest
+    const reversedData: TelemetryResponse[] = Array.isArray(telemetryData)
+        ? [...telemetryData].reverse()
+        : [];
 
-    const voltageData = {
-        labels:
-            telemetryData?.map(
-                (_, index) => `T-${telemetryData.length - index}`
-            ) || [],
-        datasets: [
-            {
-                label: 'Voltage (V)',
-                data: telemetryData?.map((d) => d.voltage) || [],
-                borderColor: 'rgb(16, 185, 129)',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                tension: 0.4,
-            },
-        ],
-    };
+    const lastTelemetry =
+        reversedData.length > 0
+            ? reversedData[reversedData.length - 1]
+            : undefined;
+    const lastTemp = lastTelemetry?.temperature;
+    const lastVolt = lastTelemetry?.voltage;
+    const lastCurr = lastTelemetry?.current;
+    const lastBatt = lastTelemetry?.battery_level;
+
+    // Estadísticas
+    const tempStats = getStats(reversedData.map((d) => d.temperature));
+    const voltStats = getStats(reversedData.map((d) => d.voltage));
+    const currStats = getStats(reversedData.map((d) => d.current));
+    const battStats = getStats(reversedData.map((d) => d.battery_level));
+
+    // CSV export
+    function exportCSV() {
+        if (!reversedData.length) return;
+        const header = 'timestamp,temperature,voltage,current,battery_level';
+        const rows = reversedData.map(
+            (d) =>
+                `${d.timestamp},${d.temperature},${d.voltage},${d.current},${d.battery_level}`
+        );
+        const csv = [header, ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        saveAs(blob, `telemetry_${satelliteId}.csv`);
+    }
+
+    // Asegurar que los datos de los gráficos estén definidos
+    const temperatureData =
+        reversedData.length > 0
+            ? {
+                  labels: reversedData.map((d) =>
+                      new Date(d.timestamp * 1000).toLocaleTimeString('en-US', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                      })
+                  ),
+                  datasets: [
+                      {
+                          label: 'Temperature (°C)',
+                          data: reversedData.map((d) => d.temperature),
+                          borderColor: 'rgb(59, 130, 246)',
+                          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                          tension: 0.4,
+                      },
+                  ],
+              }
+            : { labels: [], datasets: [] };
+
+    const voltageData =
+        reversedData.length > 0
+            ? {
+                  labels: reversedData.map((d) =>
+                      new Date(d.timestamp * 1000).toLocaleTimeString('en-US', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                      })
+                  ),
+                  datasets: [
+                      {
+                          label: 'Voltage (V)',
+                          data: reversedData.map((d) => d.voltage),
+                          borderColor: 'rgb(16, 185, 129)',
+                          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                          tension: 0.4,
+                      },
+                  ],
+              }
+            : { labels: [], datasets: [] };
+
+    const currentData =
+        reversedData.length > 0
+            ? {
+                  labels: reversedData.map((d) =>
+                      new Date(d.timestamp * 1000).toLocaleTimeString('en-US', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                      })
+                  ),
+                  datasets: [
+                      {
+                          label: 'Current (A)',
+                          data: reversedData.map((d) => d.current),
+                          borderColor: 'rgb(251, 191, 36)',
+                          backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                          tension: 0.4,
+                      },
+                  ],
+              }
+            : { labels: [], datasets: [] };
+
+    const batteryData =
+        reversedData.length > 0
+            ? {
+                  labels: reversedData.map((d) =>
+                      new Date(d.timestamp * 1000).toLocaleTimeString('en-US', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                      })
+                  ),
+                  datasets: [
+                      {
+                          label: 'Battery Level (%)',
+                          data: reversedData.map((d) => d.battery_level),
+                          borderColor: 'rgb(168, 85, 247)',
+                          backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                          tension: 0.4,
+                      },
+                  ],
+              }
+            : { labels: [], datasets: [] };
 
     const currentTelemetry = telemetryData?.[0];
 
@@ -207,27 +299,42 @@ const SatellitesMonitoring: NextPage = () => {
                     {/* Main Content */}
                     <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
                         <div className='space-y-6'>
-                            {/* Real-time Charts */}
+                            {/* Exportar CSV */}
+                            <div className='flex flex-wrap gap-4 mb-4 justify-end'>
+                                <Button
+                                    variant='primary'
+                                    onClick={exportCSV}
+                                    className='text-sm font-medium'
+                                >
+                                    Exportar CSV
+                                </Button>
+                            </div>
+
+                            {/* Real-time Charts mejorados */}
                             <div className='bg-[#141B23] rounded-lg border border-[#13181D] p-4 sm:p-6'>
                                 <h2 className='text-lg font-semibold text-white mb-4'>
                                     Real-time Charts
                                 </h2>
 
                                 <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+                                    {/* Temperatura */}
                                     <div>
                                         <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2'>
                                             <h3 className='text-white font-medium'>
                                                 Temperature
                                             </h3>
                                             <span className='text-2xl font-bold text-blue-400'>
-                                                {currentTelemetry?.temperature.toFixed(
-                                                    1
-                                                ) || '--'}
+                                                {lastTemp !== undefined
+                                                    ? formatNumber(lastTemp, 2)
+                                                    : '--'}
                                                 °C
                                             </span>
                                         </div>
-                                        <div className='text-sm text-gray-400 mb-4'>
-                                            Last 30 minutes • +4.1%
+                                        <div className='text-xs text-gray-400 mb-2'>
+                                            Min:{' '}
+                                            {formatNumber(tempStats.min, 2)}°C |
+                                            Max:{' '}
+                                            {formatNumber(tempStats.max, 2)}°C
                                         </div>
                                         <div style={{ height: '200px' }}>
                                             <Line
@@ -237,24 +344,82 @@ const SatellitesMonitoring: NextPage = () => {
                                         </div>
                                     </div>
 
+                                    {/* Voltaje */}
                                     <div>
                                         <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2'>
                                             <h3 className='text-white font-medium'>
                                                 Voltage
                                             </h3>
                                             <span className='text-2xl font-bold text-green-400'>
-                                                {currentTelemetry?.voltage.toFixed(
-                                                    1
-                                                ) || '--'}
+                                                {lastVolt !== undefined
+                                                    ? formatNumber(lastVolt, 2)
+                                                    : '--'}
                                                 V
                                             </span>
                                         </div>
-                                        <div className='text-sm text-gray-400 mb-4'>
-                                            Last 30 minutes • -0.2%
+                                        <div className='text-xs text-gray-400 mb-2'>
+                                            Min:{' '}
+                                            {formatNumber(voltStats.min, 2)}V |
+                                            Max:{' '}
+                                            {formatNumber(voltStats.max, 2)}V
                                         </div>
                                         <div style={{ height: '200px' }}>
                                             <Line
                                                 data={voltageData}
+                                                options={chartOptions}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Corriente */}
+                                    <div>
+                                        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2'>
+                                            <h3 className='text-white font-medium'>
+                                                Current
+                                            </h3>
+                                            <span className='text-2xl font-bold text-amber-400'>
+                                                {lastCurr !== undefined
+                                                    ? formatNumber(lastCurr, 3)
+                                                    : '--'}
+                                                A
+                                            </span>
+                                        </div>
+                                        <div className='text-xs text-gray-400 mb-2'>
+                                            Min:{' '}
+                                            {formatNumber(currStats.min, 3)}A |
+                                            Max:{' '}
+                                            {formatNumber(currStats.max, 3)}A
+                                        </div>
+                                        <div style={{ height: '200px' }}>
+                                            <Line
+                                                data={currentData}
+                                                options={chartOptions}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Batería */}
+                                    <div>
+                                        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2'>
+                                            <h3 className='text-white font-medium'>
+                                                Battery Level
+                                            </h3>
+                                            <span className='text-2xl font-bold text-purple-400'>
+                                                {lastBatt !== undefined
+                                                    ? formatNumber(lastBatt, 0)
+                                                    : '--'}
+                                                %
+                                            </span>
+                                        </div>
+                                        <div className='text-xs text-gray-400 mb-2'>
+                                            Min:{' '}
+                                            {formatNumber(battStats.min, 0)}% |
+                                            Max:{' '}
+                                            {formatNumber(battStats.max, 0)}%
+                                        </div>
+                                        <div style={{ height: '200px' }}>
+                                            <Line
+                                                data={batteryData}
                                                 options={chartOptions}
                                             />
                                         </div>
@@ -279,8 +444,14 @@ const SatellitesMonitoring: NextPage = () => {
                                                 {toISOStringGMT3(
                                                     data.timestamp * 1000
                                                 )}{' '}
-                                                | PKT_ID: {index + 1} |
-                                                DATA_SIZE: 128 bytes
+                                                | TEMP:{' '}
+                                                {data.temperature?.toFixed(2)}°C
+                                                | VOLT:{' '}
+                                                {data.voltage?.toFixed(2)}V |
+                                                CURR: {data.current?.toFixed(3)}
+                                                A | BAT:{' '}
+                                                {data.battery_level?.toFixed(0)}
+                                                %
                                             </div>
                                         ))}
                                 </div>
