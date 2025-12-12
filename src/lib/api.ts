@@ -57,7 +57,7 @@ class ApiClient {
             searchParams.set('endTime', params.endTime.toString());
 
         const query = searchParams.toString();
-        const endpoint = `/api/telemetry/${satellite}/history${
+        const endpoint = `/api/satellites/${satellite}/telemetry${
             query ? `?${query}` : ''
         }`;
 
@@ -73,7 +73,7 @@ class ApiClient {
             searchParams.set('amount', params.amount.toString());
 
         const query = searchParams.toString();
-        const endpoint = `/api/telemetry/${satellite}/latest${
+        const endpoint = `/api/satellites/${satellite}/telemetry${
             query ? `?${query}` : ''
         }`;
 
