@@ -23,14 +23,6 @@ export const MOCK_SATELLITES: Satellite[] = [
         uplink_frequency: 145.9,
         last_contact: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
     },
-    {
-        id: 'ASTAR-003',
-        name: 'ASTAR-003',
-        tle: '1 40967U 15052B   24345.51782528  .00000456  00000-0  23456-4 0  9992\n2 40967  97.4321 234.5678 0002345  67.8901  23.4567 14.98765432234567',
-        downlink_frequency: 436.75,
-        uplink_frequency: 145.95,
-        last_contact: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
-    },
 ];
 
 export const MOCK_GROUND_STATIONS: GroundStation[] = [
@@ -141,12 +133,14 @@ export const MOCK_COMMAND_HISTORY: Command[] = [
 export const MOCK_PASSES = (
     satelliteId: string,
     startTime: number,
-    endTime: number
+    endTime: number,
+    groundStations?: GroundStation[]
 ) => {
     const passes = [];
     const firstPassDelayMinutes = Number(process.env.FIRST_PASS_DELAY_MINUTES) || 2;
     const firstPassStartTime = startTime + (firstPassDelayMinutes * 60 * 1000);
     const duration = endTime - firstPassStartTime;
+    const stations = groundStations || MOCK_GROUND_STATIONS;
     const numPasses = 8;
 
     for (let i = 0; i < numPasses; i++) {
@@ -160,9 +154,9 @@ export const MOCK_PASSES = (
 
         passes.push({
             id: `pass-${satelliteId}-${i}`,
-            groundStationId: String((i % 3) + 1),
+            groundStationId: stations[i % stations.length]?.id || 'Unknown Station',
             groundStationName:
-                MOCK_GROUND_STATIONS[i % 3]?.name || 'Unknown Station',
+                stations[i % stations.length]?.name || 'Unknown Station',
             aos,
             los,
             maxElevation: 30 + Math.random() * 60, // 30-90 degrees

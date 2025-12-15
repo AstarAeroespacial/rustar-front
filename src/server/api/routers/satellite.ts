@@ -186,12 +186,30 @@ export const satelliteRouter = createTRPCRouter({
             })
         )
         .query(async ({ input }) => {
-            if (USE_MOCK_DATA || process.env.USE_MOCK_PASSES === 'true') {
+            if (USE_MOCK_DATA) {
                 return MOCK_PASSES(
                     input.satelliteId,
                     input.startTime,
                     input.endTime
                 );
+            }
+            if (process.env.USE_MOCK_PASSES === 'true') {
+                try {
+                    const groundStations = await apiClient.getGroundStations();
+                    return MOCK_PASSES(
+                        input.satelliteId,
+                        input.startTime,
+                        input.endTime,
+                        groundStations
+                    );
+                } catch (error) {
+                    console.warn('Failed to fetch ground stations, using mock data');
+                    return MOCK_PASSES(
+                        input.satelliteId,
+                        input.startTime,
+                        input.endTime
+                    );
+                }
             }
 
             try {
