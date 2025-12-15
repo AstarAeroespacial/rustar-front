@@ -144,14 +144,18 @@ export const MOCK_PASSES = (
     endTime: number
 ) => {
     const passes = [];
-    const duration = endTime - startTime;
-    const numPasses = 3;
+    const firstPassDelayMinutes = Number(process.env.FIRST_PASS_DELAY_MINUTES) || 2;
+    const firstPassStartTime = startTime + (firstPassDelayMinutes * 60 * 1000);
+    const duration = endTime - firstPassStartTime;
+    const numPasses = 8;
 
     for (let i = 0; i < numPasses; i++) {
         const aos =
-            startTime +
-            (duration / numPasses) * i +
-            Math.random() * (duration / numPasses / 2);
+            i === 0
+                ? firstPassStartTime
+                : firstPassStartTime +
+                  (duration / numPasses) * i +
+                  Math.random() * (duration / numPasses / 2);
         const los = aos + 5 * 60 * 1000 + Math.random() * (10 * 60 * 1000); // 5-15 minute passes
 
         passes.push({

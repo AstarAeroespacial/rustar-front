@@ -186,7 +186,7 @@ export const satelliteRouter = createTRPCRouter({
             })
         )
         .query(async ({ input }) => {
-            if (USE_MOCK_DATA) {
+            if (USE_MOCK_DATA || process.env.USE_MOCK_PASSES === 'true') {
                 return MOCK_PASSES(
                     input.satelliteId,
                     input.startTime,
