@@ -112,7 +112,7 @@ const SatellitesMonitoring: NextPage = () => {
     const lastCurr = lastTelemetry?.current;
     const lastBatt = lastTelemetry?.battery_level;
 
-    // Estadísticas
+    // Statistics
     const tempStats = getStats(reversedData.map((d) => d.temperature));
     const voltStats = getStats(reversedData.map((d) => d.voltage));
     const currStats = getStats(reversedData.map((d) => d.current));
@@ -131,7 +131,7 @@ const SatellitesMonitoring: NextPage = () => {
         saveAs(blob, `telemetry_${satelliteId}.csv`);
     }
 
-    // Asegurar que los datos de los gráficos estén definidos
+    // Ensure chart data is defined
     const temperatureData =
         reversedData.length > 0
             ? {
@@ -299,14 +299,14 @@ const SatellitesMonitoring: NextPage = () => {
                     {/* Main Content */}
                     <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
                         <div className='space-y-6'>
-                            {/* Exportar CSV */}
+                            {/* Export CSV */}
                             <div className='flex flex-wrap gap-4 mb-4 justify-end'>
                                 <Button
                                     variant='primary'
                                     onClick={exportCSV}
                                     className='text-sm font-medium'
                                 >
-                                    Exportar CSV
+                                    Export CSV
                                 </Button>
                             </div>
 
@@ -317,7 +317,7 @@ const SatellitesMonitoring: NextPage = () => {
                                 </h2>
 
                                 <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-                                    {/* Temperatura */}
+                                    {/* Temperature */}
                                     <div>
                                         <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2'>
                                             <h3 className='text-white font-medium'>
@@ -344,7 +344,7 @@ const SatellitesMonitoring: NextPage = () => {
                                         </div>
                                     </div>
 
-                                    {/* Voltaje */}
+                                    {/* Voltage */}
                                     <div>
                                         <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2'>
                                             <h3 className='text-white font-medium'>
@@ -371,7 +371,7 @@ const SatellitesMonitoring: NextPage = () => {
                                         </div>
                                     </div>
 
-                                    {/* Corriente */}
+                                    {/* Current */}
                                     <div>
                                         <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2'>
                                             <h3 className='text-white font-medium'>
@@ -398,7 +398,7 @@ const SatellitesMonitoring: NextPage = () => {
                                         </div>
                                     </div>
 
-                                    {/* Batería */}
+                                    {/* Battery */}
                                     <div>
                                         <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2'>
                                             <h3 className='text-white font-medium'>
