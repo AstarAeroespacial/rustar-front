@@ -216,7 +216,10 @@ const SatellitesMonitoring: NextPage = () => {
               }
             : { labels: [], datasets: [] };
 
-    const currentTelemetry = telemetryData?.[0];
+    const getPacketSize = (data: TelemetryResponse) => {
+        const jsonString = JSON.stringify(data);
+        return new Blob([jsonString]).size;
+    };
 
     return (
         <>
@@ -460,7 +463,7 @@ const SatellitesMonitoring: NextPage = () => {
                             {/* Received Telemetry Packets */}
                             <div className='bg-[#141B23] rounded-lg border border-[#13181D] p-4 sm:p-6'>
                                 <h2 className='text-lg font-semibold text-white mb-4'>
-                                    Received Telemetry Packets
+                                    Latest Telemetry Packets
                                 </h2>
 
                                 <div className='overflow-x-auto -mx-4 sm:mx-0'>
@@ -468,16 +471,16 @@ const SatellitesMonitoring: NextPage = () => {
                                         <table className='min-w-full divide-y divide-[#13181D]'>
                                             <thead>
                                                 <tr>
-                                                    <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                                    <th className='px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
                                                         Timestamp
                                                     </th>
-                                                    <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                                    <th className='px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
                                                         Packet ID
                                                     </th>
-                                                    <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                                    <th className='px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
                                                         Size
                                                     </th>
-                                                    <th className='px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
+                                                    <th className='px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap'>
                                                         Status
                                                     </th>
                                                 </tr>
@@ -487,19 +490,19 @@ const SatellitesMonitoring: NextPage = () => {
                                                     ?.slice(0, 5)
                                                     .map((data, index) => (
                                                         <tr key={index}>
-                                                            <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-white'>
+                                                            <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-white text-center'>
                                                                 {toLocaleStringGMT3(
                                                                     data.timestamp *
                                                                         1000
                                                                 )}
                                                             </td>
-                                                            <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
-                                                                {index + 1}
+                                                            <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300 text-center'>
+                                                                {data.id}
                                                             </td>
-                                                            <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
-                                                                128 bytes
+                                                            <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300 text-center'>
+                                                                {getPacketSize(data)} bytes
                                                             </td>
-                                                            <td className='px-4 sm:px-6 py-4 whitespace-nowrap'>
+                                                            <td className='px-4 sm:px-6 py-4 whitespace-nowrap text-center'>
                                                                 <span className='inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-900/50 text-green-400 border border-green-600'>
                                                                     Received
                                                                 </span>

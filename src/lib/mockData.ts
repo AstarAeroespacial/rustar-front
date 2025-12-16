@@ -59,6 +59,7 @@ export const MOCK_GROUND_STATIONS: GroundStation[] = [
 export const MOCK_TELEMETRY: TelemetryResponse[] = Array.from(
     { length: 20 },
     (_, i) => ({
+        id: 20 - i,
         timestamp: Math.floor(Date.now() / 1000) - i * 300, // 5 minute intervals
         temperature: 20 + Math.random() * 10 - 5,
         voltage: 12 + Math.random() * 2 - 1,
