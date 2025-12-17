@@ -1,6 +1,7 @@
 // API types based on the OpenAPI specification
 
 export interface TelemetryResponse {
+    id: number
     timestamp: number;
     temperature: number;
     voltage: number;

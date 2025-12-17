@@ -54,12 +54,14 @@ export const groundStationRouter = createTRPCRouter({
             })
         )
         .query(async ({ input }) => {
-            if (USE_MOCK_DATA) {
-                // Mock implementation - returns passes for all satellites over this ground station
+            if (USE_MOCK_DATA || process.env.USE_MOCK_PASSES === 'true') {
                 const timeRange = input.endTime - input.startTime;
                 const passesPerSatellite = Math.ceil(
                     timeRange / (6 * 60 * 60 * 1000)
                 ); // ~1 pass every 6 hours
+
+                const firstPassDelayMinutes = Number(process.env.FIRST_PASS_DELAY_MINUTES) || 2;
+                const firstPassStartTime = input.startTime + (firstPassDelayMinutes * 60 * 1000);
 
                 const passes = MOCK_SATELLITES.flatMap(
                     (satellite, satIndex) => {
@@ -71,7 +73,7 @@ export const groundStationRouter = createTRPCRouter({
                                     60 *
                                     60 *
                                     1000;
-                                const aos = input.startTime + passOffset;
+                                const aos = firstPassStartTime + passOffset;
                                 const duration =
                                     (5 + Math.random() * 10) * 60 * 1000; // 5-15 minutes
 
