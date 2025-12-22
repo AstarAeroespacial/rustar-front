@@ -46,7 +46,7 @@ const SatellitesMonitoring: NextPage = () => {
         { enabled: !!satelliteId }
     );
 
-    const [updateInterval, setUpdateInterval] = useState(5);
+    const [updateInterval, setUpdateInterval] = useState(1);
     const [isReceiving, setIsReceiving] = useState(true);
 
     const { data: telemetryData, refetch } =

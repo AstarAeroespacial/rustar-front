@@ -104,7 +104,7 @@ const Sidebar: React.FC<SidebarProps> = ({ items, title }) => {
                 {/* Header with title and collapse/close button */}
                 <div className='flex items-center justify-between p-3 border-b border-[#13181D] h-16'>
                     {(isMobile || showText) && (
-                        <h2 className='text-white font-semibold text-sm truncate'>
+                        <h2 className='text-white font-semibold text-lg truncate'>
                             {title || 'Loading...'}
                         </h2>
                     )}

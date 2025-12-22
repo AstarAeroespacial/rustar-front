@@ -1,4 +1,4 @@
-# SatCom - Satellite Management System
+# RUSTAR frontend
 
 A modern web application for satellite management and control, built with the T3 stack (Next.js, TypeScript, Tailwind CSS, tRPC).
 
