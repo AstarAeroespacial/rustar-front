@@ -70,7 +70,7 @@ class ApiClient {
     ): Promise<TelemetryResponse[]> {
         const searchParams = new URLSearchParams();
         if (params?.amount)
-            searchParams.set('amount', params.amount.toString());
+            searchParams.set('limit', params.amount.toString());
 
         const query = searchParams.toString();
         const endpoint = `/api/satellites/${satellite}/telemetry${
